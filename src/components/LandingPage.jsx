@@ -10,11 +10,12 @@ const LandingPage = () => {
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-3">
             <img src={logo} alt="Global Coding Academy Logo" className="h-12 w-auto" />
-            <span className="text-xl font-bold text-[#003366]">Global Coding Academy</span>
+            <span className="text-xl font-bold text-[#003366]">Global Coding Academy Ltd</span>
           </Link>
         </div>
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
           <a href="#courses" className="hover:text-[#003366] transition-colors">Courses</a>
+           <a href="#about" className="hover:text-[#003366] transition-colors">Projects</a>
           <a href="#about" className="hover:text-[#003366] transition-colors">About</a>
           <a href="#contact" className="hover:text-[#003366] transition-colors">Contact</a>
           <Link to="/login" className="bg-[#003366] text-white px-5 py-2 rounded-lg hover:bg-[#002244] transition-colors">
@@ -31,7 +32,7 @@ const LandingPage = () => {
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
               Learn to Code. <br />
-              <span className="text-[#FFD700]">Build the Future.</span>
+              <span className="text-[#FFD700]">Build a Shining Future.</span>
             </h1>
             <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-2xl">
               Empowering the next generation of developers in Rwanda and beyond. Join the Global Coding Academy and master the skills needed for the digital age.
@@ -127,7 +128,7 @@ const LandingPage = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
               <img src={logo} alt="Logo" className="h-12 w-auto rounded-full" />
-              <span className="text-xl font-bold">Global Coding Academy</span>
+              <span className="text-xl font-bold">Global Coding Academy Ltd</span>
             </div>
             <p className="text-blue-200 max-w-sm">
               Building the future of technology through education, innovation, and community.
