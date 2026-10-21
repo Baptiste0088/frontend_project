@@ -110,6 +110,10 @@ const AuthPage = () => {
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
                       <input type="email" placeholder="john@example.com" className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-100 focus:border-[#003366] outline-none transition-all text-sm" />
                     </div>
+                    <div className="group">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
+                      <input type="tel" placeholder="(+250) 789271770" className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-100 focus:border-[#003366] outline-none transition-all text-sm" />
+                    </div>
                   </div>
                 )}
 
