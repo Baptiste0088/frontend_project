@@ -14,9 +14,9 @@ const LandingPage = () => {
           </Link>
         </div>
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-          <a href="#courses" className="hover:text-[#003366] transition-colors">Courses</a>
            <a href="#about" className="hover:text-[#003366] transition-colors">Projects</a>
-          <a href="#about" className="hover:text-[#003366] transition-colors">About</a>
+          <Link to="/about" className="hover:text-[#003366] transition-colors">About</Link>
+          <Link to="/about#team" className="hover:text-[#003366] transition-colors">Team</Link>
           <a href="#contact" className="hover:text-[#003366] transition-colors">Contact</a>
           <Link to="/login" className="bg-[#003366] text-white px-5 py-2 rounded-lg hover:bg-[#002244] transition-colors">
             Join Now
@@ -63,40 +63,6 @@ const LandingPage = () => {
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-yellow-400 rounded-full blur-3xl opacity-10"></div>
       </header>
 
-      {/* Features Section */}
-      <section id="courses" className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#003366] mb-4">Why Choose Our Academy?</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">We provide world-class coding education tailored to meet the demands of the global tech industry.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Expert Mentorship",
-              desc: "Learn from industry veterans who have built scalable products for global companies.",
-              icon: "🎓"
-            },
-            {
-              title: "Industry Projects",
-              desc: "Apply your knowledge by working on real-world projects that solve actual problems.",
-              icon: "💻"
-            },
-            {
-              title: "Global Certification",
-              desc: "Earn certificates recognized worldwide, opening doors to international opportunities.",
-              icon: "🌍"
-            }
-          ].map((feature, idx) => (
-            <div key={idx} className="p-8 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform inline-block">{feature.icon}</div>
-              <h3 className="text-xl font-bold text-[#003366] mb-3">{feature.title}</h3>
-              <p className="text-slate-600 leading-relaxed">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* About Section */}
       <section id="about" className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
@@ -115,9 +81,9 @@ const LandingPage = () => {
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
               We don't just teach syntax; we teach problem-solving, critical thinking, and the architectural mindset required to build the software of tomorrow.
             </p>
-            <button className="text-[#003366] font-bold flex items-center gap-2 hover:gap-3 transition-all">
+            <Link to="/about" className="text-[#003366] font-bold flex items-center gap-2 hover:gap-3 transition-all">
               Read our full story <span>→</span>
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -139,7 +105,7 @@ const LandingPage = () => {
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-4 text-blue-200">
               <li><a href="#" className="hover:text-white transition-colors">Courses</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
             </ul>
