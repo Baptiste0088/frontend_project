@@ -14,6 +14,7 @@ const LandingPage = () => {
           </Link>
         </div>
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
+          <Link to="#services" className="hover:text-[#003366] transition-colors">Services</Link>
            <a href="#about" className="hover:text-[#003366] transition-colors">Projects</a>
           <Link to="/about" className="hover:text-[#003366] transition-colors">About</Link>
           <Link to="/about#team" className="hover:text-[#003366] transition-colors">Team</Link>
