@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.jpeg';
+import SiteHeader from '../components/SiteHeader';
 
 const currentYear = new Date().getFullYear();
 
@@ -36,25 +37,7 @@ const audiences = ['Students', 'Professionals', 'Businesses', 'Schools', 'Organi
 const ServicesPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <nav className="flex items-center justify-between px-6 py-4 bg-white shadow-sm sticky top-0 z-50">
-        <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="Global Coding Academy Logo" className="h-12 w-auto" />
-          <span className="text-xl font-bold text-[#003366]">Global Coding Academy Ltd</span>
-        </Link>
-
-        <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-          <Link to="/" className="hover:text-[#003366] transition-colors">Home</Link>
-          <Link to="/services" className="text-[#003366] font-bold">Services</Link>
-          <Link to="/about" className="hover:text-[#003366] transition-colors">About</Link>
-          <Link to="/about#team" className="hover:text-[#003366] transition-colors">Team</Link>
-          <a href="#contact" className="hover:text-[#003366] transition-colors">Contact</a>
-          <Link to="/login" className="bg-[#003366] text-white px-5 py-2 rounded-lg hover:bg-[#002244] transition-colors">
-            Join Now
-          </Link>
-        </div>
-
-        <div className="md:hidden text-2xl">☰</div>
-      </nav>
+      <SiteHeader activePage="services" />
 
       <header className="bg-[#003366] text-white px-6 py-20">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">

@@ -1,33 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.jpeg';
+import SiteHeader from './SiteHeader';
 
 const currentYear = new Date().getFullYear();
+
+const homeLinks = [
+  { label: 'Services', to: '/services' },
+  { label: 'Projects', href: '#about' },
+  { label: 'About', to: '/about' },
+  { label: 'Team', to: '/about#team' },
+  { label: 'Contact', href: '#contact' }
+];
 
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 bg-white shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="Global Coding Academy Logo" className="h-12 w-auto" />
-            <span className="text-xl font-bold text-[#003366]">Global Coding Academy Ltd</span>
-          </Link>
-        </div>
-        <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-          <Link to="/services" className="hover:text-[#003366] transition-colors">Services</Link>
-           <a href="#about" className="hover:text-[#003366] transition-colors">Projects</a>
-          <Link to="/about" className="hover:text-[#003366] transition-colors">About</Link>
-          <Link to="/about#team" className="hover:text-[#003366] transition-colors">Team</Link>
-          <a href="#contact" className="hover:text-[#003366] transition-colors">Contact</a>
-          <Link to="/login" className="bg-[#003366] text-white px-5 py-2 rounded-lg hover:bg-[#002244] transition-colors">
-            Join Now
-          </Link>
-        </div>
-        {/* Mobile Menu Icon */}
-        <div className="md:hidden text-2xl">☰</div>
-      </nav>
+      <SiteHeader links={homeLinks} />
 
       {/* Hero Section */}
       <header className="relative overflow-hidden bg-gradient-to-br from-[#003366] via-[#0055aa] to-[#0088ff] text-white py-20 px-6">
