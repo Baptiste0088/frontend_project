@@ -4,6 +4,8 @@ import logo from '../assets/logo.jpeg';
 import founderImage from '../assets/founder.png';
 import ctoImage from '../assets/cto.jpg';
 
+const currentYear = new Date().getFullYear();
+
 const teamMembers = [
   {
     name: 'Founder',
@@ -30,6 +32,7 @@ const AboutPage = () => {
 
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
           <Link to="/" className="hover:text-[#003366] transition-colors">Home</Link>
+          <Link to="/services" className="hover:text-[#003366] transition-colors">Services</Link>
           <Link to="/about" className="hover:text-[#003366] transition-colors">About</Link>
           <a href="#team" className="hover:text-[#003366] transition-colors">Team</a>
           <a href="#contact" className="hover:text-[#003366] transition-colors">Contact</a>
@@ -123,6 +126,7 @@ const AboutPage = () => {
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-4 text-blue-200">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
@@ -139,7 +143,7 @@ const AboutPage = () => {
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-blue-900 text-center text-blue-300 text-sm">
-          © {new Date().getFullYear()} Global Coding Academy LTD. All rights reserved.
+          © {currentYear} Global Coding Academy LTD. All rights reserved.
         </div>
       </footer>
     </div>

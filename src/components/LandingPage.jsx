@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.jpeg';
 
+const currentYear = new Date().getFullYear();
+
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -14,7 +16,7 @@ const LandingPage = () => {
           </Link>
         </div>
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-          <Link to="#services" className="hover:text-[#003366] transition-colors">Services</Link>
+          <Link to="/services" className="hover:text-[#003366] transition-colors">Services</Link>
            <a href="#about" className="hover:text-[#003366] transition-colors">Projects</a>
           <Link to="/about" className="hover:text-[#003366] transition-colors">About</Link>
           <Link to="/about#team" className="hover:text-[#003366] transition-colors">Team</Link>
@@ -39,12 +41,12 @@ const LandingPage = () => {
               Empowering the next generation of developers in Rwanda and beyond. Join the Global Coding Academy and master the skills needed for the digital age.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <button className="bg-[#FFD700] text-[#003366] font-bold px-8 py-4 rounded-full text-lg hover:bg-[#ffcc00] transition-all transform hover:scale-105 shadow-lg">
+              <Link to="/login" className="bg-[#FFD700] text-[#003366] font-bold px-8 py-4 rounded-full text-lg hover:bg-[#ffcc00] transition-all transform hover:scale-105 shadow-lg">
                 Start Learning Now
-              </button>
-              <button className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-full text-lg hover:bg-white hover:text-[#003366] transition-all">
-                Explore Courses
-              </button>
+              </Link>
+              <Link to="/services" className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-full text-lg hover:bg-white hover:text-[#003366] transition-all">
+                Explore Services
+              </Link>
             </div>
           </div>
           <div className="flex-1 flex justify-center">
@@ -90,7 +92,7 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#003366] text-white py-12 px-6">
+      <footer id="contact" className="bg-[#003366] text-white py-12 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
@@ -105,7 +107,7 @@ const LandingPage = () => {
           <div>
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-4 text-blue-200">
-              <li><a href="#" className="hover:text-white transition-colors">Courses</a></li>
+              <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
@@ -122,7 +124,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-blue-900 text-center text-blue-300 text-sm">
-          © {new Date().getFullYear()} Global Coding Academy LTD. All rights reserved.
+          © {currentYear} Global Coding Academy LTD. All rights reserved.
         </div>
       </footer>
     </div>
