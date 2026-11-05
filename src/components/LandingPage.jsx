@@ -5,18 +5,10 @@ import SiteHeader from './SiteHeader';
 
 const currentYear = new Date().getFullYear();
 
-const homeLinks = [
-  { label: 'Services', to: '/services' },
-  { label: 'Projects', href: '#about' },
-  { label: 'About', to: '/about' },
-  { label: 'Team', to: '/about#team' },
-  { label: 'Contact', href: '#contact' }
-];
-
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <SiteHeader links={homeLinks} />
+      <SiteHeader />
 
       {/* Hero Section */}
       <header className="relative overflow-hidden bg-gradient-to-br from-[#003366] via-[#0055aa] to-[#0088ff] text-white py-20 px-6">
