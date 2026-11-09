@@ -39,6 +39,16 @@ const readApiMessage = async (response) => {
   }
 };
 
+const getCountryCodeFromPhoneNumber = (phoneNumber) => {
+  const digits = phoneNumber.replace(/[^\d+]/g, '');
+
+  if (digits.startsWith('+')) {
+    return `+${digits.slice(1, 4)}`;
+  }
+
+  return '+250';
+};
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [step, setStep] = useState(1);
@@ -144,7 +154,7 @@ const AuthPage = () => {
           last_name: signupForm.last_name.trim(),
           username: signupForm.username.trim(),
           gender: signupForm.gender,
-          phone_number: signupForm.phone_number.trim(),
+          country_code: getCountryCodeFromPhoneNumber(signupForm.phone_number),
           email: signupForm.email.trim(),
           password: signupForm.password,
         }),
@@ -155,7 +165,7 @@ const AuthPage = () => {
       if (!response.ok) {
         setStatus({ type: 'error', message });
         setFieldErrors(errors);
-        if (errors.first_name || errors.last_name || errors.username || errors.email || errors.phone_number) {
+        if (errors.first_name || errors.last_name || errors.username || errors.email || errors.phone_number || errors.country_code) {
           setStep(1);
         } else if (errors.gender) {
           setStep(2);
@@ -317,7 +327,7 @@ const AuthPage = () => {
                       <div className="group">
                         <label htmlFor="phone_number" className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
                         <input id="phone_number" name="phone_number" type="tel" value={signupForm.phone_number} onChange={updateSignupForm} placeholder="Enter your phone number" className={inputClassName} required />
-                        {fieldErrors.phone_number && <p className="mt-1 text-xs text-red-600">{fieldErrors.phone_number}</p>}
+                        {(fieldErrors.phone_number || fieldErrors.country_code) && <p className="mt-1 text-xs text-red-600">{fieldErrors.phone_number || fieldErrors.country_code}</p>}
                       </div>
                     </div>
                     <div className="group">
