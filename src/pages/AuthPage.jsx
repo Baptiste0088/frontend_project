@@ -13,7 +13,7 @@ const initialSignupForm = {
   last_name: '',
   username: '',
   gender: 'Male',
-  country_code: '+250',
+  phone_number: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -144,7 +144,7 @@ const AuthPage = () => {
           last_name: signupForm.last_name.trim(),
           username: signupForm.username.trim(),
           gender: signupForm.gender,
-          country_code: signupForm.country_code.trim(),
+          phone_number: signupForm.phone_number.trim(),
           email: signupForm.email.trim(),
           password: signupForm.password,
         }),
@@ -155,7 +155,7 @@ const AuthPage = () => {
       if (!response.ok) {
         setStatus({ type: 'error', message });
         setFieldErrors(errors);
-        if (errors.first_name || errors.last_name || errors.username || errors.email || errors.country_code) {
+        if (errors.first_name || errors.last_name || errors.username || errors.email || errors.phone_number) {
           setStep(1);
         } else if (errors.gender) {
           setStep(2);
@@ -299,30 +299,30 @@ const AuthPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="group">
                         <label htmlFor="first_name" className="block text-xs font-semibold text-slate-700 mb-1">First Name</label>
-                        <input id="first_name" name="first_name" type="text" value={signupForm.first_name} onChange={updateSignupForm} placeholder="John" className={inputClassName} required />
+                        <input id="first_name" name="first_name" type="text" value={signupForm.first_name} onChange={updateSignupForm} placeholder="Enter your first name" className={inputClassName} required />
                         {fieldErrors.first_name && <p className="mt-1 text-xs text-red-600">{fieldErrors.first_name}</p>}
                       </div>
                       <div className="group">
                         <label htmlFor="last_name" className="block text-xs font-semibold text-slate-700 mb-1">Last Name</label>
-                        <input id="last_name" name="last_name" type="text" value={signupForm.last_name} onChange={updateSignupForm} placeholder="Doe" className={inputClassName} required />
+                        <input id="last_name" name="last_name" type="text" value={signupForm.last_name} onChange={updateSignupForm} placeholder="Enter your last name" className={inputClassName} required />
                         {fieldErrors.last_name && <p className="mt-1 text-xs text-red-600">{fieldErrors.last_name}</p>}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="group">
                         <label htmlFor="username" className="block text-xs font-semibold text-slate-700 mb-1">Username</label>
-                        <input id="username" name="username" type="text" value={signupForm.username} onChange={updateSignupForm} placeholder="john_doe" className={inputClassName} required />
+                        <input id="username" name="username" type="text" value={signupForm.username} onChange={updateSignupForm} placeholder="Enter your username" className={inputClassName} required />
                         {fieldErrors.username && <p className="mt-1 text-xs text-red-600">{fieldErrors.username}</p>}
                       </div>
                       <div className="group">
-                        <label htmlFor="country_code" className="block text-xs font-semibold text-slate-700 mb-1">Country Code</label>
-                        <input id="country_code" name="country_code" type="text" value={signupForm.country_code} onChange={updateSignupForm} placeholder="+250" className={inputClassName} required />
-                        {fieldErrors.country_code && <p className="mt-1 text-xs text-red-600">{fieldErrors.country_code}</p>}
+                        <label htmlFor="phone_number" className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
+                        <input id="phone_number" name="phone_number" type="tel" value={signupForm.phone_number} onChange={updateSignupForm} placeholder="Enter your phone number" className={inputClassName} required />
+                        {fieldErrors.phone_number && <p className="mt-1 text-xs text-red-600">{fieldErrors.phone_number}</p>}
                       </div>
                     </div>
                     <div className="group">
                       <label htmlFor="signup-email" className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
-                      <input id="signup-email" name="email" type="email" value={signupForm.email} onChange={updateSignupForm} placeholder="john@example.com" className={inputClassName} required />
+                      <input id="signup-email" name="email" type="email" value={signupForm.email} onChange={updateSignupForm} placeholder="Enter your email address" className={inputClassName} required />
                       {fieldErrors.email && <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>}
                     </div>
                   </div>
