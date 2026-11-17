@@ -5,9 +5,8 @@ import logo from '../assets/logo.jpeg';
 const defaultLinks = [
   { label: 'Home', to: '/' },
   { label: 'Services', to: '/services' },
-  { label: 'Courses', to: '/courses' },
   { label: 'About', to: '/about' },
-  { label: 'Team', to: '/about#team' },
+  { label: 'Practice', to: '/#practice' },
   { label: 'Contact', href: '#contact' }
 ];
 
@@ -53,8 +52,8 @@ const SiteHeader = ({ activePage, links = defaultLinks }) => {
               </Link>
             )
           ))}
-          <Link to="/login" className="bg-[#003366] text-white px-5 py-2 rounded-lg hover:bg-[#002244] transition-colors">
-            Join Now
+          <Link to="/#practice" className="bg-[#003366] text-white px-5 py-2 rounded-lg hover:bg-[#002244] transition-colors">
+            Start Coding
           </Link>
         </div>
 
@@ -94,11 +93,11 @@ const SiteHeader = ({ activePage, links = defaultLinks }) => {
               )
             ))}
             <Link
-              to="/login"
+              to="/#practice"
               className="mt-2 rounded-lg bg-[#003366] px-3 py-3 text-center font-bold text-white hover:bg-[#002244]"
               onClick={closeMenu}
             >
-              Join Now
+              Start Coding
             </Link>
           </div>
         </div>

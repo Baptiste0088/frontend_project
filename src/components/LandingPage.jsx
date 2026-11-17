@@ -1,158 +1,236 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
 import logo from '../assets/logo.jpeg';
 import SiteHeader from './SiteHeader';
 
-const currentYear = new Date().getFullYear();
+const levels = [
+  { id: 1, name: 'Foundations', brief: 'Create a clear heading and a short introduction.' },
+  { id: 2, name: 'Core Skills', brief: 'Add a styled button and organize content with sections.' },
+  { id: 3, name: 'Web Builder', brief: 'Build a responsive card and add a simple interaction.' },
+  { id: 4, name: 'Application Skills', brief: 'Create a small interactive interface with reusable styles.' },
+  { id: 5, name: 'Advanced Practice', brief: 'Plan and build a polished mini-project independently.' },
+];
 
-const LandingPage = () => {
+const starterCode = {
+  html: `<main class="welcome-card">
+  <span class="level-tag">My first project</span>
+  <h1>Hello, Rwanda! 🇷🇼</h1>
+  <p>I am learning to build for the web with Global Coding Academy.</p>
+  <button id="welcomeButton">Click me</button>
+  <p id="message"></p>
+</main>`,
+  css: `body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #e8f3ff, #ffffff);
+  color: #12304a;
+}
+
+.welcome-card {
+  width: min(520px, 82vw);
+  padding: 40px;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 20px 50px rgba(0, 51, 102, 0.15);
+  text-align: center;
+}
+
+.level-tag {
+  color: #0066cc;
+  font-weight: bold;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 20px;
+  background: #ffd700;
+  color: #003366;
+  font-weight: bold;
+  cursor: pointer;
+}`,
+  javascript: `const button = document.querySelector('#welcomeButton');
+const message = document.querySelector('#message');
+
+button.addEventListener('click', () => {
+  message.textContent = 'Excellent — your JavaScript is working!';
+});`,
+};
+
+const languageMeta = {
+  html: { label: 'HTML', detail: 'Structure' },
+  css: { label: 'CSS', detail: 'Design' },
+  javascript: { label: 'JavaScript', detail: 'Interaction' },
+};
+
+function buildDocument(code) {
+  const escapedScript = code.javascript.replace(/<\/script/gi, '<\\/script');
+  return `<!doctype html><html><head><meta charset="UTF-8"><style>${code.css}</style></head><body>${code.html}<script>${escapedScript}</script></body></html>`;
+}
+
+export default function LandingPage() {
+  const [selectedLevel, setSelectedLevel] = useState(1);
+  const [activeLanguage, setActiveLanguage] = useState('html');
+  const [code, setCode] = useState(starterCode);
+  const [previewCode, setPreviewCode] = useState(starterCode);
+  const [runCount, setRunCount] = useState(0);
+
+  const activeLevel = levels.find((level) => level.id === selectedLevel);
+  const preview = useMemo(() => buildDocument(previewCode), [previewCode]);
+
+  const runCode = () => {
+    setPreviewCode({ ...code });
+    setRunCount((count) => count + 1);
+  };
+
+  const resetCode = () => {
+    setCode(starterCode);
+    setPreviewCode(starterCode);
+    setRunCount((count) => count + 1);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <SiteHeader />
+    <div className="min-h-screen bg-[#f4f7fb] text-slate-900">
+      <SiteHeader
+        activePage="home"
+        links={[
+          { label: 'Practice', href: '#practice' },
+          { label: 'Levels', href: '#levels' },
+          { label: 'About', to: '/about' },
+          { label: 'Contact', href: '#contact' },
+        ]}
+      />
 
-      {/* Hero Section */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-[#003366] via-[#0055aa] to-[#0088ff] text-white py-20 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
-          <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-              Learn to Code. <br />
-              <span className="text-[#FFD700]">Build a Shining Future.</span>
+      <header className="relative overflow-hidden bg-[#071d35] px-5 pb-16 pt-14 text-white sm:px-8 lg:pb-20 lg:pt-20">
+        <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_75%_25%,#1d9bf0_0,transparent_34%),radial-gradient(circle_at_12%_85%,#ffd700_0,transparent_24%)]" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
+          <div className="text-left">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-300/25 bg-blue-300/10 px-4 py-2 text-sm font-semibold text-blue-100">
+              <span className="h-2 w-2 rounded-full bg-[#ffd700]" />
+              Learn by building — directly in your browser
+            </div>
+            <h1 className="max-w-3xl text-4xl font-black leading-[1.08] sm:text-5xl lg:text-6xl">
+              Write code. Run it. <span className="text-[#ffd700]">See it come alive.</span>
             </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-2xl">
-              Empowering the next generation of developers in Rwanda and beyond. Join the Global Coding Academy and master the skills needed for the digital age.
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+              Start coding with Global Coding Academy. Choose your learning level, practise web languages, and see your result instantly—no account or backend needed.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Link to="/login" className="bg-[#FFD700] text-[#003366] font-bold px-8 py-4 rounded-full text-lg hover:bg-[#ffcc00] transition-all transform hover:scale-105 shadow-lg">
-                Start Learning Now
-              </Link>
-              <Link to="/services" className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-full text-lg hover:bg-white hover:text-[#003366] transition-all">
-                Explore Services
-              </Link>
-              <Link to="/courses" className="bg-white text-[#003366] font-bold px-8 py-4 rounded-full text-lg hover:bg-blue-50 transition-all">
-                Our Courses
-              </Link>
+            <a href="#practice" className="mt-8 inline-flex items-center gap-3 rounded-xl bg-[#ffd700] px-7 py-4 font-extrabold text-[#071d35] shadow-lg shadow-yellow-500/15 transition hover:-translate-y-0.5 hover:bg-yellow-300">
+              Start coding now <span aria-hidden="true">↓</span>
+            </a>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full bg-red-400" /><span className="h-3 w-3 rounded-full bg-yellow-400" /><span className="h-3 w-3 rounded-full bg-green-400" />
+              <span className="ml-2 text-xs text-slate-400">your-first-project.html</span>
+            </div>
+            <pre className="overflow-hidden rounded-2xl bg-[#03101f] p-6 text-left text-sm leading-7 text-blue-100"><code><span className="text-blue-400">&lt;h1&gt;</span>Hello, coder!<span className="text-blue-400">&lt;/h1&gt;</span>{'\n'}<span className="text-purple-400">&lt;button&gt;</span>Build the future<span className="text-purple-400">&lt;/button&gt;</span>{'\n'}<span className="text-slate-500">// Your journey starts here.</span></code></pre>
+          </div>
+        </div>
+      </header>
+
+      <main id="practice" className="mx-auto max-w-[1500px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <section id="levels" className="mb-8 text-left">
+          <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#0066cc]">Choose your learning level</p>
+          <div className="mt-3 flex flex-col justify-between gap-3 lg:flex-row lg:items-end">
+            <div>
+              <h2 className="text-3xl font-black text-[#071d35] sm:text-4xl">A practical path from Level 1 to Level 5</h2>
+              <p className="mt-2 text-slate-600">Inspired by Rwanda’s five Basic TVET levels and organized for progressive coding practice.</p>
+            </div>
+            <span className="w-fit rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700">Practice pathway · Not an official qualification</span>
+          </div>
+
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {levels.map((level) => {
+              const selected = selectedLevel === level.id;
+              return (
+                <button
+                  type="button"
+                  key={level.id}
+                  onClick={() => setSelectedLevel(level.id)}
+                  className={`rounded-2xl border p-4 text-left transition ${selected ? 'border-[#0066cc] bg-[#0066cc] text-white shadow-lg shadow-blue-900/15' : 'border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-blue-300'}`}
+                >
+                  <span className={`text-xs font-black uppercase tracking-wider ${selected ? 'text-blue-100' : 'text-[#0066cc]'}`}>Level {level.id}</span>
+                  <span className="mt-1 block font-extrabold">{level.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="mb-5 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-[#0066cc]">Level {activeLevel.id} challenge</p>
+            <p className="mt-1 font-bold text-[#071d35]">{activeLevel.brief}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(languageMeta).map(([key, language]) => (
+              <button
+                type="button"
+                key={key}
+                onClick={() => setActiveLanguage(key)}
+                className={`rounded-xl px-4 py-3 text-sm font-extrabold transition ${activeLanguage === key ? 'bg-[#071d35] text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              >
+                {language.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid min-h-[640px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 lg:grid-cols-2">
+          <div className="flex min-h-[580px] flex-col bg-[#07131f] text-left">
+            <div className="flex items-center justify-between border-b border-slate-700 px-5 py-4">
+              <div>
+                <p className="font-extrabold text-white">{languageMeta[activeLanguage].label} editor</p>
+                <p className="text-xs text-slate-400">{languageMeta[activeLanguage].detail} · Edit the code below</p>
+              </div>
+              <button type="button" onClick={resetCode} className="rounded-lg border border-slate-600 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800">Reset</button>
+            </div>
+            <textarea
+              value={code[activeLanguage]}
+              onChange={(event) => setCode((current) => ({ ...current, [activeLanguage]: event.target.value }))}
+              className="min-h-[440px] flex-1 resize-none bg-[#07131f] p-6 font-mono text-[14px] leading-7 text-slate-100 outline-none sm:text-[15px]"
+              aria-label={`${languageMeta[activeLanguage].label} code editor`}
+              spellCheck="false"
+            />
+            <div className="flex items-center justify-between border-t border-slate-700 bg-[#0a1928] px-5 py-4">
+              <span className="hidden text-xs text-slate-400 sm:inline">Your code stays in this browser session.</span>
+              <button type="button" onClick={runCode} className="ml-auto inline-flex items-center gap-2 rounded-xl bg-[#ffd700] px-6 py-3 font-black text-[#071d35] transition hover:bg-yellow-300 active:scale-95">
+                <span aria-hidden="true">▶</span> Run code
+              </button>
             </div>
           </div>
-          <div className="flex-1 flex justify-center">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#FFD700] to-[#0088ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-              <img
-                src={logo}
-                alt="Global Coding Academy"
-                className="relative rounded-full w-64 h-64 md:w-80 md:h-80 object-cover shadow-2xl border-4 border-white"
+
+          <div className="flex min-h-[580px] flex-col bg-slate-100 text-left">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+              <div>
+                <p className="font-extrabold text-[#071d35]">Live result</p>
+                <p className="text-xs text-slate-500">Your output appears here after you run it</p>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-700"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Browser preview</div>
+            </div>
+            <div className="flex-1 p-3 sm:p-5">
+              <iframe
+                key={runCount}
+                title="Code result preview"
+                srcDoc={preview}
+                sandbox="allow-scripts"
+                className="h-full min-h-[490px] w-full rounded-xl border border-slate-200 bg-white shadow-inner"
               />
             </div>
           </div>
-        </div>
+        </section>
+      </main>
 
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-blue-400 rounded-full blur-3xl opacity-20"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-yellow-400 rounded-full blur-3xl opacity-10"></div>
-      </header>
-
-      {/* About Section */}
-      <section id="about" className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <img
-              src={logo}
-              alt="Academy Mission"
-              className="rounded-2xl shadow-xl w-full max-w-md mx-auto"
-            />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#003366] mb-6">Our Mission</h2>
-            <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-              At Global Coding Academy LTD, we believe that coding is the new literacy. Our mission is to democratize access to high-quality technical education, specifically focusing on empowering the youth in Rwanda.
-            </p>
-            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              We don't just teach syntax; we teach problem-solving, critical thinking, and the architectural mindset required to build the software of tomorrow.
-            </p>
-            <Link to="/about" className="text-[#003366] font-bold flex items-center gap-2 hover:gap-3 transition-all">
-              Read our full story <span>→</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-6 bg-slate-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-[#0055aa] font-bold uppercase tracking-[0.18em] text-sm mb-4">
-              Our Courses
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#003366] mb-4">
-              ICT and programming language training
-            </h2>
-            <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Build practical technology skills through beginner, intermediate, and expert level
-              courses designed for real projects and career growth.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            {[
-              ['Beginner', 'Programming Fundamentals'],
-              ['Intermediate', 'Database and Web Applications'],
-              ['Expert', 'Artificial Intelligence and Advanced ICT']
-            ].map(([level, title]) => (
-              <article key={level} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-sm font-bold text-[#0055aa]">{level}</p>
-                <h3 className="mt-3 text-xl font-bold text-[#003366]">{title}</h3>
-                <p className="mt-3 text-slate-600">
-                  Structured training with guided practice, course support, and clear learning outcomes.
-                </p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link to="/courses" className="inline-flex rounded-lg bg-[#003366] px-6 py-3 font-bold text-white transition-colors hover:bg-[#002244]">
-              View All Courses
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer id="contact" className="bg-[#003366] text-white py-12 px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <img src={logo} alt="Logo" className="h-12 w-auto rounded-full" />
-              <span className="text-xl font-bold">Global Coding Academy Ltd</span>
-            </div>
-            <p className="text-blue-200 max-w-sm">
-              Building the future of technology through education, innovation, and community.
-              Proudly based in Rwanda.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-lg font-bold mb-6">Quick Links</h4>
-            <ul className="space-y-4 text-blue-200">
-              <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
-              <li><Link to="/courses" className="hover:text-white transition-colors">Our Courses</Link></li>
-              <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-lg font-bold mb-6">Connect</h4>
-            <ul className="space-y-4 text-blue-200">
-              <li><a href="#" className="hover:text-white transition-colors">LinkedIn</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Twitter / X</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">GitHub</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Email Us</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-blue-900 text-center text-blue-300 text-sm">
-          © {currentYear} Global Coding Academy LTD. All rights reserved.
+      <footer id="contact" className="bg-[#071d35] px-6 py-10 text-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-center sm:flex-row sm:text-left">
+          <div className="flex items-center gap-3"><img src={logo} alt="Global Coding Academy" className="h-11 w-11 rounded-full object-cover" /><div><p className="font-extrabold">Global Coding Academy Ltd</p><p className="text-sm text-slate-400">Learn. Practise. Build.</p></div></div>
+          <p className="text-sm text-slate-400">Frontend practice lab · Built for learners in Rwanda and beyond</p>
         </div>
       </footer>
     </div>
   );
-};
-
-export default LandingPage;
+}
