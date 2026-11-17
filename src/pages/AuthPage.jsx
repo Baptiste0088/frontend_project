@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import logo from '../assets/logo.jpeg';
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://backend.globalcodingacademy.com').replace(/\/$/, '');
+import { API_BASE_URL } from '../lib/api';
 
 const initialLoginForm = {
   login: '',

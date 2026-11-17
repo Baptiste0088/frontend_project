@@ -28,6 +28,9 @@ const LandingPage = () => {
               <Link to="/services" className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-full text-lg hover:bg-white hover:text-[#003366] transition-all">
                 Explore Services
               </Link>
+              <Link to="/courses" className="bg-white text-[#003366] font-bold px-8 py-4 rounded-full text-lg hover:bg-blue-50 transition-all">
+                Our Courses
+              </Link>
             </div>
           </div>
           <div className="flex-1 flex justify-center">
@@ -72,6 +75,45 @@ const LandingPage = () => {
         </div>
       </section>
 
+      <section className="py-20 px-6 bg-slate-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-[#0055aa] font-bold uppercase tracking-[0.18em] text-sm mb-4">
+              Our Courses
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#003366] mb-4">
+              ICT and programming language training
+            </h2>
+            <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Build practical technology skills through beginner, intermediate, and expert level
+              courses designed for real projects and career growth.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            {[
+              ['Beginner', 'Programming Fundamentals'],
+              ['Intermediate', 'Database and Web Applications'],
+              ['Expert', 'Artificial Intelligence and Advanced ICT']
+            ].map(([level, title]) => (
+              <article key={level} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-sm font-bold text-[#0055aa]">{level}</p>
+                <h3 className="mt-3 text-xl font-bold text-[#003366]">{title}</h3>
+                <p className="mt-3 text-slate-600">
+                  Structured training with guided practice, course support, and clear learning outcomes.
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link to="/courses" className="inline-flex rounded-lg bg-[#003366] px-6 py-3 font-bold text-white transition-colors hover:bg-[#002244]">
+              View All Courses
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer id="contact" className="bg-[#003366] text-white py-12 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -89,6 +131,7 @@ const LandingPage = () => {
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-4 text-blue-200">
               <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
+              <li><Link to="/courses" className="hover:text-white transition-colors">Our Courses</Link></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>

@@ -5,6 +5,7 @@ import logo from '../assets/logo.jpeg';
 const defaultLinks = [
   { label: 'Home', to: '/' },
   { label: 'Services', to: '/services' },
+  { label: 'Courses', to: '/courses' },
   { label: 'About', to: '/about' },
   { label: 'Team', to: '/about#team' },
   { label: 'Contact', href: '#contact' }
