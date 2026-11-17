@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.jpeg';
 import { API_BASE_URL } from '../lib/api';
 
@@ -12,6 +13,7 @@ const initialSignupForm = {
   last_name: '',
   username: '',
   gender: 'Male',
+  role: 'Learner',
   phone_number: '',
   email: '',
   password: '',
@@ -49,6 +51,7 @@ const getCountryCodeFromPhoneNumber = (phoneNumber) => {
 };
 
 const AuthPage = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [step, setStep] = useState(1);
   const [loginForm, setLoginForm] = useState(initialLoginForm);
@@ -112,8 +115,10 @@ const AuthPage = () => {
 
       localStorage.setItem('gcaAuthToken', payload.token);
       localStorage.setItem('gcaUser', JSON.stringify(payload.user));
-      setStatus({ type: 'success', message });
+      const destination = payload.user?.role === 'Admin' ? '/dashboard/courses' : '/dashboard/learner';
+      setStatus({ type: 'success', message: `${message} Redirecting...` });
       setLoginForm(initialLoginForm);
+      navigate(destination, { replace: true });
     } catch {
       setStatus({
         type: 'error',
@@ -153,7 +158,9 @@ const AuthPage = () => {
           last_name: signupForm.last_name.trim(),
           username: signupForm.username.trim(),
           gender: signupForm.gender,
+          role: signupForm.role,
           country_code: getCountryCodeFromPhoneNumber(signupForm.phone_number),
+          phone_number: signupForm.phone_number.trim(),
           email: signupForm.email.trim(),
           password: signupForm.password,
         }),
@@ -166,7 +173,7 @@ const AuthPage = () => {
         setFieldErrors(errors);
         if (errors.first_name || errors.last_name || errors.username || errors.email || errors.phone_number || errors.country_code) {
           setStep(1);
-        } else if (errors.gender) {
+        } else if (errors.gender || errors.role) {
           setStep(2);
         } else {
           setStep(3);
@@ -350,6 +357,14 @@ const AuthPage = () => {
                         <option value="Other">Other</option>
                       </select>
                       {fieldErrors.gender && <p className="mt-1 text-xs text-red-600">{fieldErrors.gender}</p>}
+                    </div>
+                    <div className="group">
+                      <label htmlFor="role" className="block text-xs font-semibold text-slate-700 mb-1">Account Role</label>
+                      <select id="role" name="role" value={signupForm.role} onChange={updateSignupForm} className={`${inputClassName} bg-white`} required>
+                        <option value="Learner">Learner</option>
+                        <option value="Admin">Admin</option>
+                      </select>
+                      {fieldErrors.role && <p className="mt-1 text-xs text-red-600">{fieldErrors.role}</p>}
                     </div>
                   </div>
                 )}

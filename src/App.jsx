@@ -5,6 +5,7 @@ import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
 import CoursesPage from './pages/CoursesPage';
 import CoursesDashboardPage from './pages/CoursesDashboardPage';
+import LearnerDashboardPage from './pages/LearnerDashboardPage';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/dashboard/courses" element={<CoursesDashboardPage />} />
+        <Route path="/dashboard/learner" element={<LearnerDashboardPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/login" element={<AuthPage />} />
       </Routes>
