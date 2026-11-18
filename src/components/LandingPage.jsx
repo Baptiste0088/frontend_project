@@ -9,6 +9,48 @@ const levels = [
   { id: 5, name: 'Advanced Practice', brief: 'Expense dashboard: practise structured data, calculations, and reusable rendering.', result: 'The dashboard starts with RWF 8,000, accepts new expenses, removes existing ones, and recalculates the total after every change.', concepts: ['Objects and arrays', 'Reduce calculations', 'Reusable rendering'], steps: ['Review the starter expense data.', 'Add and remove expenses.', 'Change the render function or dashboard design.'] },
 ];
 
+const rtqfCurriculum = {
+  3: {
+    focus: 'Foundation and Front-End Web Development',
+    languages: [
+      { name: 'HTML', trades: ['SWD', 'MMP'], module: 'Website Development · SWDWD301' },
+      { name: 'CSS', trades: ['SWD', 'MMP'], module: 'Website Development and UI/UX styling · SWDWD301' },
+      { name: 'JavaScript', trades: ['SWD', 'MMP'], module: 'JavaScript Fundamentals and Vue.js · SWDJF301' },
+    ],
+  },
+  4: {
+    focus: 'Backend Systems, Databases, OOP and Embedded Systems',
+    languages: [
+      { name: 'JavaScript', trades: ['SWD'], module: 'Backend Application Development with Node.js · SWDBD401' },
+      { name: 'PHP', trades: ['SWD', 'NIT'], module: 'PHP, Laravel MVC and IoT web applications · NITIW401' },
+      { name: 'SQL', trades: ['SWD', 'NIT'], module: 'MySQL Database Management · NITDB401' },
+      { name: 'C', trades: ['CSA', 'NIT'], module: 'C Programming and Embedded Firmware · GENCP401' },
+      { name: 'C++', trades: ['CSA', 'NIT'], module: 'C++ Fundamentals and Microcontroller Implementation' },
+    ],
+  },
+  5: {
+    focus: 'Advanced Frameworks, Mobile, AI, Kernel and Blockchain',
+    languages: [
+      { name: 'JavaScript', trades: ['SWD'], module: 'React and Next.js Frontend Development · SWDFA501' },
+      { name: 'SQL', trades: ['SWD'], module: 'Advanced Database Administration and Backend Integration' },
+      { name: 'Dart', trades: ['SWD'], module: 'Flutter Mobile Application Development · SWDMA501' },
+      { name: 'Python', trades: ['SWD', 'NIT'], module: 'Python, Machine Learning and Network Automation · GENPP501' },
+      { name: 'C', trades: ['SWD', 'CSA'], module: 'C Programming and Hobby Kernel Development · GENCC501' },
+      { name: 'C++', trades: ['CSA'], module: 'Hobby Kernel Development and Hardware Optimisation · CSAHK501' },
+      { name: 'Assembly', trades: ['CSA'], module: 'NASM Hobby Kernel Development · CSAHK501' },
+      { name: 'Solidity', trades: ['SWD'], module: 'Blockchain and Smart Contracts · SWDBF501' },
+    ],
+  },
+};
+
+const curriculumTrades = {
+  ALL: 'All trades',
+  SWD: 'Software Development',
+  CSA: 'Computer Systems and Architecture',
+  NIT: 'Networking and Internet Technology',
+  MMP: 'Multimedia Production',
+};
+
 const starterCode = {
   html: `<main class="welcome-card">
   <span class="level-tag">My first project</span>
@@ -277,6 +319,14 @@ function validateCode(code) {
 export default function LandingPage() {
   const previewContainerRef = useRef(null);
   const lineNumbersRef = useRef(null);
+  const [profileUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('gcaUser');
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [activeLanguage, setActiveLanguage] = useState('html');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -290,12 +340,19 @@ export default function LandingPage() {
     Object.fromEntries(Object.entries(levelStarterCode).map(([id, code]) => [id, { ...code }]))
   );
   const [runCount, setRunCount] = useState(0);
+  const [rtqfLevel, setRtqfLevel] = useState(3);
+  const [curriculumTrade, setCurriculumTrade] = useState('ALL');
+  const [curriculumLanguage, setCurriculumLanguage] = useState('HTML');
 
   const activeLevel = levels.find((level) => level.id === selectedLevel);
   const code = codeByLevel[selectedLevel];
   const previewCode = previewByLevel[selectedLevel];
   const preview = useMemo(() => buildDocument(previewCode), [previewCode]);
   const editorLines = code[activeLanguage].split('\n');
+  const curriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
+  const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
+  const fullName = [profileUser?.first_name, profileUser?.last_name].filter(Boolean).join(' ') || profileUser?.name || profileUser?.username || 'Full Name';
+  const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
   const activeErrorLines = errors.flatMap((error) => {
     const language = languageMeta[activeLanguage].label;
     const line = error.match(new RegExp(`^${language}(?: runtime error on)? line (\\d+)`, 'i'))?.[1];
@@ -344,6 +401,26 @@ export default function LandingPage() {
     setShowExplanation(false);
   };
 
+  const selectRtqfLevel = (levelId) => {
+    const nextLevel = Number(levelId);
+    const firstLanguage = rtqfCurriculum[nextLevel].languages[0];
+    setRtqfLevel(nextLevel);
+    setCurriculumTrade('ALL');
+    setCurriculumLanguage(firstLanguage.name);
+  };
+
+  const selectCurriculumTrade = (trade) => {
+    const nextLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => trade === 'ALL' || language.trades.includes(trade));
+    setCurriculumTrade(trade);
+    setCurriculumLanguage(nextLanguages[0].name);
+  };
+
+  const selectCurriculumLanguage = (languageName) => {
+    setCurriculumLanguage(languageName);
+    const editorLanguage = languageName === 'JavaScript' ? 'javascript' : languageName.toLowerCase();
+    if (languageMeta[editorLanguage]) setActiveLanguage(editorLanguage);
+  };
+
   const viewFullscreen = () => {
     previewContainerRef.current?.requestFullscreen?.();
   };
@@ -353,8 +430,53 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="h-[100svh] bg-[#e9eef5] p-1.5 text-xs text-slate-900 sm:p-2">
-      <main id="practice" className="mx-auto flex h-full max-w-[1800px] flex-col overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
+    <div className="h-[100svh] w-full overflow-hidden bg-[#e9eef5] text-xs text-slate-900">
+      <main id="practice" className="flex h-full w-full flex-col overflow-hidden bg-white">
+        <section className="border-b border-slate-700 bg-[#071d35] px-3 py-2 text-left text-white">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 flex-1 flex-col gap-2 lg:flex-row lg:items-center">
+              <div className="min-w-0 lg:w-64">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-300">RTB curriculum pathway</p>
+                <p className="truncate text-[10px] text-slate-400">{rtqfCurriculum[rtqfLevel].focus}</p>
+              </div>
+              <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
+                <label className="flex items-center gap-2 rounded-lg border border-slate-600 bg-[#0b2947] px-2 py-1">
+                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Level</span>
+                  <select value={rtqfLevel} onChange={(event) => selectRtqfLevel(event.target.value)} className="min-w-0 flex-1 bg-transparent py-1 text-[11px] font-bold text-white outline-none">
+                    <option className="text-slate-900" value="3">RTQF Level 3</option>
+                    <option className="text-slate-900" value="4">RTQF Level 4</option>
+                    <option className="text-slate-900" value="5">RTQF Level 5</option>
+                  </select>
+                </label>
+                <label className="flex items-center gap-2 rounded-lg border border-slate-600 bg-[#0b2947] px-2 py-1">
+                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Trade</span>
+                  <select value={curriculumTrade} onChange={(event) => selectCurriculumTrade(event.target.value)} className="min-w-0 flex-1 bg-transparent py-1 text-[11px] font-bold text-white outline-none">
+                    {Object.entries(curriculumTrades).map(([key, label]) => {
+                      const available = key === 'ALL' || rtqfCurriculum[rtqfLevel].languages.some((language) => language.trades.includes(key));
+                      return <option className="text-slate-900" key={key} value={key} disabled={!available}>{label}</option>;
+                    })}
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center justify-between gap-3 rounded-lg border border-slate-600 bg-[#0b2947] px-2.5 py-1.5 sm:justify-end lg:min-w-56">
+              <div className="min-w-0 text-right">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Full Name</p>
+                <p className="max-w-40 truncate text-[11px] font-black text-white" title={fullName}>{fullName}</p>
+              </div>
+              <img src={profileImage} alt={`${fullName} profile`} className="h-9 w-9 rounded-full border border-white/30 bg-white object-cover" />
+            </div>
+          </div>
+          <div className="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-[minmax(220px,0.7fr)_1fr]">
+            <label className="flex items-center gap-2 rounded-lg border border-slate-600 bg-[#0b2947] px-2 py-1">
+              <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
+              <select value={selectedCurriculumLanguage.name} onChange={(event) => selectCurriculumLanguage(event.target.value)} className="min-w-0 flex-1 bg-transparent py-1 text-[11px] font-bold text-white outline-none">
+                {curriculumLanguages.map((language) => <option className="text-slate-900" key={language.name} value={language.name}>{language.name}</option>)}
+              </select>
+            </label>
+            <p className="min-w-0 truncate rounded-md bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-blue-100" title={selectedCurriculumLanguage.module}>{selectedCurriculumLanguage.module}</p>
+          </div>
+        </section>
         <section id="levels" className="flex flex-col gap-2 border-b border-slate-200 bg-white p-2 text-left lg:flex-row lg:items-center">
           <div className="flex items-center justify-between lg:block">
             <div className="flex shrink-0 items-center gap-2 pr-2">
