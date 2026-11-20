@@ -19,7 +19,7 @@ function readRunnerPayload() {
 
 export default function CodeRunnerPage() {
   const [payload] = useState(readRunnerPayload);
-  const [language, setLanguage] = useState(payload?.language || 'clang');
+  const language = compilers[payload?.language] ? payload.language : 'clang';
   const [code, setCode] = useState(payload?.code || '');
   const [stdin, setStdin] = useState('');
   const [result, setResult] = useState('Run the code to see its result.');
@@ -63,7 +63,7 @@ export default function CodeRunnerPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-400">Global Coding Academy</p><h1 className="mt-1 text-2xl font-black">Code runner</h1></div>
-          <div className="flex items-center gap-3"><label className="text-sm font-bold text-slate-300">Language <select value={language} onChange={(event) => setLanguage(event.target.value)} className="ml-2 rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-white">{Object.entries(compilers).map(([value, compiler]) => <option key={value} value={value}>{compiler.name}</option>)}</select></label><button type="button" onClick={runCode} disabled={running || !code.trim()} className="rounded-lg bg-[#ffd700] px-5 py-2.5 font-black text-[#082f55] disabled:opacity-50">{running ? 'Running…' : '▶ Run code'}</button></div>
+          <div className="flex items-center gap-3"><span className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-bold text-slate-300">{compilers[language].name}</span><button type="button" onClick={runCode} disabled={running || !code.trim()} className="rounded-lg bg-[#ffd700] px-5 py-2.5 font-black text-[#082f55] disabled:opacity-50">{running ? 'Running…' : '▶ Run code'}</button></div>
         </header>
 
         <section className="grid min-h-[calc(100vh-8rem)] gap-4 lg:grid-cols-2">
