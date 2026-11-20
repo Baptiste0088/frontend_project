@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/logo.jpeg';
 import EnrollmentGate from './EnrollmentGate';
+import { API_BASE_URL } from '../lib/api';
 
 const levels = [
   { id: 1, name: 'Foundations', brief: 'Personal welcome card: practise headings, paragraphs, colors, and one button.', result: 'A centered card displays your greeting and introduction. Clicking the button shows a success message beneath it.', concepts: ['HTML structure', 'CSS colors', 'Click events'], steps: ['Edit the welcome text in HTML.', 'Change the card colors in CSS.', 'Run the code and click the button.'] },
@@ -336,6 +337,11 @@ export default function LandingPage() {
     }
   });
   const [showEnrollment, setShowEnrollment] = useState(false);
+  const [packageLanguages, setPackageLanguages] = useState([]);
+  const [packageChapters, setPackageChapters] = useState({});
+  const [expandedLanguage, setExpandedLanguage] = useState('');
+  const [packageLoading, setPackageLoading] = useState(true);
+  const [packageError, setPackageError] = useState('');
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [selectedLesson, setSelectedLesson] = useState({ levelId: 1, type: 'overview', index: 0 });
   const [expandedTocLevel, setExpandedTocLevel] = useState(1);
@@ -378,6 +384,31 @@ export default function LandingPage() {
   const enrolledTrade = enrollment?.trade_name || 'Choose trade';
   const displayedProgress = enrollment ? progressPercentage : 0;
   const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
+
+  useEffect(() => {
+    if (!enrollment?.trade_id) return;
+    let cancelled = false;
+    fetch(`${API_BASE_URL}/api/trades/${enrollment.trade_id}/languages`)
+      .then(async (response) => {
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.message || 'Unable to load languages.');
+        const languages = payload.languages || [];
+        const chapterEntries = await Promise.all(languages.map(async (language) => {
+          const chapterResponse = await fetch(`${API_BASE_URL}/api/languages/${language.id}/chapters`);
+          const chapterPayload = await chapterResponse.json().catch(() => ({}));
+          if (!chapterResponse.ok) throw new Error(chapterPayload.message || `Unable to load ${language.name} chapters.`);
+          return [language.id, chapterPayload.chapters || []];
+        }));
+        if (!cancelled) {
+          setPackageLanguages(languages);
+          setPackageChapters(Object.fromEntries(chapterEntries));
+          setExpandedLanguage(languages[0]?.id || '');
+        }
+      })
+      .catch((requestError) => { if (!cancelled) setPackageError(requestError.message); })
+      .finally(() => { if (!cancelled) setPackageLoading(false); });
+    return () => { cancelled = true; };
+  }, [enrollment?.trade_id]);
 
   const selectLevel = (levelId) => {
     if (!enrollment) { setShowEnrollment(true); return; }
@@ -440,14 +471,13 @@ export default function LandingPage() {
               </div>
               <div className="profile-card flex items-center gap-2">
                 <div className="min-w-0 text-right">
-                  <span>Full Name</span>
                   <strong className="block max-w-40 truncate" title={fullName}>{fullName}</strong>
                 </div>
                 <img src={profileImage} alt={`${fullName} profile`} className="h-8 w-8 rounded-full object-cover" />
               </div>
             </div>
           </div>
-          <div className="mt-2">
+          {!enrollment && <div className="mt-2">
             <div className="language-row flex min-w-0 items-center gap-2 overflow-x-auto px-2 py-1">
               <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
               <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -467,7 +497,7 @@ export default function LandingPage() {
                 })}
               </div>
             </div>
-          </div>
+          </div>}
         </section>
 
         <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
@@ -477,7 +507,33 @@ export default function LandingPage() {
             </div>
 
             <nav className="flex-1 overflow-y-auto py-2" aria-label="Lesson table of contents">
-              {levels.map((level) => {
+              {enrollment && packageLoading && <p className="px-3 py-4 text-slate-500">Loading your languages…</p>}
+              {enrollment && packageError && <p className="mx-3 my-3 rounded bg-red-50 px-3 py-2 text-red-700">{packageError}</p>}
+              {enrollment && !packageLoading && !packageError && packageLanguages.length === 0 && <p className="px-3 py-4 text-slate-500">No languages have been added to your trade yet.</p>}
+              {enrollment && packageLanguages.map((language) => {
+                const expanded = expandedLanguage === language.id;
+                const chapters = packageChapters[language.id] || [];
+                return (
+                  <div key={language.id} className={`border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedLanguage(expanded ? '' : language.id)}
+                      className={`flex w-full items-center gap-2 px-3 py-3 text-left font-bold transition ${darkMode ? 'text-white hover:bg-slate-800' : 'text-[#082f55] hover:bg-slate-100'}`}
+                      aria-expanded={expanded}
+                    >
+                      <span className="min-w-0 flex-1 truncate" title={language.name}>{language.name}</span>
+                      <span className="shrink-0 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-700">{chapters.length}</span>
+                      <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+                    </button>
+                    {expanded && <div className={darkMode ? 'bg-slate-950' : 'bg-white'}>
+                      {chapters.length === 0
+                        ? <p className="px-7 py-3 text-[11px] text-slate-500">No chapters yet</p>
+                        : chapters.map((chapter, index) => <div key={chapter.id} className={`border-t px-7 py-2.5 text-[11px] ${darkMode ? 'border-slate-800 text-slate-300' : 'border-slate-100 text-slate-700'}`} title={chapter.name}><span className="mr-2 text-slate-400">{index + 1}.</span>{chapter.name}</div>)}
+                    </div>}
+                  </div>
+                );
+              })}
+              {!enrollment && levels.map((level) => {
                 const selected = selectedLevel === level.id;
                 const expanded = expandedTocLevel === level.id;
                 return (
