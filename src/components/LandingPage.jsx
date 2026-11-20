@@ -331,7 +331,7 @@ function _validateCode(code) {
 }
 
 export default function LandingPage() {
-  const [profileUser] = useState(() => {
+  const [profileUser, setProfileUser] = useState(() => {
     try {
       const storedUser = localStorage.getItem('gcaUser');
       return storedUser ? JSON.parse(storedUser) : null;
@@ -348,6 +348,8 @@ export default function LandingPage() {
     }
   });
   const [showEnrollment, setShowEnrollment] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
   const [packageLanguages, setPackageLanguages] = useState([]);
   const [packageChapters, setPackageChapters] = useState({});
   const [packagePages, setPackagePages] = useState({});
@@ -479,6 +481,16 @@ export default function LandingPage() {
     window.open(`/code-runner?run=${encodeURIComponent(runId)}`, '_blank', 'noopener');
   };
 
+  const signOut = () => {
+    localStorage.removeItem('gcaAuthToken');
+    localStorage.removeItem('gcaUser');
+    localStorage.removeItem('gcaEnrollment');
+    setProfileUser(null);
+    setEnrollment(null);
+    setShowProfileMenu(false);
+    setShowAccount(false);
+  };
+
   return (
     <div className={`h-[100svh] w-full overflow-hidden text-xs ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
       {showEnrollment && !enrollment && (
@@ -487,6 +499,21 @@ export default function LandingPage() {
           onClose={() => setShowEnrollment(false)}
           onEnrolled={(savedEnrollment) => { setEnrollment(savedEnrollment); setShowEnrollment(false); }}
         />
+      )}
+      {showAccount && enrollment && (
+        <div className="fixed inset-0 z-[70] grid place-items-center bg-[#082f55]/65 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="My account">
+          <section className="relative w-full max-w-md rounded-2xl bg-white p-7 text-left text-slate-900 shadow-2xl">
+            <button type="button" onClick={() => setShowAccount(false)} className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-xl text-slate-600" aria-label="Close account">×</button>
+            <img src={profileImage} alt="Profile" className="h-16 w-16 rounded-full object-cover" />
+            <h2 className="mt-4 text-2xl font-black text-[#082f55]">{fullName}</h2>
+            <dl className="mt-6 grid gap-4 text-sm">
+              <div><dt className="text-xs font-bold uppercase text-slate-500">Username</dt><dd className="mt-1 font-bold">{profileUser?.username || enrollment.login_username || enrollment.student_id_number || 'Student account'}</dd></div>
+              <div><dt className="text-xs font-bold uppercase text-slate-500">Occupation</dt><dd className="mt-1 font-bold">{occupation}</dd></div>
+              <div><dt className="text-xs font-bold uppercase text-slate-500">Level</dt><dd className="mt-1 font-bold">{enrolledLevel}</dd></div>
+              <div><dt className="text-xs font-bold uppercase text-slate-500">Trade</dt><dd className="mt-1 font-bold">{enrolledTrade}</dd></div>
+            </dl>
+          </section>
+        </div>
       )}
       <main id="practice" className="flex h-full w-full flex-col overflow-hidden">
         <section className={`practice-header border-b px-3 py-2 text-left ${darkMode ? 'border-slate-700 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}>
@@ -519,11 +546,15 @@ export default function LandingPage() {
                 <span>Trade</span>
                 <strong>{enrolledTrade}</strong>
               </div>
-              <div className="profile-card flex items-center gap-2">
+              <div className="profile-card relative flex items-center gap-2">
                 <div className="min-w-0 text-right">
                   <strong className="block max-w-40 truncate" title={fullName}>{fullName}</strong>
                 </div>
-                <img src={profileImage} alt={`${fullName} profile`} className="h-8 w-8 rounded-full object-cover" />
+                {enrollment ? <button type="button" onClick={() => setShowProfileMenu((current) => !current)} className="rounded-full" aria-expanded={showProfileMenu} aria-label="Open profile menu"><img src={profileImage} alt={`${fullName} profile`} className="h-8 w-8 rounded-full object-cover" /></button> : <img src={profileImage} alt={`${fullName} profile`} className="h-8 w-8 rounded-full object-cover" />}
+                {showProfileMenu && enrollment && <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-44 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 text-left shadow-xl">
+                  <button type="button" onClick={() => { setShowAccount(true); setShowProfileMenu(false); }} className="block w-full px-4 py-2.5 text-left text-sm font-bold text-[#082f55] hover:bg-slate-100">My account</button>
+                  <button type="button" onClick={signOut} className="block w-full border-t border-slate-100 px-4 py-2.5 text-left text-sm font-bold text-red-600 hover:bg-red-50">Sign out</button>
+                </div>}
               </div>
             </div>
           </div>
