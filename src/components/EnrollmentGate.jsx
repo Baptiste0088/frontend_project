@@ -6,6 +6,7 @@ const initialForm = {
   full_name: '',
   student_id_type: 'SDMS',
   student_id_number: '',
+  student_id_confirmation: '',
   occupation_id: '',
   level_id: '',
   trade_id: '',
@@ -27,7 +28,7 @@ async function apiRequest(path, options = {}) {
   return payload;
 }
 
-export default function EnrollmentGate({ initialName = '', userUuid = null, onEnrolled, onClose }) {
+export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }) {
   const [form, setForm] = useState({ ...initialForm, full_name: initialName });
   const [occupations, setOccupations] = useState([]);
   const [levels, setLevels] = useState([]);
@@ -51,7 +52,7 @@ export default function EnrollmentGate({ initialName = '', userUuid = null, onEn
   const selectOccupation = async (occupationId) => {
     const occupation = occupations.find((item) => item.id === occupationId);
     const studentIdType = /\b(REB|TVET)\b/i.test(occupation?.name || '') ? 'INDEX' : 'SDMS';
-    setForm((current) => ({ ...current, occupation_id: occupationId, level_id: '', trade_id: '', student_id_type: studentIdType, student_id_number: '' }));
+    setForm((current) => ({ ...current, occupation_id: occupationId, level_id: '', trade_id: '', student_id_type: studentIdType, student_id_number: '', student_id_confirmation: '' }));
     setLevels([]);
     setTrades([]);
     setError('');
@@ -90,7 +91,7 @@ export default function EnrollmentGate({ initialName = '', userUuid = null, onEn
     try {
       const payload = await apiRequest('/api/enrollments', {
         method: 'POST',
-        body: JSON.stringify({ ...form, user_uuid: userUuid || undefined }),
+        body: JSON.stringify(form),
       });
       localStorage.setItem('gcaEnrollment', JSON.stringify(payload.enrollment));
       onEnrolled(payload.enrollment);
@@ -133,9 +134,14 @@ export default function EnrollmentGate({ initialName = '', userUuid = null, onEn
                 </select>
               </label>
 
-              <label className="grid gap-2 text-sm font-bold text-slate-700">{requiresIndexNumber ? 'Index number' : 'SDMS number'}
-                <input className="rounded-lg border border-slate-300 px-4 py-3 font-normal uppercase outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100" value={form.student_id_number} onChange={(event) => setForm((current) => ({ ...current, student_id_number: event.target.value }))} placeholder={form.student_id_type === 'SDMS' ? 'Enter SDMS number' : 'Enter index number'} required />
-                <span className="text-xs font-normal text-slate-500">{requiresIndexNumber ? 'Required for the selected REB or TVET student occupation.' : 'Index number is requested only for REB or TVET student occupations.'}</span>
+              <label className="grid gap-2 text-sm font-bold text-slate-700">{requiresIndexNumber ? 'Index number (login username)' : 'SDMS number (login username)'}
+                <input className="rounded-lg border border-slate-300 px-4 py-3 font-normal uppercase outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100" value={form.student_id_number} onChange={(event) => setForm((current) => ({ ...current, student_id_number: event.target.value.toUpperCase() }))} placeholder={form.student_id_type === 'SDMS' ? 'Enter SDMS number' : 'Enter index number'} required />
+                <span className="text-xs font-normal text-slate-500">This number will be your login username.</span>
+              </label>
+
+              <label className="grid gap-2 text-sm font-bold text-slate-700">{requiresIndexNumber ? 'Enter index number again (initial password)' : 'Enter SDMS number again (initial password)'}
+                <input type="password" className="rounded-lg border border-slate-300 px-4 py-3 font-normal outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100" value={form.student_id_confirmation} onChange={(event) => setForm((current) => ({ ...current, student_id_confirmation: event.target.value.toUpperCase() }))} placeholder="Enter the same number again" required />
+                <span className="text-xs font-normal text-slate-500">The two numbers must match. You can use this number as your initial password.</span>
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">

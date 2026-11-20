@@ -403,7 +403,6 @@ export default function LandingPage() {
       {showEnrollment && !enrollment && (
         <EnrollmentGate
           initialName={accountName}
-          userUuid={profileUser?.uuid || profileUser?.id || null}
           onClose={() => setShowEnrollment(false)}
           onEnrolled={(savedEnrollment) => { setEnrollment(savedEnrollment); setShowEnrollment(false); }}
         />
