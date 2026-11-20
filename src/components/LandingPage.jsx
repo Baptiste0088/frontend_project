@@ -339,7 +339,10 @@ export default function LandingPage() {
   const [showEnrollment, setShowEnrollment] = useState(false);
   const [packageLanguages, setPackageLanguages] = useState([]);
   const [packageChapters, setPackageChapters] = useState({});
-  const [expandedLanguage, setExpandedLanguage] = useState('');
+  const [packagePages, setPackagePages] = useState({});
+  const [selectedPackageLanguage, setSelectedPackageLanguage] = useState('');
+  const [expandedChapter, setExpandedChapter] = useState('');
+  const [selectedPackagePage, setSelectedPackagePage] = useState('');
   const [packageLoading, setPackageLoading] = useState(true);
   const [packageError, setPackageError] = useState('');
   const [selectedLevel, setSelectedLevel] = useState(1);
@@ -384,6 +387,9 @@ export default function LandingPage() {
   const enrolledTrade = enrollment?.trade_name || 'Choose trade';
   const displayedProgress = enrollment ? progressPercentage : 0;
   const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
+  const selectedLanguageChapters = packageChapters[selectedPackageLanguage] || [];
+  const activePackagePage = Object.values(packagePages).flat().find((page) => page.id === selectedPackagePage);
+  const activePackageChapter = selectedLanguageChapters.find((chapter) => chapter.id === activePackagePage?.chapter_id);
 
   useEffect(() => {
     if (!enrollment?.trade_id) return;
@@ -393,16 +399,26 @@ export default function LandingPage() {
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.message || 'Unable to load languages.');
         const languages = payload.languages || [];
-        const chapterEntries = await Promise.all(languages.map(async (language) => {
+        const languageResults = await Promise.all(languages.map(async (language) => {
           const chapterResponse = await fetch(`${API_BASE_URL}/api/languages/${language.id}/chapters`);
           const chapterPayload = await chapterResponse.json().catch(() => ({}));
           if (!chapterResponse.ok) throw new Error(chapterPayload.message || `Unable to load ${language.name} chapters.`);
-          return [language.id, chapterPayload.chapters || []];
+          const chapters = chapterPayload.chapters || [];
+          const pageEntries = await Promise.all(chapters.map(async (chapter) => {
+            const pageResponse = await fetch(`${API_BASE_URL}/api/chapters/${chapter.id}/pages`);
+            const pagePayload = await pageResponse.json().catch(() => ({}));
+            if (!pageResponse.ok) throw new Error(pagePayload.message || `Unable to load ${chapter.name} pages.`);
+            return [chapter.id, (pagePayload.pages || []).filter((page) => page.is_published)];
+          }));
+          return { languageId: language.id, chapters, pageEntries };
         }));
         if (!cancelled) {
           setPackageLanguages(languages);
-          setPackageChapters(Object.fromEntries(chapterEntries));
-          setExpandedLanguage(languages[0]?.id || '');
+          setPackageChapters(Object.fromEntries(languageResults.map((result) => [result.languageId, result.chapters])));
+          setPackagePages(Object.fromEntries(languageResults.flatMap((result) => result.pageEntries)));
+          setSelectedPackageLanguage(languages[0]?.id || '');
+          setExpandedChapter(languageResults[0]?.chapters[0]?.id || '');
+          setSelectedPackagePage(languageResults[0]?.pageEntries.flatMap((entry) => entry[1])[0]?.id || '');
         }
       })
       .catch((requestError) => { if (!cancelled) setPackageError(requestError.message); })
@@ -427,6 +443,13 @@ export default function LandingPage() {
   const selectCurriculumLanguage = (languageName) => {
     if (!enrollment) { setShowEnrollment(true); return; }
     setCurriculumLanguage(languageName);
+  };
+
+  const selectStudentLanguage = (languageId) => {
+    const chapters = packageChapters[languageId] || [];
+    setSelectedPackageLanguage(languageId);
+    setExpandedChapter(chapters[0]?.id || '');
+    setSelectedPackagePage(chapters.flatMap((chapter) => packagePages[chapter.id] || [])[0]?.id || '');
   };
 
   return (
@@ -477,17 +500,18 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          {!enrollment && <div className="mt-2">
+          <div className="mt-2">
             <div className="language-row flex min-w-0 items-center gap-2 overflow-x-auto px-2 py-1">
               <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
               <div className="flex min-w-0 flex-1 items-center gap-1.5">
-                {curriculumLanguages.map((language) => {
-                  const selected = selectedCurriculumLanguage.name === language.name;
+                {enrollment && packageLoading && <span className="text-[11px] text-slate-500">Loading…</span>}
+                {(enrollment ? packageLanguages : curriculumLanguages).map((language) => {
+                  const selected = enrollment ? selectedPackageLanguage === language.id : selectedCurriculumLanguage.name === language.name;
                   return (
                     <button
                       type="button"
-                      key={language.name}
-                      onClick={() => selectCurriculumLanguage(language.name)}
+                      key={language.id || language.name}
+                      onClick={() => enrollment ? selectStudentLanguage(language.id) : selectCurriculumLanguage(language.name)}
                       aria-pressed={selected}
                       className={`shrink-0 rounded px-2.5 py-1 text-[11px] font-bold transition ${selected ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}
                     >
@@ -497,7 +521,7 @@ export default function LandingPage() {
                 })}
               </div>
             </div>
-          </div>}
+          </div>
         </section>
 
         <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
@@ -510,25 +534,27 @@ export default function LandingPage() {
               {enrollment && packageLoading && <p className="px-3 py-4 text-slate-500">Loading your languages…</p>}
               {enrollment && packageError && <p className="mx-3 my-3 rounded bg-red-50 px-3 py-2 text-red-700">{packageError}</p>}
               {enrollment && !packageLoading && !packageError && packageLanguages.length === 0 && <p className="px-3 py-4 text-slate-500">No languages have been added to your trade yet.</p>}
-              {enrollment && packageLanguages.map((language) => {
-                const expanded = expandedLanguage === language.id;
-                const chapters = packageChapters[language.id] || [];
+              {enrollment && !packageLoading && packageLanguages.length > 0 && selectedLanguageChapters.length === 0 && <p className="px-3 py-4 text-slate-500">No chapters have been added to this language yet.</p>}
+              {enrollment && selectedLanguageChapters.map((chapter, chapterIndex) => {
+                const expanded = expandedChapter === chapter.id;
+                const publishedPages = packagePages[chapter.id] || [];
                 return (
-                  <div key={language.id} className={`border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
+                  <div key={chapter.id} className={`border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
                     <button
                       type="button"
-                      onClick={() => setExpandedLanguage(expanded ? '' : language.id)}
+                      onClick={() => setExpandedChapter(expanded ? '' : chapter.id)}
                       className={`flex w-full items-center gap-2 px-3 py-3 text-left font-bold transition ${darkMode ? 'text-white hover:bg-slate-800' : 'text-[#082f55] hover:bg-slate-100'}`}
                       aria-expanded={expanded}
                     >
-                      <span className="min-w-0 flex-1 truncate" title={language.name}>{language.name}</span>
-                      <span className="shrink-0 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-700">{chapters.length}</span>
+                      <span className="shrink-0 text-slate-400">{chapterIndex + 1}.</span>
+                      <span className="min-w-0 flex-1 truncate" title={chapter.name}>{chapter.name}</span>
+                      <span className="shrink-0 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-700">{publishedPages.length}</span>
                       <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
                     </button>
                     {expanded && <div className={darkMode ? 'bg-slate-950' : 'bg-white'}>
-                      {chapters.length === 0
-                        ? <p className="px-7 py-3 text-[11px] text-slate-500">No chapters yet</p>
-                        : chapters.map((chapter, index) => <div key={chapter.id} className={`border-t px-7 py-2.5 text-[11px] ${darkMode ? 'border-slate-800 text-slate-300' : 'border-slate-100 text-slate-700'}`} title={chapter.name}><span className="mr-2 text-slate-400">{index + 1}.</span>{chapter.name}</div>)}
+                      {publishedPages.length === 0
+                        ? <p className="px-8 py-3 text-[11px] text-slate-500">No published pages</p>
+                        : publishedPages.map((page) => <button type="button" key={page.id} onClick={() => setSelectedPackagePage(page.id)} className={`flex w-full items-center border-t px-8 py-2.5 text-left text-[11px] ${selectedPackagePage === page.id ? 'bg-slate-900 text-white' : (darkMode ? 'border-slate-800 text-slate-300 hover:bg-slate-800' : 'border-slate-100 text-slate-700 hover:bg-slate-100')}`}><span className="mr-2 text-slate-400">›</span>Page {page.page_number}</button>)}
                     </div>}
                   </div>
                 );
@@ -599,6 +625,19 @@ export default function LandingPage() {
                   <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-5 py-2.5 font-black text-[#082f55]">Start Learning</button>
                 </div>
               )}
+              {enrollment && activePackagePage && (
+                <section>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">{packageLanguages.find((language) => language.id === selectedPackageLanguage)?.name} · Page {activePackagePage.page_number}</p>
+                  <h1 className="mt-2 text-2xl font-black text-slate-950">{activePackageChapter?.name}</h1>
+                  <div className="mt-7 space-y-5">
+                    {(activePackagePage.published_blocks || []).map((block) => block.type === 'rich_text'
+                      ? <div key={block.id} className="chapter-rich-text text-sm text-slate-800" style={{ lineHeight: activePackagePage.line_spacing || 1.5 }} dangerouslySetInnerHTML={{ __html: block.content }} />
+                      : <div key={block.id} className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100"><div className="border-b border-slate-700 px-4 py-2 text-[10px] font-bold uppercase text-slate-400">{block.language}</div><pre className="overflow-x-auto p-4 text-sm"><code>{block.code}</code></pre>{block.output && <pre className="border-t border-slate-700 bg-black/30 p-4 text-xs text-emerald-300">{block.output}</pre>}</div>)}
+                  </div>
+                </section>
+              )}
+              {enrollment && !packageLoading && !activePackagePage && <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-slate-600">Select a published page from the left sidebar. If none appears, this language has no published lesson pages yet.</div>}
+              <div className={enrollment ? 'hidden' : ''}>
               <p className={`text-[10px] font-black uppercase tracking-[0.16em] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Level {activeLevel.id} · {selectedCurriculumLanguage.name}
               </p>
@@ -689,6 +728,7 @@ export default function LandingPage() {
                   Next{nextPage ? `: ${nextPage.label}` : ''}
                 </button>
               </nav>
+              </div>
             </div>
           </article>
         </section>
