@@ -392,7 +392,6 @@ export default function LandingPage() {
     (packagePages[chapter.id] || []).map((page) => ({ ...page, chapterName: chapter.name }))
   ));
   const activePackagePage = Object.values(packagePages).flat().find((page) => page.id === selectedPackagePage);
-  const activePackageChapter = selectedLanguageChapters.find((chapter) => chapter.id === activePackagePage?.chapter_id);
   const activePackagePageIndex = publishedLessonPages.findIndex((page) => page.id === selectedPackagePage);
   const previousPackagePage = activePackagePageIndex > 0 ? publishedLessonPages[activePackagePageIndex - 1] : null;
   const nextPackagePage = activePackagePageIndex >= 0 && activePackagePageIndex < publishedLessonPages.length - 1 ? publishedLessonPages[activePackagePageIndex + 1] : null;
@@ -638,9 +637,7 @@ export default function LandingPage() {
               )}
               {enrollment && activePackagePage && (
                 <section>
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">{packageLanguages.find((language) => language.id === selectedPackageLanguage)?.name} · Page {activePackagePage.page_number}</p>
-                  <h1 className="mt-2 text-2xl font-black text-slate-950">{activePackageChapter?.name}</h1>
-                  <div className="mt-7 space-y-5">
+                  <div className="space-y-5">
                     {(activePackagePage.published_blocks || []).map((block) => block.type === 'rich_text'
                       ? <div key={block.id} className="chapter-rich-text" style={{ lineHeight: activePackagePage.line_spacing || 1.5 }} dangerouslySetInnerHTML={{ __html: block.content }} />
                       : <div key={block.id} className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100"><div className="border-b border-slate-700 px-4 py-2 text-[10px] font-bold uppercase text-slate-400">{block.language}</div><pre className="overflow-x-auto p-4 text-sm"><code>{block.code}</code></pre>{block.output && <pre className="border-t border-slate-700 bg-black/30 p-4 text-xs text-emerald-300">{block.output}</pre>}</div>)}
