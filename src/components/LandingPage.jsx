@@ -45,6 +45,42 @@ const rtqfCurriculum = {
   },
 };
 
+const guestSampleLanguages = [
+  { name: 'HTML', chapters: [
+    { title: 'Build your first web page', practice: 'Create a personal introduction page with headings, images, and links.' },
+    { title: 'Forms and semantic HTML', practice: 'Build a student registration form with clear, accessible structure.' },
+    { title: 'Portfolio page project', practice: 'Combine your skills into a portfolio you can share.' },
+  ] },
+  { name: 'CSS', chapters: [
+    { title: 'Colors, fonts, and spacing', practice: 'Turn a plain page into a clean, branded design.' },
+    { title: 'Responsive page layouts', practice: 'Build layouts that work on phones, tablets, and computers.' },
+    { title: 'Design a landing page', practice: 'Create a professional landing page from a real brief.' },
+  ] },
+  { name: 'JavaScript', chapters: [
+    { title: 'Variables and decisions', practice: 'Build an interactive score and grading tool.' },
+    { title: 'Buttons, forms, and events', practice: 'Create a working task manager in the browser.' },
+    { title: 'Interactive application project', practice: 'Build and test a complete quiz application.' },
+  ] },
+  { name: 'Python', chapters: [
+    { title: 'Your first Python program', practice: 'Write and run a program that accepts user input.' },
+    { title: 'Conditions and loops', practice: 'Build a practical marks and attendance calculator.' },
+    { title: 'Python mini-project', practice: 'Create a small command-line management system.' },
+  ] },
+  { name: 'C', chapters: [
+    { title: 'Introduction to C', practice: 'Compile and run your first C program.' },
+    { title: 'Variables and input', practice: 'Build a program that calculates and displays results.' },
+    { title: 'Functions and problem solving', practice: 'Organize a real program into reusable functions.' },
+  ] },
+];
+
+const guestCodeSamples = {
+  HTML: '<h1>Hello, future developer!</h1>\n<p>I built my first web page.</p>',
+  CSS: '.project-card {\n  color: #082f55;\n  border: 2px solid #ffd700;\n}',
+  JavaScript: "const learner = 'You';\nconsole.log(`${learner} can build software!`);",
+  Python: "name = input('Your name: ')\nprint(f'Welcome, {name}!')",
+  C: '#include <stdio.h>\n\nint main(void) {\n  printf("Hello, developer!\\n");\n  return 0;\n}',
+};
+
 function curriculumTradeKey(enrollment) {
   const value = `${enrollment?.trade_code || ''} ${enrollment?.trade_name || ''}`.toLowerCase();
   if (value.includes('swd') || value.includes('software')) return 'SWD';
@@ -358,11 +394,12 @@ export default function LandingPage() {
   const [selectedPackagePage, setSelectedPackagePage] = useState('');
   const [packageLoading, setPackageLoading] = useState(true);
   const [packageError, setPackageError] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState(1);
+  const [_selectedLevel, setSelectedLevel] = useState(1);
   const [selectedLesson, setSelectedLesson] = useState({ levelId: 1, type: 'overview', index: 0 });
-  const [expandedTocLevel, setExpandedTocLevel] = useState(1);
+  const [_expandedTocLevel, setExpandedTocLevel] = useState(1);
   const darkMode = false;
   const [curriculumLanguage, setCurriculumLanguage] = useState('HTML');
+  const [guestChapterIndex, setGuestChapterIndex] = useState(0);
   const selectedRtqfLevel = Number(String(enrollment?.level_name || '').match(/\d+/)?.[0]);
   const rtqfLevel = rtqfCurriculum[selectedRtqfLevel] ? selectedRtqfLevel : 3;
   const curriculumTrade = curriculumTradeKey(enrollment);
@@ -370,6 +407,8 @@ export default function LandingPage() {
   const matchingCurriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
   const curriculumLanguages = matchingCurriculumLanguages.length ? matchingCurriculumLanguages : rtqfCurriculum[rtqfLevel].languages;
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
+  const selectedGuestLanguage = guestSampleLanguages.find((language) => language.name === curriculumLanguage) || guestSampleLanguages[0];
+  const selectedGuestChapter = selectedGuestLanguage.chapters[guestChapterIndex] || selectedGuestLanguage.chapters[0];
   const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
   const activeConcept = activeLevel.concepts[selectedLesson.index];
   const activeStep = activeLevel.steps[selectedLesson.index];
@@ -444,7 +483,7 @@ export default function LandingPage() {
     return () => { cancelled = true; };
   }, [enrollment?.trade_id]);
 
-  const selectLevel = (levelId) => {
+  const _selectLevel = (levelId) => {
     if (!enrollment) { setShowEnrollment(true); return; }
     setSelectedLevel(levelId);
     setExpandedTocLevel(levelId);
@@ -459,8 +498,8 @@ export default function LandingPage() {
   };
 
   const selectCurriculumLanguage = (languageName) => {
-    if (!enrollment) { setShowEnrollment(true); return; }
     setCurriculumLanguage(languageName);
+    setGuestChapterIndex(0);
   };
 
   const selectStudentLanguage = (languageId) => {
@@ -527,6 +566,7 @@ export default function LandingPage() {
             </div>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-5 py-2 font-black text-[#082f55] shadow-sm hover:bg-[#f5ca00]">Start Learning</button>}
+              {enrollment && <>
               <div className="profile-meta-card progress-card">
                 <span>Progress</span>
                 <strong>{displayedProgress}%</strong>
@@ -556,6 +596,7 @@ export default function LandingPage() {
                   <button type="button" onClick={signOut} className="block w-full border-t border-slate-100 px-4 py-2.5 text-left text-sm font-bold text-red-600 hover:bg-red-50">Sign out</button>
                 </div>}
               </div>
+              </>}
             </div>
           </div>
           <div className="mt-2">
@@ -563,8 +604,8 @@ export default function LandingPage() {
               <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
               <div className="flex min-w-0 flex-1 items-center gap-1.5">
                 {enrollment && packageLoading && <span className="text-[11px] text-slate-500">Loading…</span>}
-                {(enrollment ? packageLanguages : curriculumLanguages).map((language) => {
-                  const selected = enrollment ? selectedPackageLanguage === language.id : selectedCurriculumLanguage.name === language.name;
+                {(enrollment ? packageLanguages : guestSampleLanguages).map((language) => {
+                  const selected = enrollment ? selectedPackageLanguage === language.id : selectedGuestLanguage.name === language.name;
                   return (
                     <button
                       type="button"
@@ -620,71 +661,42 @@ export default function LandingPage() {
                   </div>
                 );
               })}
-              {!enrollment && levels.map((level) => {
-                const selected = selectedLevel === level.id;
-                const expanded = expandedTocLevel === level.id;
-                return (
-                  <div key={level.id} className={`border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        selectLevel(level.id);
-                        setExpandedTocLevel(expanded ? 0 : level.id);
-                      }}
-                      className={`flex w-full items-center gap-2 px-3 py-2.5 text-left transition ${selected ? (darkMode ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-950') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100')}`}
-                      aria-expanded={expanded}
-                    >
-                      <span className="min-w-0 flex-1 truncate">Level {level.id}: {level.name}</span>
-                      <span className="shrink-0" aria-hidden="true">{expanded ? '▾' : '▸'}</span>
-                    </button>
-
-                    {expanded && (
-                      <div className={`py-1 ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
-                        <button
-                          type="button"
-                          onClick={() => selectLevel(level.id)}
-                          aria-current={selectedLesson.levelId === level.id && selectedLesson.type === 'overview' ? 'page' : undefined}
-                          className={`w-full px-8 py-2 text-left text-[11px] font-bold ${selectedLesson.levelId === level.id && selectedLesson.type === 'overview' ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100')}`}
-                        >
-                          Overview
-                        </button>
-                        {level.concepts.map((concept) => (
-                          <button
-                            type="button"
-                            key={concept}
-                            onClick={() => selectLessonItem(level.id, 'concept', level.concepts.indexOf(concept))}
-                            aria-current={selectedLesson.levelId === level.id && selectedLesson.type === 'concept' && activeConcept === concept ? 'page' : undefined}
-                            className={`w-full px-8 py-2 text-left text-[11px] font-semibold ${selectedLesson.levelId === level.id && selectedLesson.type === 'concept' && activeConcept === concept ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100')}`}
-                          >
-                            {concept}
-                          </button>
-                        ))}
-                        {level.steps.map((step, index) => (
-                          <button
-                            type="button"
-                            key={step}
-                            onClick={() => selectLessonItem(level.id, 'step', index)}
-                            aria-current={selectedLesson.levelId === level.id && selectedLesson.type === 'step' && selectedLesson.index === index ? 'page' : undefined}
-                            className={`w-full px-8 py-2 text-left text-[11px] font-semibold ${selectedLesson.levelId === level.id && selectedLesson.type === 'step' && selectedLesson.index === index ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}
-                          >
-                            Step {index + 1}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {!enrollment && <div>
+                <div className="border-b border-slate-200 bg-white px-3 py-3">
+                  <p className="font-black text-[#082f55]">{selectedGuestLanguage.name} sample chapters</p>
+                  <p className="mt-1 text-[10px] text-slate-500">Preview what you will learn</p>
+                </div>
+                {selectedGuestLanguage.chapters.map((chapter, index) => (
+                  <button type="button" key={chapter.title} onClick={() => setGuestChapterIndex(index)} aria-current={guestChapterIndex === index ? 'page' : undefined} className={`flex w-full items-start gap-3 border-b border-slate-200 px-3 py-3 text-left transition ${guestChapterIndex === index ? 'bg-[#082f55] text-white' : 'bg-white text-slate-700 hover:bg-blue-50'}`}>
+                    <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-black ${guestChapterIndex === index ? 'bg-[#ffd700] text-[#082f55]' : 'bg-blue-100 text-blue-700'}`}>{index + 1}</span>
+                    <span className="leading-5">{chapter.title}</span>
+                  </button>
+                ))}
+                <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Real practice:</strong> every chapter includes code you can edit, run, and test.</div>
+              </div>}
             </nav>
 
           </aside>
           <article className="lesson-content min-w-0 flex-1 overflow-y-auto bg-white p-5 text-left text-black sm:p-8" aria-label="Lesson content">
             <div className="mx-auto max-w-4xl">
               {!enrollment && (
-                <div className="mb-6 flex flex-col gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div><strong className="text-[#082f55]">Sample lesson</strong><p className="mt-1 text-slate-600">Explore this preview, then enroll when you are ready to start learning.</p></div>
-                  <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-5 py-2.5 font-black text-[#082f55]">Start Learning</button>
-                </div>
+                <section className="guest-learning-page">
+                  <div className="overflow-hidden rounded-2xl bg-[#082f55] p-6 text-white shadow-lg sm:p-9">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical software development</p>
+                    <h1 className="mt-3 max-w-2xl text-3xl font-black leading-tight sm:text-4xl">Learn programming by building real software.</h1>
+                    <p className="mt-4 max-w-2xl text-base leading-7 text-blue-100">Global Coding Academy takes you from your first line of code to websites, applications, and software projects you can demonstrate. Every chapter combines a clear lesson with real practice.</p>
+                    <div className="mt-7 flex flex-wrap gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Start learning</button><span className="self-center text-sm font-bold text-blue-100">No experience required</span></div>
+                  </div>
+
+                  <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                    {[['01', 'Learn clearly', 'Short lessons explain each idea in plain language.'], ['02', 'Write real code', 'Practice inside projects instead of only reading theory.'], ['03', 'Run and improve', 'Test your code, see results, fix mistakes, and build confidence.']].map(([number, title, description]) => <div key={number} className="rounded-xl border border-blue-100 bg-blue-50/60 p-5"><span className="text-xs font-black text-blue-600">{number}</span><h2 className="mt-2 text-lg font-black text-[#082f55]">{title}</h2><p className="mt-2 leading-6 text-slate-600">{description}</p></div>)}
+                  </div>
+
+                  <div className="mt-6 grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[1fr_1.05fr]">
+                    <div className="p-6 sm:p-8"><p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Sample from {selectedGuestLanguage.name}</p><h2 className="mt-3 text-2xl font-black text-[#082f55]">{selectedGuestChapter.title}</h2><p className="mt-4 text-base leading-7 text-slate-600">{selectedGuestChapter.practice}</p><ul className="mt-6 space-y-3 text-sm font-bold text-slate-700"><li>✓ Follow a guided example</li><li>✓ Edit the code yourself</li><li>✓ Complete a practical challenge</li></ul><button type="button" onClick={() => setShowEnrollment(true)} className="mt-7 rounded-lg border-2 border-[#082f55] px-5 py-2.5 font-black text-[#082f55] hover:bg-[#082f55] hover:text-white">Enroll to practise</button></div>
+                    <div className="bg-slate-950 p-5 text-slate-100 sm:p-7"><div className="mb-4 flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-wider text-slate-400">{selectedGuestLanguage.name} preview</span><span className="flex gap-1.5" aria-hidden="true"><i className="h-2.5 w-2.5 rounded-full bg-red-400" /><i className="h-2.5 w-2.5 rounded-full bg-amber-300" /><i className="h-2.5 w-2.5 rounded-full bg-emerald-400" /></span></div><pre className="min-h-44 overflow-x-auto rounded-lg bg-black/35 p-4 font-mono text-sm leading-7 text-emerald-300"><code>{guestCodeSamples[selectedGuestLanguage.name]}</code></pre><div className="mt-4 rounded-lg border border-slate-700 bg-slate-900 p-4"><span className="text-[10px] font-bold uppercase text-slate-500">Practice result</span><p className="mt-2 font-mono text-sm text-white">Your project comes to life here.</p></div></div>
+                  </div>
+                </section>
               )}
               {enrollment && activePackagePage && (
                 <section>
@@ -700,7 +712,7 @@ export default function LandingPage() {
                 </section>
               )}
               {enrollment && !packageLoading && !activePackagePage && <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-slate-600">Select a published page from the left sidebar. If none appears, this language has no published lesson pages yet.</div>}
-              <div className={`sample-lesson-document ${enrollment ? 'hidden' : ''}`}>
+              <div className="sample-lesson-document hidden">
               <p className={`text-[10px] font-black uppercase tracking-[0.16em] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Level {activeLevel.id} · {selectedCurriculumLanguage.name}
               </p>
