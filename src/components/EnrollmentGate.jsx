@@ -161,7 +161,7 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
   return (
     <main className="fixed inset-0 z-50 overflow-y-auto bg-[#082f55]/65 px-4 py-8 text-left text-slate-900 backdrop-blur-sm sm:px-6">
       <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-5xl overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-xl lg:grid-cols-[0.82fr_1.18fr]">
-        <section className="flex flex-col justify-between bg-[#082f55] p-7 text-white sm:p-10">
+        <section className="hidden flex-col justify-between bg-[#082f55] p-7 text-white sm:p-10 lg:flex">
           <div><div className="flex items-center gap-3"><img src={logo} alt="Global Coding Academy" className="h-14 w-14 rounded-full border-2 border-white object-cover" /><div><strong className="block text-lg">Global Coding Academy</strong><span className="text-sm text-blue-200">Official eLearning</span></div></div><p className="mt-14 text-xs font-bold uppercase tracking-[0.18em] text-[#ffd700]">Start learning</p><h1 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">{mode === 'login' ? 'Welcome back.' : 'Learn one step at a time.'}</h1><p className="mt-5 max-w-md leading-7 text-blue-100">{mode === 'login' ? 'Sign in with your existing learner account.' : 'New learners enroll once. Returning learners use the separate login form.'}</p></div>
           <p className="mt-12 text-sm text-blue-200">REB and TVET students use an index number. Other learners use an SDMS number.</p>
         </section>
