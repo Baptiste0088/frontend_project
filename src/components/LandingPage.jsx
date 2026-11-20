@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import logo from '../assets/logo.jpeg';
+import EnrollmentGate from './EnrollmentGate';
 
 const levels = [
   { id: 1, name: 'Foundations', brief: 'Personal welcome card: practise headings, paragraphs, colors, and one button.', result: 'A centered card displays your greeting and introduction. Clicking the button shows a success message beneath it.', concepts: ['HTML structure', 'CSS colors', 'Click events'], steps: ['Edit the welcome text in HTML.', 'Change the card colors in CSS.', 'Run the code and click the button.'] },
@@ -43,13 +44,14 @@ const rtqfCurriculum = {
   },
 };
 
-const curriculumTrades = {
-  ALL: 'All trades',
-  SWD: 'Software Development',
-  CSA: 'Computer Systems and Architecture',
-  NIT: 'Networking and Internet Technology',
-  MMP: 'Multimedia Production',
-};
+function curriculumTradeKey(enrollment) {
+  const value = `${enrollment?.trade_code || ''} ${enrollment?.trade_name || ''}`.toLowerCase();
+  if (value.includes('swd') || value.includes('software')) return 'SWD';
+  if (value.includes('csa') || value.includes('computer system')) return 'CSA';
+  if (value.includes('nit') || value.includes('network')) return 'NIT';
+  if (value.includes('mmp') || value.includes('multimedia')) return 'MMP';
+  return 'ALL';
+}
 
 const _starterCode = {
   html: `<main class="welcome-card">
@@ -325,15 +327,26 @@ export default function LandingPage() {
       return null;
     }
   });
+  const [enrollment, setEnrollment] = useState(() => {
+    try {
+      const storedEnrollment = localStorage.getItem('gcaEnrollment');
+      return storedEnrollment ? JSON.parse(storedEnrollment) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [showEnrollment, setShowEnrollment] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [selectedLesson, setSelectedLesson] = useState({ levelId: 1, type: 'overview', index: 0 });
   const [expandedTocLevel, setExpandedTocLevel] = useState(1);
   const darkMode = false;
-  const [rtqfLevel] = useState(3);
-  const [curriculumTrade] = useState('SWD');
   const [curriculumLanguage, setCurriculumLanguage] = useState('HTML');
+  const selectedRtqfLevel = Number(String(enrollment?.level_name || '').match(/\d+/)?.[0]);
+  const rtqfLevel = rtqfCurriculum[selectedRtqfLevel] ? selectedRtqfLevel : 3;
+  const curriculumTrade = curriculumTradeKey(enrollment);
 
-  const curriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
+  const matchingCurriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
+  const curriculumLanguages = matchingCurriculumLanguages.length ? matchingCurriculumLanguages : rtqfCurriculum[rtqfLevel].languages;
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
   const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
   const activeConcept = activeLevel.concepts[selectedLesson.index];
@@ -358,28 +371,43 @@ export default function LandingPage() {
       ? 2 + selectedLesson.index
       : 2 + activeLevel.concepts.length + selectedLesson.index;
   const progressPercentage = Math.round(((completedPreviousItems + currentItemPosition) / totalLessonItems) * 100);
-  const fullName = [profileUser?.first_name, profileUser?.last_name].filter(Boolean).join(' ') || profileUser?.name || profileUser?.username || 'Full Name';
-  const occupation = profileUser?.occupation || profileUser?.role || 'Learner';
+  const accountName = [profileUser?.first_name, profileUser?.last_name].filter(Boolean).join(' ') || profileUser?.name || profileUser?.username || '';
+  const fullName = enrollment?.full_name || 'Sample learner';
+  const occupation = enrollment?.occupation_name || 'Choose occupation';
+  const enrolledLevel = enrollment?.level_name || 'Choose level';
+  const enrolledTrade = enrollment?.trade_name || 'Choose trade';
+  const displayedProgress = enrollment ? progressPercentage : 0;
   const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
 
   const selectLevel = (levelId) => {
+    if (!enrollment) { setShowEnrollment(true); return; }
     setSelectedLevel(levelId);
     setExpandedTocLevel(levelId);
     setSelectedLesson({ levelId, type: 'overview', index: 0 });
   };
 
   const selectLessonItem = (levelId, type, index) => {
+    if (!enrollment) { setShowEnrollment(true); return; }
     setSelectedLevel(levelId);
     setExpandedTocLevel(levelId);
     setSelectedLesson({ levelId, type, index });
   };
 
   const selectCurriculumLanguage = (languageName) => {
+    if (!enrollment) { setShowEnrollment(true); return; }
     setCurriculumLanguage(languageName);
   };
 
   return (
     <div className={`h-[100svh] w-full overflow-hidden text-xs ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
+      {showEnrollment && !enrollment && (
+        <EnrollmentGate
+          initialName={accountName}
+          userUuid={profileUser?.uuid || profileUser?.id || null}
+          onClose={() => setShowEnrollment(false)}
+          onEnrolled={(savedEnrollment) => { setEnrollment(savedEnrollment); setShowEnrollment(false); }}
+        />
+      )}
       <main id="practice" className="flex h-full w-full flex-col overflow-hidden">
         <section className={`practice-header border-b px-3 py-2 text-left ${darkMode ? 'border-slate-700 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -391,11 +419,12 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
+              {!enrollment && <button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-5 py-2 font-black text-[#082f55] shadow-sm hover:bg-[#f5ca00]">Start Learning</button>}
               <div className="profile-meta-card progress-card">
                 <span>Progress</span>
-                <strong>{progressPercentage}%</strong>
+                <strong>{displayedProgress}%</strong>
                 <span className="progress-track" aria-hidden="true">
-                  <span style={{ width: `${progressPercentage}%` }} />
+                  <span style={{ width: `${displayedProgress}%` }} />
                 </span>
               </div>
               <div className="profile-meta-card">
@@ -404,11 +433,11 @@ export default function LandingPage() {
               </div>
               <div className="profile-meta-card">
                 <span>Level</span>
-                <strong>RTQF {rtqfLevel}</strong>
+                <strong>{enrolledLevel}</strong>
               </div>
               <div className="profile-meta-card trade-card">
                 <span>Trade</span>
-                <strong>{curriculumTrades[curriculumTrade]}</strong>
+                <strong>{enrolledTrade}</strong>
               </div>
               <div className="profile-card flex items-center gap-2">
                 <div className="min-w-0 text-right">
@@ -509,6 +538,12 @@ export default function LandingPage() {
           </aside>
           <article className="lesson-content min-w-0 flex-1 overflow-y-auto bg-white p-5 text-left text-black sm:p-8" aria-label="Lesson content">
             <div className="mx-auto max-w-4xl">
+              {!enrollment && (
+                <div className="mb-6 flex flex-col gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div><strong className="text-[#082f55]">Sample lesson</strong><p className="mt-1 text-slate-600">Explore this preview, then enroll when you are ready to start learning.</p></div>
+                  <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-5 py-2.5 font-black text-[#082f55]">Start Learning</button>
+                </div>
+              )}
               <p className={`text-[10px] font-black uppercase tracking-[0.16em] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Level {activeLevel.id} · {selectedCurriculumLanguage.name}
               </p>
