@@ -81,6 +81,15 @@ const guestCodeSamples = {
   C: '#include <stdio.h>\n\nint main(void) {\n  printf("Hello, developer!\\n");\n  return 0;\n}',
 };
 
+const guestFrameworks = [
+  { name: 'React', focus: 'Interactive web applications', color: 'bg-cyan-100 text-cyan-800' },
+  { name: 'Node.js', focus: 'Backend APIs and services', color: 'bg-green-100 text-green-800' },
+  { name: 'Python', focus: 'Automation, data, and AI', color: 'bg-blue-100 text-blue-800' },
+  { name: 'Django', focus: 'Complete Python web systems', color: 'bg-emerald-100 text-emerald-800' },
+  { name: 'Laravel', focus: 'Modern PHP applications', color: 'bg-red-100 text-red-800' },
+  { name: 'Flutter', focus: 'Android and iOS applications', color: 'bg-sky-100 text-sky-800' },
+];
+
 function curriculumTradeKey(enrollment) {
   const value = `${enrollment?.trade_code || ''} ${enrollment?.trade_name || ''}`.toLowerCase();
   if (value.includes('swd') || value.includes('software')) return 'SWD';
@@ -672,6 +681,13 @@ export default function LandingPage() {
                     <span className="leading-5">{chapter.title}</span>
                   </button>
                 ))}
+                <div className="border-b border-slate-200 bg-slate-100 px-3 py-3">
+                  <p className="font-black text-[#082f55]">Frameworks & technologies</p>
+                  <p className="mt-1 text-[10px] text-slate-500">Skills you can continue learning</p>
+                </div>
+                <div className="grid gap-2 bg-white p-3">
+                  {guestFrameworks.map((framework) => <div key={framework.name} className="rounded-lg border border-slate-200 p-3"><div className="flex items-center gap-2"><span className={`rounded px-2 py-1 text-[10px] font-black ${framework.color}`}>{framework.name}</span></div><p className="mt-2 text-[11px] leading-4 text-slate-600">{framework.focus}</p></div>)}
+                </div>
                 <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Real practice:</strong> every chapter includes code you can edit, run, and test.</div>
               </div>}
             </nav>
