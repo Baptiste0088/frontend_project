@@ -51,8 +51,7 @@ textarea {
   box-sizing: border-box;
 }
 
-#practice,
-#practice * {
+#practice {
   font-family: Tahoma, Arial, sans-serif !important;
   font-size: 16px !important;
   font-style: normal !important;
@@ -68,9 +67,27 @@ textarea {
   box-shadow: none !important;
 }
 
-#practice .lesson-content,
-#practice .lesson-content * {
+#practice .lesson-content {
   color: #000 !important;
+}
+
+#practice .chapter-rich-text {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+#practice .chapter-rich-text ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+#practice .chapter-rich-text ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
 }
 
 #practice .lesson-content .lesson-navigation button:not(:disabled) {
@@ -294,7 +311,7 @@ textarea {
   background: #fff !important;
 }
 
-#practice .lesson-content h1 {
+#practice .lesson-content .sample-lesson-document h1 {
   color: #071d35 !important;
 }
 
@@ -302,7 +319,7 @@ textarea {
   color: #0066cc !important;
 }
 
-#practice .lesson-content li::marker {
+#practice .lesson-content .sample-lesson-document li::marker {
   color: #0066cc;
 }
 
