@@ -473,6 +473,12 @@ export default function LandingPage() {
     setExpandedChapter(page.chapter_id);
   };
 
+  const openCodeRunner = (block) => {
+    const runId = block.id;
+    localStorage.setItem(`gcaCodeRun:${runId}`, JSON.stringify({ language: block.language, code: block.code }));
+    window.open(`/code-runner?run=${encodeURIComponent(runId)}`, '_blank', 'noopener');
+  };
+
   return (
     <div className={`h-[100svh] w-full overflow-hidden text-xs ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
       {showEnrollment && !enrollment && (
@@ -654,7 +660,7 @@ export default function LandingPage() {
                   <div className="space-y-5">
                     {(activePackagePage.published_blocks || []).map((block) => block.type === 'rich_text'
                       ? <div key={block.id} className="chapter-rich-text" style={{ lineHeight: activePackagePage.line_spacing || 1.5 }} dangerouslySetInnerHTML={{ __html: block.content }} />
-                      : <div key={block.id} className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100"><div className="border-b border-slate-700 px-4 py-2 text-[10px] font-bold uppercase text-slate-400">{block.language}</div><pre className="overflow-x-auto p-4 text-sm"><code>{block.code}</code></pre>{block.output && <pre className="border-t border-slate-700 bg-black/30 p-4 text-xs text-emerald-300">{block.output}</pre>}</div>)}
+                      : <div key={block.id} className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100"><div className="flex items-center justify-between gap-3 border-b border-slate-700 px-4 py-2"><span className="text-[10px] font-bold uppercase text-slate-400">{block.language}</span><button type="button" onClick={() => openCodeRunner(block)} className="rounded bg-[#ffd700] px-3 py-1.5 text-[11px] font-black text-[#082f55] hover:bg-[#f5ca00]">▶ Run code ↗</button></div><pre className="overflow-x-auto p-4 text-sm"><code>{block.code}</code></pre>{block.output && <pre className="border-t border-slate-700 bg-black/30 p-4 text-xs text-emerald-300">{block.output}</pre>}</div>)}
                   </div>
                   <nav className="mt-10 flex items-center justify-between gap-3 border-t border-slate-300 pt-5" aria-label="Published lesson pagination">
                     <button type="button" disabled={!previousPackagePage} onClick={() => previousPackagePage && selectPublishedPage(previousPackagePage)} className={`rounded-lg border px-4 py-2.5 text-left font-bold ${previousPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>← {previousPackagePage ? (previousPackagePage.heading ? `Previous: ${previousPackagePage.heading}` : 'Previous page') : 'Previous'}</button>
