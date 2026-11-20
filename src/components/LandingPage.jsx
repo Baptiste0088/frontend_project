@@ -407,8 +407,7 @@ export default function LandingPage() {
   const [selectedLesson, setSelectedLesson] = useState({ levelId: 1, type: 'overview', index: 0 });
   const [_expandedTocLevel, setExpandedTocLevel] = useState(1);
   const darkMode = false;
-  const [curriculumLanguage, setCurriculumLanguage] = useState('HTML');
-  const [guestChapterIndex, setGuestChapterIndex] = useState(0);
+  const [curriculumLanguage] = useState('HTML');
   const selectedRtqfLevel = Number(String(enrollment?.level_name || '').match(/\d+/)?.[0]);
   const rtqfLevel = rtqfCurriculum[selectedRtqfLevel] ? selectedRtqfLevel : 3;
   const curriculumTrade = curriculumTradeKey(enrollment);
@@ -417,7 +416,7 @@ export default function LandingPage() {
   const curriculumLanguages = matchingCurriculumLanguages.length ? matchingCurriculumLanguages : rtqfCurriculum[rtqfLevel].languages;
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
   const selectedGuestLanguage = guestSampleLanguages.find((language) => language.name === curriculumLanguage) || guestSampleLanguages[0];
-  const selectedGuestChapter = selectedGuestLanguage.chapters[guestChapterIndex] || selectedGuestLanguage.chapters[0];
+  const selectedGuestChapter = selectedGuestLanguage.chapters[0];
   const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
   const activeConcept = activeLevel.concepts[selectedLesson.index];
   const activeStep = activeLevel.steps[selectedLesson.index];
@@ -504,11 +503,6 @@ export default function LandingPage() {
     setSelectedLevel(levelId);
     setExpandedTocLevel(levelId);
     setSelectedLesson({ levelId, type, index });
-  };
-
-  const selectCurriculumLanguage = (languageName) => {
-    setCurriculumLanguage(languageName);
-    setGuestChapterIndex(0);
   };
 
   const selectStudentLanguage = (languageId) => {
@@ -608,18 +602,18 @@ export default function LandingPage() {
               </>}
             </div>
           </div>
-          <div className="mt-2">
+          {enrollment && <div className="mt-2">
             <div className="language-row flex min-w-0 items-center gap-2 overflow-x-auto px-2 py-1">
               <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
               <div className="flex min-w-0 flex-1 items-center gap-1.5">
                 {enrollment && packageLoading && <span className="text-[11px] text-slate-500">Loading…</span>}
-                {(enrollment ? packageLanguages : guestSampleLanguages).map((language) => {
-                  const selected = enrollment ? selectedPackageLanguage === language.id : selectedGuestLanguage.name === language.name;
+                {packageLanguages.map((language) => {
+                  const selected = selectedPackageLanguage === language.id;
                   return (
                     <button
                       type="button"
                       key={language.id || language.name}
-                      onClick={() => enrollment ? selectStudentLanguage(language.id) : selectCurriculumLanguage(language.name)}
+                      onClick={() => selectStudentLanguage(language.id)}
                       aria-pressed={selected}
                       className={`shrink-0 rounded px-2.5 py-1 text-[11px] font-bold transition ${selected ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}
                     >
@@ -629,14 +623,14 @@ export default function LandingPage() {
                 })}
               </div>
             </div>
-          </div>
+          </div>}
         </section>
 
         <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
           <aside className={`practice-sidebar flex h-full w-[260px] shrink-0 flex-col overflow-y-auto border-r text-left ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
-            <div className={`border-b px-3 py-3 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`}>
+            {enrollment && <div className={`border-b px-3 py-3 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`}>
               <p className={`text-[10px] font-black uppercase tracking-[0.14em] ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>My Package</p>
-            </div>
+            </div>}
 
             <nav className="flex-1 overflow-y-auto py-2" aria-label="Lesson table of contents">
               {enrollment && packageLoading && <p className="px-3 py-4 text-slate-500">Loading your languages…</p>}
@@ -671,20 +665,6 @@ export default function LandingPage() {
                 );
               })}
               {!enrollment && <div>
-                <div className="border-b border-slate-200 bg-white px-3 py-3">
-                  <p className="font-black text-[#082f55]">{selectedGuestLanguage.name} sample chapters</p>
-                  <p className="mt-1 text-[10px] text-slate-500">Preview what you will learn</p>
-                </div>
-                {selectedGuestLanguage.chapters.map((chapter, index) => (
-                  <button type="button" key={chapter.title} onClick={() => setGuestChapterIndex(index)} aria-current={guestChapterIndex === index ? 'page' : undefined} className={`flex w-full items-start gap-3 border-b border-slate-200 px-3 py-3 text-left transition ${guestChapterIndex === index ? 'bg-[#082f55] text-white' : 'bg-white text-slate-700 hover:bg-blue-50'}`}>
-                    <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-black ${guestChapterIndex === index ? 'bg-[#ffd700] text-[#082f55]' : 'bg-blue-100 text-blue-700'}`}>{index + 1}</span>
-                    <span className="leading-5">{chapter.title}</span>
-                  </button>
-                ))}
-                <div className="border-b border-slate-200 bg-slate-100 px-3 py-3">
-                  <p className="font-black text-[#082f55]">Frameworks & technologies</p>
-                  <p className="mt-1 text-[10px] text-slate-500">Skills you can continue learning</p>
-                </div>
                 <div className="grid gap-2 bg-white p-3">
                   {guestFrameworks.map((framework) => <div key={framework.name} className="rounded-lg border border-slate-200 p-3"><div className="flex items-center gap-2"><span className={`rounded px-2 py-1 text-[10px] font-black ${framework.color}`}>{framework.name}</span></div><p className="mt-2 text-[11px] leading-4 text-slate-600">{framework.focus}</p></div>)}
                 </div>
