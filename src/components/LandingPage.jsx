@@ -395,6 +395,7 @@ export default function LandingPage() {
   const [showEnrollment, setShowEnrollment] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [packageLanguages, setPackageLanguages] = useState([]);
   const [packageChapters, setPackageChapters] = useState({});
   const [packagePages, setPackagePages] = useState({});
@@ -515,6 +516,7 @@ export default function LandingPage() {
   const selectPublishedPage = (page) => {
     setSelectedPackagePage(page.id);
     setExpandedChapter(page.chapter_id);
+    setShowMobileSidebar(false);
   };
 
   const openCodeRunner = (block) => {
@@ -567,25 +569,26 @@ export default function LandingPage() {
                 <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
+            <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-5 py-2 font-black text-[#082f55] shadow-sm hover:bg-[#f5ca00]">Start Learning</button>}
               {enrollment && <>
-              <div className="profile-meta-card progress-card">
+              <div className="profile-meta-card progress-card hidden sm:block">
                 <span>Progress</span>
                 <strong>{displayedProgress}%</strong>
                 <span className="progress-track" aria-hidden="true">
                   <span style={{ width: `${displayedProgress}%` }} />
                 </span>
               </div>
-              <div className="profile-meta-card">
+              <div className="profile-meta-card hidden sm:block">
                 <span>Occupation</span>
                 <strong>{occupation}</strong>
               </div>
-              <div className="profile-meta-card">
+              <div className="profile-meta-card hidden sm:block">
                 <span>Level</span>
                 <strong>{enrolledLevel}</strong>
               </div>
-              <div className="profile-meta-card trade-card">
+              <div className="profile-meta-card trade-card hidden sm:block">
                 <span>Trade</span>
                 <strong>{enrolledTrade}</strong>
               </div>
@@ -627,7 +630,9 @@ export default function LandingPage() {
         </section>
 
         <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
-          <aside className={`practice-sidebar flex h-full w-[260px] shrink-0 flex-col overflow-y-auto border-r text-left ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
+          {showMobileSidebar && <button type="button" className="fixed inset-0 z-40 bg-slate-950/55 md:hidden" onClick={() => setShowMobileSidebar(false)} aria-label="Close lesson menu" />}
+          <aside id="learning-sidebar" className={`practice-sidebar fixed inset-y-0 left-0 z-50 flex h-full w-[min(85vw,300px)] shrink-0 flex-col overflow-y-auto border-r text-left shadow-2xl transition-transform duration-200 md:static md:z-auto md:w-[260px] md:translate-x-0 md:shadow-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
+            <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-3 md:hidden"><strong className="text-[#082f55]">Learning menu</strong><button type="button" onClick={() => setShowMobileSidebar(false)} className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Close lesson menu">×</button></div>
             {enrollment && <div className={`border-b px-3 py-3 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`}>
               <p className={`text-[10px] font-black uppercase tracking-[0.14em] ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>My Package</p>
             </div>}

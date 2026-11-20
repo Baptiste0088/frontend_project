@@ -236,9 +236,26 @@ textarea {
     min-width: 0;
   }
 
+  #practice .profile-meta-card.hidden {
+    display: none !important;
+  }
+
+  #practice .profile-meta > button:first-child {
+    grid-column: 1 / -1;
+  }
+
   #practice .profile-card {
     grid-column: 1 / -1;
     justify-content: flex-end;
+  }
+
+  #practice .practice-header {
+    max-height: 42svh;
+    overflow-y: auto;
+  }
+
+  #practice .lesson-content {
+    padding: 16px;
   }
 }
 
