@@ -54,7 +54,7 @@ function curriculumTradeKey(enrollment) {
   return 'ALL';
 }
 
-function publishedPageHeadings(page) {
+function publishedPageHeading(page) {
   const headings = (page.published_blocks || []).flatMap((block) => {
     if (block.type !== 'rich_text' || !block.content) return [];
     const documentNode = new DOMParser().parseFromString(block.content, 'text/html');
@@ -62,7 +62,7 @@ function publishedPageHeadings(page) {
       .map((heading) => heading.textContent.trim())
       .filter(Boolean);
   });
-  return headings.length ? headings : ['Published lesson'];
+  return headings[0] || '';
 }
 
 const _starterCode = {
@@ -400,7 +400,7 @@ export default function LandingPage() {
   const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
   const selectedLanguageChapters = packageChapters[selectedPackageLanguage] || [];
   const publishedLessonPages = selectedLanguageChapters.flatMap((chapter) => (
-    (packagePages[chapter.id] || []).map((page) => ({ ...page, heading: publishedPageHeadings(page)[0] }))
+    (packagePages[chapter.id] || []).map((page) => ({ ...page, heading: publishedPageHeading(page) })).filter((page) => page.heading)
   ));
   const activePackagePage = Object.values(packagePages).flat().find((page) => page.id === selectedPackagePage);
   const activePackagePageIndex = publishedLessonPages.findIndex((page) => page.id === selectedPackagePage);
@@ -434,7 +434,7 @@ export default function LandingPage() {
           setPackagePages(Object.fromEntries(languageResults.flatMap((result) => result.pageEntries)));
           setSelectedPackageLanguage(languages[0]?.id || '');
           setExpandedChapter(languageResults[0]?.chapters[0]?.id || '');
-          setSelectedPackagePage(languageResults[0]?.pageEntries.flatMap((entry) => entry[1])[0]?.id || '');
+          setSelectedPackagePage(languageResults[0]?.pageEntries.flatMap((entry) => entry[1]).find((page) => publishedPageHeading(page))?.id || '');
         }
       })
       .catch((requestError) => { if (!cancelled) setPackageError(requestError.message); })
@@ -465,7 +465,7 @@ export default function LandingPage() {
     const chapters = packageChapters[languageId] || [];
     setSelectedPackageLanguage(languageId);
     setExpandedChapter(chapters[0]?.id || '');
-    setSelectedPackagePage(chapters.flatMap((chapter) => packagePages[chapter.id] || [])[0]?.id || '');
+    setSelectedPackagePage(chapters.flatMap((chapter) => packagePages[chapter.id] || []).find((page) => publishedPageHeading(page))?.id || '');
   };
 
   const selectPublishedPage = (page) => {
@@ -575,7 +575,10 @@ export default function LandingPage() {
                     {expanded && <div className={darkMode ? 'bg-slate-950' : 'bg-white'}>
                       {publishedPages.length === 0
                         ? <p className="px-8 py-3 text-[11px] text-slate-500">No published pages</p>
-                        : publishedPages.flatMap((page) => publishedPageHeadings(page).map((heading, headingIndex) => <button type="button" key={`${page.id}-${headingIndex}`} onClick={() => selectPublishedPage(page)} className={`flex w-full items-start border-t px-8 py-2.5 text-left text-[11px] ${selectedPackagePage === page.id ? 'bg-slate-900 text-white' : (darkMode ? 'border-slate-800 text-slate-300 hover:bg-slate-800' : 'border-slate-100 text-slate-700 hover:bg-slate-100')}`}><span className="mr-2 text-slate-400">›</span><span>{heading}</span></button>))}
+                        : publishedPages.map((page) => {
+                          const heading = publishedPageHeading(page);
+                          return heading ? <button type="button" key={page.id} onClick={() => selectPublishedPage(page)} className={`flex w-full items-start border-t px-8 py-2.5 text-left text-[11px] ${selectedPackagePage === page.id ? 'bg-slate-900 text-white' : (darkMode ? 'border-slate-800 text-slate-300 hover:bg-slate-800' : 'border-slate-100 text-slate-700 hover:bg-slate-100')}`}><span className="mr-2 text-slate-400">›</span><span>{heading}</span></button> : null;
+                        })}
                     </div>}
                   </div>
                 );
