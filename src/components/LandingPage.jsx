@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
 import logo from '../assets/logo.jpeg';
 
 const levels = [
@@ -51,7 +51,7 @@ const curriculumTrades = {
   MMP: 'Multimedia Production',
 };
 
-const starterCode = {
+const _starterCode = {
   html: `<main class="welcome-card">
   <span class="level-tag">My first project</span>
   <h1>Hello, Rwanda! 🇷🇼</h1>
@@ -100,8 +100,8 @@ button.addEventListener('click', () => {
 });`,
 };
 
-const levelStarterCode = {
-  1: starterCode,
+const _levelStarterCode = {
+  1: _starterCode,
   2: {
     html: `<main class="counter-card">
   <p class="eyebrow">LEVEL 2 PRACTICE</p>
@@ -253,19 +253,19 @@ render();`,
   },
 };
 
-const languageMeta = {
+const _languageMeta = {
   html: { label: 'HTML', detail: 'Structure', filename: 'index.html' },
   css: { label: 'CSS', detail: 'Design', filename: 'style.css' },
   javascript: { label: 'JavaScript', detail: 'Interaction', filename: 'script.js' },
 };
 
-function buildDocument(code) {
+function _buildDocument(code) {
   const escapedScript = code.javascript.replace(/<\/script/gi, '<\\/script');
   const errorBridge = `window.addEventListener('error', function (event) { window.parent.postMessage({ source: 'gca-preview', message: event.message, line: event.lineno }, '*'); }); window.addEventListener('unhandledrejection', function (event) { window.parent.postMessage({ source: 'gca-preview', message: String(event.reason) }, '*'); });`;
   return `<!doctype html><html><head><meta charset="UTF-8"><style>${code.css}</style></head><body>${code.html}<script>${errorBridge}</script><script>${escapedScript}</script></body></html>`;
 }
 
-function validateCode(code) {
+function _validateCode(code) {
   const errors = [];
   const tagLikeLine = /^\s*(main|section|header|footer|div|form|input|button|h[1-6]|p|span|ul|li)\b[^<>]*>/i;
 
@@ -317,8 +317,6 @@ function validateCode(code) {
 }
 
 export default function LandingPage() {
-  const previewContainerRef = useRef(null);
-  const lineNumbersRef = useRef(null);
   const [profileUser] = useState(() => {
     try {
       const storedUser = localStorage.getItem('gcaUser');
@@ -328,344 +326,282 @@ export default function LandingPage() {
     }
   });
   const [selectedLevel, setSelectedLevel] = useState(1);
-  const [activeLanguage, setActiveLanguage] = useState('html');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showMobileTools, setShowMobileTools] = useState(false);
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [errors, setErrors] = useState([]);
-  const [codeByLevel, setCodeByLevel] = useState(() =>
-    Object.fromEntries(Object.entries(levelStarterCode).map(([id, code]) => [id, { ...code }]))
-  );
-  const [previewByLevel, setPreviewByLevel] = useState(() =>
-    Object.fromEntries(Object.entries(levelStarterCode).map(([id, code]) => [id, { ...code }]))
-  );
-  const [runCount, setRunCount] = useState(0);
-  const [rtqfLevel, setRtqfLevel] = useState(3);
-  const [curriculumTrade, setCurriculumTrade] = useState('ALL');
+  const [selectedLesson, setSelectedLesson] = useState({ levelId: 1, type: 'overview', index: 0 });
+  const [expandedTocLevel, setExpandedTocLevel] = useState(1);
+  const darkMode = false;
+  const [rtqfLevel] = useState(3);
+  const [curriculumTrade] = useState('SWD');
   const [curriculumLanguage, setCurriculumLanguage] = useState('HTML');
 
-  const activeLevel = levels.find((level) => level.id === selectedLevel);
-  const code = codeByLevel[selectedLevel];
-  const previewCode = previewByLevel[selectedLevel];
-  const preview = useMemo(() => buildDocument(previewCode), [previewCode]);
-  const editorLines = code[activeLanguage].split('\n');
   const curriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
+  const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
+  const activeConcept = activeLevel.concepts[selectedLesson.index];
+  const activeStep = activeLevel.steps[selectedLesson.index];
+  const lessonPages = levels.flatMap((level) => [
+    { levelId: level.id, type: 'overview', index: 0, label: `Level ${level.id}: ${level.name}` },
+    ...level.concepts.map((concept, index) => ({ levelId: level.id, type: 'concept', index, label: concept })),
+    ...level.steps.map((step, index) => ({ levelId: level.id, type: 'step', index, label: `Step ${index + 1}` })),
+  ]);
+  const currentPageIndex = lessonPages.findIndex((page) => (
+    page.levelId === selectedLesson.levelId && page.type === selectedLesson.type && page.index === selectedLesson.index
+  ));
+  const previousPage = currentPageIndex > 0 ? lessonPages[currentPageIndex - 1] : null;
+  const nextPage = currentPageIndex < lessonPages.length - 1 ? lessonPages[currentPageIndex + 1] : null;
+  const totalLessonItems = levels.reduce((total, level) => total + 1 + level.concepts.length + level.steps.length, 0);
+  const completedPreviousItems = levels
+    .filter((level) => level.id < selectedLesson.levelId)
+    .reduce((total, level) => total + 1 + level.concepts.length + level.steps.length, 0);
+  const currentItemPosition = selectedLesson.type === 'overview'
+    ? 1
+    : selectedLesson.type === 'concept'
+      ? 2 + selectedLesson.index
+      : 2 + activeLevel.concepts.length + selectedLesson.index;
+  const progressPercentage = Math.round(((completedPreviousItems + currentItemPosition) / totalLessonItems) * 100);
   const fullName = [profileUser?.first_name, profileUser?.last_name].filter(Boolean).join(' ') || profileUser?.name || profileUser?.username || 'Full Name';
+  const occupation = profileUser?.occupation || profileUser?.role || 'Learner';
   const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
-  const activeErrorLines = errors.flatMap((error) => {
-    const language = languageMeta[activeLanguage].label;
-    const line = error.match(new RegExp(`^${language}(?: runtime error on)? line (\\d+)`, 'i'))?.[1];
-    return line ? [Number(line)] : [];
-  });
-
-  useEffect(() => {
-    const updateFullscreenState = () => {
-      setIsFullscreen(document.fullscreenElement === previewContainerRef.current);
-    };
-
-    document.addEventListener('fullscreenchange', updateFullscreenState);
-    return () => document.removeEventListener('fullscreenchange', updateFullscreenState);
-  }, []);
-
-  useEffect(() => {
-    const receivePreviewError = (event) => {
-      if (event.data?.source !== 'gca-preview') return;
-      const line = event.data.line ? ` on line ${event.data.line}` : '';
-      setErrors([`JavaScript runtime error${line}: ${event.data.message}`]);
-    };
-
-    window.addEventListener('message', receivePreviewError);
-    return () => window.removeEventListener('message', receivePreviewError);
-  }, []);
-
-  const runCode = () => {
-    const codeErrors = validateCode(code);
-    setErrors(codeErrors);
-    if (codeErrors.length > 0) return;
-    setPreviewByLevel((current) => ({ ...current, [selectedLevel]: { ...code } }));
-    setRunCount((count) => count + 1);
-  };
-
-  const resetCode = () => {
-    const starter = { ...levelStarterCode[selectedLevel] };
-    setCodeByLevel((current) => ({ ...current, [selectedLevel]: starter }));
-    setPreviewByLevel((current) => ({ ...current, [selectedLevel]: starter }));
-    setErrors([]);
-    setRunCount((count) => count + 1);
-  };
 
   const selectLevel = (levelId) => {
     setSelectedLevel(levelId);
-    setErrors([]);
-    setShowExplanation(false);
+    setExpandedTocLevel(levelId);
+    setSelectedLesson({ levelId, type: 'overview', index: 0 });
   };
 
-  const selectRtqfLevel = (levelId) => {
-    const nextLevel = Number(levelId);
-    const firstLanguage = rtqfCurriculum[nextLevel].languages[0];
-    setRtqfLevel(nextLevel);
-    setCurriculumTrade('ALL');
-    setCurriculumLanguage(firstLanguage.name);
-  };
-
-  const selectCurriculumTrade = (trade) => {
-    const nextLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => trade === 'ALL' || language.trades.includes(trade));
-    setCurriculumTrade(trade);
-    setCurriculumLanguage(nextLanguages[0].name);
+  const selectLessonItem = (levelId, type, index) => {
+    setSelectedLevel(levelId);
+    setExpandedTocLevel(levelId);
+    setSelectedLesson({ levelId, type, index });
   };
 
   const selectCurriculumLanguage = (languageName) => {
     setCurriculumLanguage(languageName);
-    const editorLanguage = languageName === 'JavaScript' ? 'javascript' : languageName.toLowerCase();
-    if (languageMeta[editorLanguage]) setActiveLanguage(editorLanguage);
-  };
-
-  const viewFullscreen = () => {
-    previewContainerRef.current?.requestFullscreen?.();
-  };
-
-  const closeFullscreen = () => {
-    if (document.fullscreenElement) document.exitFullscreen?.();
   };
 
   return (
-    <div className="h-[100svh] w-full overflow-hidden bg-[#e9eef5] text-xs text-slate-900">
-      <main id="practice" className="flex h-full w-full flex-col overflow-hidden bg-white">
-        <section className="border-b border-slate-700 bg-[#071d35] px-3 py-2 text-left text-white">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 flex-1 flex-col gap-2 lg:flex-row lg:items-center">
-              <div className="min-w-0 lg:w-64">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-300">RTB curriculum pathway</p>
-                <p className="truncate text-[10px] text-slate-400">{rtqfCurriculum[rtqfLevel].focus}</p>
-              </div>
-              <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
-                <label className="flex items-center gap-2 rounded-lg border border-slate-600 bg-[#0b2947] px-2 py-1">
-                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Level</span>
-                  <select value={rtqfLevel} onChange={(event) => selectRtqfLevel(event.target.value)} className="min-w-0 flex-1 bg-transparent py-1 text-[11px] font-bold text-white outline-none">
-                    <option className="text-slate-900" value="3">RTQF Level 3</option>
-                    <option className="text-slate-900" value="4">RTQF Level 4</option>
-                    <option className="text-slate-900" value="5">RTQF Level 5</option>
-                  </select>
-                </label>
-                <label className="flex items-center gap-2 rounded-lg border border-slate-600 bg-[#0b2947] px-2 py-1">
-                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Trade</span>
-                  <select value={curriculumTrade} onChange={(event) => selectCurriculumTrade(event.target.value)} className="min-w-0 flex-1 bg-transparent py-1 text-[11px] font-bold text-white outline-none">
-                    {Object.entries(curriculumTrades).map(([key, label]) => {
-                      const available = key === 'ALL' || rtqfCurriculum[rtqfLevel].languages.some((language) => language.trades.includes(key));
-                      return <option className="text-slate-900" key={key} value={key} disabled={!available}>{label}</option>;
-                    })}
-                  </select>
-                </label>
+    <div className={`h-[100svh] w-full overflow-hidden text-xs ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
+      <main id="practice" className="flex h-full w-full flex-col overflow-hidden">
+        <section className={`practice-header border-b px-3 py-2 text-left ${darkMode ? 'border-slate-700 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="brand-block flex min-w-0 items-center gap-3">
+              <img src={logo} alt="Global Coding Academy logo" className="brand-logo h-11 w-11 shrink-0 rounded-full object-cover" />
+              <div className="brand-copy min-w-0">
+                <p className="brand-name">Global Coding Academy</p>
+                <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
-            <div className="flex shrink-0 items-center justify-between gap-3 rounded-lg border border-slate-600 bg-[#0b2947] px-2.5 py-1.5 sm:justify-end lg:min-w-56">
-              <div className="min-w-0 text-right">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Full Name</p>
-                <p className="max-w-40 truncate text-[11px] font-black text-white" title={fullName}>{fullName}</p>
+            <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
+              <div className="profile-meta-card progress-card">
+                <span>Progress</span>
+                <strong>{progressPercentage}%</strong>
+                <span className="progress-track" aria-hidden="true">
+                  <span style={{ width: `${progressPercentage}%` }} />
+                </span>
               </div>
-              <img src={profileImage} alt={`${fullName} profile`} className="h-9 w-9 rounded-full border border-white/30 bg-white object-cover" />
+              <div className="profile-meta-card">
+                <span>Occupation</span>
+                <strong>{occupation}</strong>
+              </div>
+              <div className="profile-meta-card">
+                <span>Level</span>
+                <strong>RTQF {rtqfLevel}</strong>
+              </div>
+              <div className="profile-meta-card trade-card">
+                <span>Trade</span>
+                <strong>{curriculumTrades[curriculumTrade]}</strong>
+              </div>
+              <div className="profile-card flex items-center gap-2">
+                <div className="min-w-0 text-right">
+                  <span>Full Name</span>
+                  <strong className="block max-w-40 truncate" title={fullName}>{fullName}</strong>
+                </div>
+                <img src={profileImage} alt={`${fullName} profile`} className="h-8 w-8 rounded-full object-cover" />
+              </div>
             </div>
           </div>
-          <div className="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-[minmax(220px,0.7fr)_1fr]">
-            <label className="flex items-center gap-2 rounded-lg border border-slate-600 bg-[#0b2947] px-2 py-1">
+          <div className="mt-2">
+            <div className="language-row flex min-w-0 items-center gap-2 overflow-x-auto px-2 py-1">
               <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
-              <select value={selectedCurriculumLanguage.name} onChange={(event) => selectCurriculumLanguage(event.target.value)} className="min-w-0 flex-1 bg-transparent py-1 text-[11px] font-bold text-white outline-none">
-                {curriculumLanguages.map((language) => <option className="text-slate-900" key={language.name} value={language.name}>{language.name}</option>)}
-              </select>
-            </label>
-            <p className="min-w-0 truncate rounded-md bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-blue-100" title={selectedCurriculumLanguage.module}>{selectedCurriculumLanguage.module}</p>
-          </div>
-        </section>
-        <section id="levels" className="flex flex-col gap-2 border-b border-slate-200 bg-white p-2 text-left lg:flex-row lg:items-center">
-          <div className="flex items-center justify-between lg:block">
-            <div className="flex shrink-0 items-center gap-2 pr-2">
-              <img src={logo} alt="Global Coding Academy" className="h-8 w-8 rounded-full object-cover" />
-              <div>
-                <h1 className="text-sm font-black leading-tight text-[#071d35]">Coding Practice</h1>
-                <p className="text-[10px] text-slate-500">Select your level</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowMobileTools((open) => !open)}
-              className="inline-grid h-9 w-9 place-items-center rounded-lg bg-[#071d35] text-lg font-black leading-none text-white lg:hidden"
-              aria-expanded={showMobileTools}
-              aria-controls="mobile-practice-tools"
-              aria-label={showMobileTools ? 'Close practice tools' : 'Open practice tools'}
-            >
-              {showMobileTools ? '×' : '☰'}
-            </button>
-          </div>
-
-          <div id="mobile-practice-tools" className={`${showMobileTools ? 'grid' : 'hidden'} flex-1 grid-cols-2 gap-1.5 sm:grid-cols-5 lg:grid`}>
-            {levels.map((level) => {
-              const selected = selectedLevel === level.id;
-              return (
-                <button
-                  type="button"
-                  key={level.id}
-                  onClick={() => selectLevel(level.id)}
-                  title={level.name}
-                  className={`min-w-0 rounded-lg border px-2 py-1.5 text-center transition ${selected ? 'border-[#0066cc] bg-[#0066cc] text-white' : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-blue-300 hover:bg-blue-50'}`}
-                >
-                  <span className="block text-[10px] font-black uppercase">Level {level.id}</span>
-                  <span className="hidden truncate text-[10px] font-semibold sm:block">{level.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className={`${showMobileTools ? 'flex' : 'hidden'} flex-col gap-2 border-b border-slate-200 bg-slate-50 px-2 py-1.5 text-left sm:flex-row sm:items-center sm:justify-between lg:flex`}>
-          <p className="min-w-0 truncate text-[11px] text-slate-600">
-            <strong className="text-[#0066cc]">Level {activeLevel.id} challenge:</strong> {activeLevel.brief}
-          </p>
-          <div className="flex shrink-0 flex-wrap gap-1">
-            <button
-              type="button"
-              onClick={() => setShowExplanation(true)}
-              className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-[11px] font-extrabold text-blue-700 hover:bg-blue-100"
-            >
-              ? View explanation
-            </button>
-            {Object.entries(languageMeta).map(([key, language]) => (
-              <button
-                type="button"
-                key={key}
-                onClick={() => setActiveLanguage(key)}
-                className={`rounded-md px-3 py-1.5 text-[11px] font-extrabold transition ${activeLanguage === key ? 'bg-[#071d35] text-white' : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-100'}`}
-              >
-                <span>{language.label}</span>
-                <span className="ml-1 hidden font-normal opacity-70 md:inline">· {language.filename}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {errors.length > 0 && (
-          <section className="flex items-start justify-between gap-3 border-b border-red-300 bg-red-50 px-3 py-2 text-left text-[11px] text-red-800" role="alert" aria-live="assertive">
-            <div>
-              <p className="font-black">Code error — fix the following before running:</p>
-              <ul className="mt-1 list-disc pl-5 font-semibold">
-                {errors.map((error) => <li key={error}>{error}</li>)}
-              </ul>
-            </div>
-            <button type="button" onClick={() => setErrors([])} className="shrink-0 rounded-md border border-red-300 bg-white px-2.5 py-1 font-black text-red-700 hover:bg-red-100" aria-label="Close error message">
-              × Close
-            </button>
-          </section>
-        )}
-
-        <section className="grid min-h-0 flex-1 overflow-auto bg-white lg:grid-cols-[minmax(340px,42%)_minmax(0,58%)] lg:overflow-hidden">
-          <div className="flex min-h-[430px] flex-col bg-[#07131f] text-left lg:min-h-0">
-            <div className="flex h-10 shrink-0 items-center justify-between border-b border-slate-700 px-3">
-              <p className="font-bold text-white">{languageMeta[activeLanguage].filename} <span className="font-normal text-slate-400">· {languageMeta[activeLanguage].label} {languageMeta[activeLanguage].detail}</span></p>
-              <button type="button" onClick={resetCode} className="rounded border border-slate-600 px-2 py-1 text-[10px] font-bold text-slate-300 hover:bg-slate-800">Reset</button>
-            </div>
-            <div className="flex min-h-0 flex-1 overflow-hidden bg-[#07131f]">
-              <div ref={lineNumbersRef} className="w-11 shrink-0 select-none overflow-hidden border-r border-slate-700 bg-[#091827] py-3 text-right font-mono text-[12px] leading-5 text-slate-500" aria-hidden="true">
-                {editorLines.map((_, index) => {
-                  const lineNumber = index + 1;
-                  const hasError = activeErrorLines.includes(lineNumber);
-                  return <span key={lineNumber} className={`block h-5 pr-2 ${hasError ? 'bg-red-500/20 font-bold text-red-400' : ''}`}>{lineNumber}</span>;
+              <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                {curriculumLanguages.map((language) => {
+                  const selected = selectedCurriculumLanguage.name === language.name;
+                  return (
+                    <button
+                      type="button"
+                      key={language.name}
+                      onClick={() => selectCurriculumLanguage(language.name)}
+                      aria-pressed={selected}
+                      className={`shrink-0 rounded px-2.5 py-1 text-[11px] font-bold transition ${selected ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}
+                    >
+                      {language.name}
+                    </button>
+                  );
                 })}
               </div>
-              <textarea
-                value={code[activeLanguage]}
-                onChange={(event) => setCodeByLevel((current) => ({
-                  ...current,
-                  [selectedLevel]: { ...current[selectedLevel], [activeLanguage]: event.target.value },
-                }))}
-                onScroll={(event) => {
-                  if (lineNumbersRef.current) lineNumbersRef.current.scrollTop = event.currentTarget.scrollTop;
-                }}
-                className="min-h-0 min-w-0 flex-1 resize-none bg-[#07131f] px-3 py-3 font-mono text-[12px] leading-5 text-slate-100 outline-none"
-                aria-label={`${languageMeta[activeLanguage].label} code editor`}
-                spellCheck="false"
-              />
-            </div>
-            <div className="flex h-11 shrink-0 items-center border-t border-slate-700 bg-[#0a1928] px-2">
-              <button type="button" onClick={runCode} className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-[#ffd700] px-4 py-2 text-[11px] font-black text-[#071d35] hover:bg-yellow-300 active:scale-95">
-                <span aria-hidden="true">▶</span> Run code
-              </button>
-            </div>
-          </div>
-
-          <div className="flex min-h-[430px] flex-col border-t border-slate-200 bg-slate-100 text-left lg:min-h-0 lg:border-l lg:border-t-0">
-            <div className="flex h-10 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3">
-              <p className="font-bold text-[#071d35]">Live result</p>
-              <div className="flex items-center gap-2">
-                <div className="hidden items-center gap-1.5 text-[10px] font-bold text-emerald-700 sm:flex"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Browser preview</div>
-                <button type="button" onClick={viewFullscreen} className="rounded-md bg-[#071d35] px-2.5 py-1.5 text-[10px] font-bold text-white hover:bg-[#123b62]" aria-label="View result in full screen">
-                  ⛶ Full screen
-                </button>
-              </div>
-            </div>
-            <div ref={previewContainerRef} className="relative min-h-0 flex-1 overflow-hidden bg-white">
-              {isFullscreen && (
-                <button
-                  type="button"
-                  onClick={closeFullscreen}
-                  className="absolute right-3 top-3 z-10 rounded-lg bg-red-600 px-4 py-2 text-xs font-black text-white shadow-lg hover:bg-red-700"
-                  aria-label="Close full screen"
-                >
-                  × Close full screen
-                </button>
-              )}
-              <iframe
-                key={`${selectedLevel}-${runCount}`}
-                title="Code result preview"
-                srcDoc={preview}
-                sandbox="allow-scripts"
-                allowFullScreen
-                className="block h-full min-h-[390px] w-full border-0 bg-white lg:min-h-0"
-              />
             </div>
           </div>
         </section>
 
-        {showExplanation && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#071d35]/70 p-3 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="explanation-title">
-            <section className="max-h-[calc(100svh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-2xl">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-[#0066cc]">Level {activeLevel.id} explanation</p>
-                  <h2 id="explanation-title" className="mt-1 text-xl font-black text-[#071d35]">{activeLevel.name}</h2>
-                </div>
-                <button type="button" onClick={() => setShowExplanation(false)} className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-black text-slate-700 hover:bg-slate-200" aria-label="Close explanation">× Close</button>
-              </div>
+        <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
+          <aside className={`practice-sidebar flex h-full w-[260px] shrink-0 flex-col overflow-y-auto border-r text-left ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
+            <div className={`border-b px-3 py-3 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`}>
+              <p className={`text-[10px] font-black uppercase tracking-[0.14em] ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>My Package</p>
+            </div>
 
-              <p className="mt-4 rounded-lg bg-blue-50 p-3 text-sm font-semibold leading-5 text-slate-700">{activeLevel.brief}</p>
+            <nav className="flex-1 overflow-y-auto py-2" aria-label="Lesson table of contents">
+              {levels.map((level) => {
+                const selected = selectedLevel === level.id;
+                const expanded = expandedTocLevel === level.id;
+                return (
+                  <div key={level.id} className={`border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        selectLevel(level.id);
+                        setExpandedTocLevel(expanded ? 0 : level.id);
+                      }}
+                      className={`flex w-full items-center gap-2 px-3 py-2.5 text-left transition ${selected ? (darkMode ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-950') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100')}`}
+                      aria-expanded={expanded}
+                    >
+                      <span className="min-w-0 flex-1 truncate">Level {level.id}: {level.name}</span>
+                      <span className="shrink-0" aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+                    </button>
 
-              <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-                <h3 className="text-[10px] font-black uppercase tracking-wider text-emerald-700">Target result</h3>
-                <p className="mt-1 text-xs font-semibold leading-5 text-emerald-950">{activeLevel.result}</p>
-              </div>
+                    {expanded && (
+                      <div className={`py-1 ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
+                        <button
+                          type="button"
+                          onClick={() => selectLevel(level.id)}
+                          aria-current={selectedLesson.levelId === level.id && selectedLesson.type === 'overview' ? 'page' : undefined}
+                          className={`w-full px-8 py-2 text-left text-[11px] font-bold ${selectedLesson.levelId === level.id && selectedLesson.type === 'overview' ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100')}`}
+                        >
+                          Overview
+                        </button>
+                        {level.concepts.map((concept) => (
+                          <button
+                            type="button"
+                            key={concept}
+                            onClick={() => selectLessonItem(level.id, 'concept', level.concepts.indexOf(concept))}
+                            aria-current={selectedLesson.levelId === level.id && selectedLesson.type === 'concept' && activeConcept === concept ? 'page' : undefined}
+                            className={`w-full px-8 py-2 text-left text-[11px] font-semibold ${selectedLesson.levelId === level.id && selectedLesson.type === 'concept' && activeConcept === concept ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100')}`}
+                          >
+                            {concept}
+                          </button>
+                        ))}
+                        {level.steps.map((step, index) => (
+                          <button
+                            type="button"
+                            key={step}
+                            onClick={() => selectLessonItem(level.id, 'step', index)}
+                            aria-current={selectedLesson.levelId === level.id && selectedLesson.type === 'step' && selectedLesson.index === index ? 'page' : undefined}
+                            className={`w-full px-8 py-2 text-left text-[11px] font-semibold ${selectedLesson.levelId === level.id && selectedLesson.type === 'step' && selectedLesson.index === index ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}
+                          >
+                            Step {index + 1}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
 
-              <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h3 className="text-[10px] font-black uppercase tracking-wider text-slate-600">Run it locally</h3>
-                <p className="mt-1 text-[11px] leading-5 text-slate-700">
-                  Create one folder with <code className="font-bold text-[#0066cc]">index.html</code>, <code className="font-bold text-[#0066cc]">style.css</code>, and <code className="font-bold text-[#0066cc]">script.js</code>. Paste each editor tab into its matching file. Add <code className="font-bold">&lt;link rel="stylesheet" href="style.css"&gt;</code> inside <code>&lt;head&gt;</code> and <code className="font-bold">&lt;script src="script.js"&gt;&lt;/script&gt;</code> before <code>&lt;/body&gt;</code>. Double-click <code className="font-bold">index.html</code> to run it.
-                </p>
-              </div>
+          </aside>
+          <article className="lesson-content min-w-0 flex-1 overflow-y-auto bg-white p-5 text-left text-black sm:p-8" aria-label="Lesson content">
+            <div className="mx-auto max-w-4xl">
+              <p className={`text-[10px] font-black uppercase tracking-[0.16em] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                Level {activeLevel.id} · {selectedCurriculumLanguage.name}
+              </p>
 
-              <h3 className="mt-4 text-xs font-black uppercase tracking-wider text-slate-500">What you will practise</h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {activeLevel.concepts.map((concept) => <span key={concept} className="rounded-full bg-[#071d35] px-3 py-1.5 text-[11px] font-bold text-white">{concept}</span>)}
-              </div>
+              {selectedLesson.type === 'overview' && (
+                <>
+                  <h1 className={`mt-2 text-2xl font-black ${darkMode ? 'text-white' : 'text-slate-950'}`}>{activeLevel.name}</h1>
+                  <ul className="mt-6 list-disc space-y-5 pl-5 text-sm font-bold leading-6">
+                    <li>
+                      Course overview
+                      <ul className={`mt-2 list-circle space-y-2 pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <li>{activeLevel.brief}</li>
+                        <li>{activeLevel.result}</li>
+                      </ul>
+                    </li>
+                    <li>
+                      Topics
+                      <ul className={`mt-2 list-disc space-y-1.5 pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {activeLevel.concepts.map((concept) => <li key={concept}>{concept}</li>)}
+                      </ul>
+                    </li>
+                    <li>
+                      Lesson steps
+                      <ol className={`mt-2 list-decimal space-y-1.5 pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {activeLevel.steps.map((step) => <li key={step}>{step}</li>)}
+                      </ol>
+                    </li>
+                  </ul>
+                </>
+              )}
 
-              <h3 className="mt-4 text-xs font-black uppercase tracking-wider text-slate-500">How to complete it</h3>
-              <ol className="mt-2 grid gap-2">
-                {activeLevel.steps.map((step, index) => (
-                  <li key={step} className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
-                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#ffd700] font-black text-[#071d35]">{index + 1}</span>{step}
-                  </li>
-                ))}
-              </ol>
-            </section>
-          </div>
-        )}
+              {selectedLesson.type === 'concept' && (
+                <>
+                  <h1 className={`mt-2 text-2xl font-black ${darkMode ? 'text-white' : 'text-slate-950'}`}>{activeConcept}</h1>
+                  <ul className="mt-6 list-disc space-y-4 pl-5 text-sm font-bold leading-6">
+                    <li>
+                      About this topic
+                      <ul className={`mt-2 list-disc space-y-2 pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <li>This topic is part of {activeLevel.name}.</li>
+                        <li>{activeLevel.brief}</li>
+                      </ul>
+                    </li>
+                    <li>
+                      Learning goal
+                      <ul className={`mt-2 list-disc pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <li>Understand {activeConcept.toLowerCase()} and use it to complete the Level {activeLevel.id} learning result.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </>
+              )}
+
+              {selectedLesson.type === 'step' && (
+                <>
+                  <h1 className={`mt-2 text-2xl font-black ${darkMode ? 'text-white' : 'text-slate-950'}`}>Step {selectedLesson.index + 1}</h1>
+                  <ul className="mt-6 list-disc space-y-4 pl-5 text-sm font-bold leading-6">
+                    <li>
+                      Task
+                      <ul className={`mt-2 list-disc pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <li>{activeStep}</li>
+                      </ul>
+                    </li>
+                    <li>
+                      Expected result
+                      <ul className={`mt-2 list-disc pl-5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <li>{activeLevel.result}</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </>
+              )}
+
+              <nav className={`lesson-navigation mt-10 flex items-center justify-between gap-3 border-t pt-5 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`} aria-label="Lesson pagination">
+                <button
+                  type="button"
+                  disabled={!previousPage}
+                  onClick={() => previousPage && selectLessonItem(previousPage.levelId, previousPage.type, previousPage.index)}
+                  className={`rounded border px-4 py-2 ${previousPage ? 'border-slate-900 bg-slate-900 text-white hover:bg-slate-800' : 'cursor-not-allowed border-slate-300 bg-slate-200 text-slate-500 opacity-50'}`}
+                >
+                  Previous{previousPage ? `: ${previousPage.label}` : ''}
+                </button>
+                <button
+                  type="button"
+                  disabled={!nextPage}
+                  onClick={() => nextPage && selectLessonItem(nextPage.levelId, nextPage.type, nextPage.index)}
+                  className={`rounded border px-4 py-2 text-right ${nextPage ? 'border-slate-900 bg-slate-900 text-white hover:bg-slate-800' : 'cursor-not-allowed border-slate-300 bg-slate-200 text-slate-500 opacity-50'}`}
+                >
+                  Next{nextPage ? `: ${nextPage.label}` : ''}
+                </button>
+              </nav>
+            </div>
+          </article>
+        </section>
       </main>
     </div>
   );

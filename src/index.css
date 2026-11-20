@@ -42,3 +42,277 @@ body {
   flex-direction: column;
   box-sizing: border-box;
 }
+
+#practice,
+#practice * {
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+#practice .language-row,
+#practice .language-row button {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#practice .lesson-content,
+#practice .lesson-content * {
+  color: #000 !important;
+}
+
+#practice .lesson-content .lesson-navigation button:not(:disabled) {
+  color: #fff !important;
+}
+
+#practice {
+  background: #fff !important;
+}
+
+#practice .practice-header {
+  border-color: #93c5fd !important;
+  background: #fff !important;
+  box-shadow: 0 3px 12px rgb(0 102 204 / 8%);
+}
+
+#practice .practice-header p,
+#practice .practice-header span,
+#practice .practice-header button {
+  color: #071d35 !important;
+}
+
+#practice .practice-header span[class*="rounded"],
+#practice .practice-header div[class*="rounded"] {
+  border-color: #bfdbfe !important;
+  background: transparent !important;
+}
+
+#practice .brand-block {
+  padding-right: 18px;
+  border-right: 1px solid #dbeafe;
+}
+
+#practice .brand-logo {
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 3px #0066cc, 0 3px 10px rgb(0 102 204 / 18%);
+}
+
+#practice .brand-copy {
+  padding-left: 10px;
+  border-left: 3px solid #f2b705;
+}
+
+#practice .brand-name {
+  color: #0066cc !important;
+  font-weight: 700 !important;
+  white-space: nowrap;
+}
+
+#practice .brand-slogan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #475569 !important;
+  white-space: nowrap;
+}
+
+#practice .brand-slogan > span {
+  width: 14px;
+  height: 3px;
+  border-radius: 999px;
+  background: #f2b705 !important;
+}
+
+@media (max-width: 1023px) {
+  #practice .brand-block {
+    border-right: 0;
+  }
+}
+
+#practice .profile-meta-card,
+#practice .profile-card {
+  min-height: 44px;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 12px !important;
+  background: #f8fbff !important;
+  box-shadow: 0 2px 8px rgb(15 65 115 / 8%);
+}
+
+#practice .profile-meta-card {
+  display: grid;
+  min-width: 118px;
+  align-content: center;
+  gap: 0;
+  padding: 3px 10px;
+  border-left: 4px solid #0066cc !important;
+}
+
+#practice .profile-meta-card > span:first-child,
+#practice .profile-card span {
+  color: #64748b !important;
+}
+
+#practice .profile-meta-card strong,
+#practice .profile-card strong {
+  color: #071d35 !important;
+}
+
+#practice .profile-meta-card.trade-card {
+  min-width: 190px;
+  border-left-color: #f2b705 !important;
+}
+
+#practice .profile-meta-card.progress-card {
+  border-left-color: #16a34a !important;
+}
+
+#practice .progress-track {
+  display: block;
+  width: 100%;
+  height: 3px;
+  margin-top: 1px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dcfce7 !important;
+}
+
+#practice .progress-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #16a34a !important;
+}
+
+#practice .profile-card {
+  padding: 3px 8px 3px 12px;
+  border-color: #f2b705 !important;
+  background: #fffdf4 !important;
+}
+
+#practice .profile-card img {
+  border: 2px solid #0066cc !important;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+
+@media (max-width: 767px) {
+  #practice .profile-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  #practice .profile-meta-card,
+  #practice .profile-meta-card.trade-card,
+  #practice .profile-card {
+    min-width: 0;
+  }
+
+  #practice .profile-card {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+#practice .language-row button {
+  color: #475569 !important;
+  border-radius: 8px !important;
+  background: #eff6ff !important;
+}
+
+#practice .language-row button:hover {
+  color: #0066cc !important;
+  background: #dbeafe !important;
+}
+
+#practice .language-row button[aria-pressed="true"] {
+  color: #071d35 !important;
+  background: #ffd700 !important;
+  text-decoration: none;
+}
+
+#practice .practice-sidebar {
+  border-color: #bfdbfe !important;
+  background: #fff !important;
+}
+
+#practice .practice-sidebar div {
+  border-color: #e2e8f0 !important;
+  background: transparent !important;
+}
+
+#practice .practice-sidebar p,
+#practice .practice-sidebar button,
+#practice .practice-sidebar span {
+  color: #071d35 !important;
+}
+
+#practice .practice-sidebar button {
+  margin: 2px 6px;
+  width: calc(100% - 12px);
+  border-radius: 8px !important;
+  background: #f1f5f9 !important;
+}
+
+#practice .practice-sidebar button:hover {
+  color: #0066cc !important;
+  background: #dbeafe !important;
+}
+
+#practice .practice-sidebar button[aria-expanded] {
+  background: #fff !important;
+}
+
+#practice .practice-sidebar button[aria-expanded]:hover {
+  color: #0066cc !important;
+  background: #eff6ff !important;
+}
+
+#practice .practice-sidebar button[aria-current="page"] {
+  color: #fff !important;
+  background: #163a63 !important;
+  box-shadow: none;
+}
+
+#practice .practice-sidebar button[aria-current="page"] span {
+  color: #fff !important;
+}
+
+#practice .lesson-content {
+  border-top: 4px solid #ffd700;
+  background: #fff !important;
+}
+
+#practice .lesson-content h1 {
+  color: #071d35 !important;
+}
+
+#practice .lesson-content > div > p:first-child {
+  color: #0066cc !important;
+}
+
+#practice .lesson-content li::marker {
+  color: #0066cc;
+}
+
+#practice .lesson-content .lesson-navigation {
+  border-color: #bfdbfe !important;
+}
+
+#practice .lesson-content .lesson-navigation button:not(:disabled) {
+  border-color: #163a63 !important;
+  background: #163a63 !important;
+}
+
+#practice .lesson-content .lesson-navigation button:not(:disabled):hover {
+  border-color: #234f7d !important;
+  background: #234f7d !important;
+}
+
+#practice .lesson-content .lesson-navigation button:focus-visible {
+  outline: 3px solid #f2b705;
+  outline-offset: 2px;
+}
