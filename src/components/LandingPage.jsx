@@ -656,10 +656,10 @@ export default function LandingPage() {
                       ? <div key={block.id} className="chapter-rich-text" style={{ lineHeight: activePackagePage.line_spacing || 1.5 }} dangerouslySetInnerHTML={{ __html: block.content }} />
                       : <div key={block.id} className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100"><div className="border-b border-slate-700 px-4 py-2 text-[10px] font-bold uppercase text-slate-400">{block.language}</div><pre className="overflow-x-auto p-4 text-sm"><code>{block.code}</code></pre>{block.output && <pre className="border-t border-slate-700 bg-black/30 p-4 text-xs text-emerald-300">{block.output}</pre>}</div>)}
                   </div>
-                  {(previousPackagePage || nextPackagePage) && <nav className="mt-10 flex items-center justify-between gap-3 border-t border-slate-300 pt-5" aria-label="Published lesson pagination">
-                    {previousPackagePage && <button type="button" onClick={() => selectPublishedPage(previousPackagePage)} className="rounded-lg border border-[#082f55] bg-[#082f55] px-4 py-2.5 text-left font-bold text-white hover:bg-[#0b416f]">← Previous: {previousPackagePage.heading}</button>}
-                    {nextPackagePage && <button type="button" onClick={() => selectPublishedPage(nextPackagePage)} className="ml-auto rounded-lg border border-[#082f55] bg-[#082f55] px-4 py-2.5 text-right font-bold text-white hover:bg-[#0b416f]">Next: {nextPackagePage.heading} →</button>}
-                  </nav>}
+                  <nav className="mt-10 flex items-center justify-between gap-3 border-t border-slate-300 pt-5" aria-label="Published lesson pagination">
+                    <button type="button" disabled={!previousPackagePage} onClick={() => previousPackagePage && selectPublishedPage(previousPackagePage)} className={`rounded-lg border px-4 py-2.5 text-left font-bold ${previousPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>← {previousPackagePage ? `Previous: ${previousPackagePage.heading}` : 'Previous'}</button>
+                    <button type="button" disabled={!nextPackagePage} onClick={() => nextPackagePage && selectPublishedPage(nextPackagePage)} className={`ml-auto rounded-lg border px-4 py-2.5 text-right font-bold ${nextPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>{nextPackagePage ? `Next: ${nextPackagePage.heading}` : 'Next'} →</button>
+                  </nav>
                 </section>
               )}
               {enrollment && !packageLoading && !activePackagePage && <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-slate-600">Select a published page from the left sidebar. If none appears, this language has no published lesson pages yet.</div>}
