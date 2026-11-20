@@ -400,7 +400,7 @@ export default function LandingPage() {
   const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
   const selectedLanguageChapters = packageChapters[selectedPackageLanguage] || [];
   const publishedLessonPages = selectedLanguageChapters.flatMap((chapter) => (
-    (packagePages[chapter.id] || []).map((page) => ({ ...page, heading: publishedPageHeading(page) })).filter((page) => page.heading)
+    (packagePages[chapter.id] || []).map((page) => ({ ...page, heading: publishedPageHeading(page) }))
   ));
   const activePackagePage = Object.values(packagePages).flat().find((page) => page.id === selectedPackagePage);
   const activePackagePageIndex = publishedLessonPages.findIndex((page) => page.id === selectedPackagePage);
@@ -434,7 +434,7 @@ export default function LandingPage() {
           setPackagePages(Object.fromEntries(languageResults.flatMap((result) => result.pageEntries)));
           setSelectedPackageLanguage(languages[0]?.id || '');
           setExpandedChapter(languageResults[0]?.chapters[0]?.id || '');
-          setSelectedPackagePage(languageResults[0]?.pageEntries.flatMap((entry) => entry[1]).find((page) => publishedPageHeading(page))?.id || '');
+          setSelectedPackagePage(languageResults[0]?.pageEntries.flatMap((entry) => entry[1])[0]?.id || '');
         }
       })
       .catch((requestError) => { if (!cancelled) setPackageError(requestError.message); })
@@ -465,7 +465,7 @@ export default function LandingPage() {
     const chapters = packageChapters[languageId] || [];
     setSelectedPackageLanguage(languageId);
     setExpandedChapter(chapters[0]?.id || '');
-    setSelectedPackagePage(chapters.flatMap((chapter) => packagePages[chapter.id] || []).find((page) => publishedPageHeading(page))?.id || '');
+    setSelectedPackagePage(chapters.flatMap((chapter) => packagePages[chapter.id] || [])[0]?.id || '');
   };
 
   const selectPublishedPage = (page) => {
@@ -657,8 +657,8 @@ export default function LandingPage() {
                       : <div key={block.id} className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100"><div className="border-b border-slate-700 px-4 py-2 text-[10px] font-bold uppercase text-slate-400">{block.language}</div><pre className="overflow-x-auto p-4 text-sm"><code>{block.code}</code></pre>{block.output && <pre className="border-t border-slate-700 bg-black/30 p-4 text-xs text-emerald-300">{block.output}</pre>}</div>)}
                   </div>
                   <nav className="mt-10 flex items-center justify-between gap-3 border-t border-slate-300 pt-5" aria-label="Published lesson pagination">
-                    <button type="button" disabled={!previousPackagePage} onClick={() => previousPackagePage && selectPublishedPage(previousPackagePage)} className={`rounded-lg border px-4 py-2.5 text-left font-bold ${previousPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>← {previousPackagePage ? `Previous: ${previousPackagePage.heading}` : 'Previous'}</button>
-                    <button type="button" disabled={!nextPackagePage} onClick={() => nextPackagePage && selectPublishedPage(nextPackagePage)} className={`ml-auto rounded-lg border px-4 py-2.5 text-right font-bold ${nextPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>{nextPackagePage ? `Next: ${nextPackagePage.heading}` : 'Next'} →</button>
+                    <button type="button" disabled={!previousPackagePage} onClick={() => previousPackagePage && selectPublishedPage(previousPackagePage)} className={`rounded-lg border px-4 py-2.5 text-left font-bold ${previousPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>← {previousPackagePage ? (previousPackagePage.heading ? `Previous: ${previousPackagePage.heading}` : 'Previous page') : 'Previous'}</button>
+                    <button type="button" disabled={!nextPackagePage} onClick={() => nextPackagePage && selectPublishedPage(nextPackagePage)} className={`ml-auto rounded-lg border px-4 py-2.5 text-right font-bold ${nextPackagePage ? 'border-[#082f55] bg-[#082f55] text-white hover:bg-[#0b416f]' : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'}`}>{nextPackagePage ? (nextPackagePage.heading ? `Next: ${nextPackagePage.heading}` : 'Next page') : 'Next'} →</button>
                   </nav>
                 </section>
               )}
