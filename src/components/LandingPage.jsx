@@ -45,11 +45,11 @@ const rtqfCurriculum = {
   },
 };
 
-const officeLearningPaths = [
+const ictLearningPaths = [
   {
     id: 'word',
+    category: 'office',
     name: 'Microsoft Word',
-    shortName: 'Word',
     badge: 'W',
     color: 'bg-blue-700',
     focus: 'Create clean, professional documents.',
@@ -58,8 +58,8 @@ const officeLearningPaths = [
   },
   {
     id: 'excel',
+    category: 'office',
     name: 'Microsoft Excel',
-    shortName: 'Excel',
     badge: 'X',
     color: 'bg-emerald-700',
     focus: 'Organize information and calculate results.',
@@ -68,13 +68,53 @@ const officeLearningPaths = [
   },
   {
     id: 'powerpoint',
+    category: 'office',
     name: 'Microsoft PowerPoint',
-    shortName: 'PowerPoint',
     badge: 'P',
     color: 'bg-orange-600',
     focus: 'Present ideas clearly and confidently.',
     topics: ['Design clear presentation slides', 'Add images, charts, and transitions', 'Prepare and deliver a presentation'],
     practice: 'Design and present a five-slide business or school project.',
+  },
+  {
+    id: 'web',
+    category: 'coding',
+    name: 'HTML & CSS',
+    badge: '</>',
+    color: 'bg-cyan-700',
+    focus: 'Build and style useful web pages.',
+    topics: ['Create pages with semantic HTML', 'Style layouts with CSS', 'Make pages work on phones and computers'],
+    practice: 'Build a responsive personal portfolio website.',
+  },
+  {
+    id: 'javascript',
+    category: 'coding',
+    name: 'JavaScript',
+    badge: 'JS',
+    color: 'bg-amber-500',
+    focus: 'Add logic and interaction to websites.',
+    topics: ['Use variables, conditions, and functions', 'Handle buttons, forms, and events', 'Build interactive browser projects'],
+    practice: 'Create and test an interactive quiz application.',
+  },
+  {
+    id: 'python',
+    category: 'coding',
+    name: 'Python',
+    badge: 'Py',
+    color: 'bg-indigo-700',
+    focus: 'Learn programming and automation clearly.',
+    topics: ['Write programs with input and output', 'Use conditions, loops, and functions', 'Solve practical problems with code'],
+    practice: 'Build a marks and attendance calculator.',
+  },
+  {
+    id: 'c',
+    category: 'coding',
+    name: 'C Programming',
+    badge: 'C',
+    color: 'bg-slate-700',
+    focus: 'Understand core programming concepts.',
+    topics: ['Compile and run C programs', 'Work with variables and user input', 'Organize solutions with functions'],
+    practice: 'Create a small command-line management program.',
   },
 ];
 
@@ -384,7 +424,7 @@ export default function LandingPage() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [selectedOfficePath, setSelectedOfficePath] = useState('word');
+  const [selectedLearningPath, setSelectedLearningPath] = useState('word');
   const [packageLanguages, setPackageLanguages] = useState([]);
   const [packageChapters, setPackageChapters] = useState({});
   const [packagePages, setPackagePages] = useState({});
@@ -405,7 +445,7 @@ export default function LandingPage() {
   const matchingCurriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
   const curriculumLanguages = matchingCurriculumLanguages.length ? matchingCurriculumLanguages : rtqfCurriculum[rtqfLevel].languages;
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
-  const selectedOfficeCourse = officeLearningPaths.find((course) => course.id === selectedOfficePath) || officeLearningPaths[0];
+  const selectedLearningCourse = ictLearningPaths.find((course) => course.id === selectedLearningPath) || ictLearningPaths[0];
   const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
   const activeConcept = activeLevel.concepts[selectedLesson.index];
   const activeStep = activeLevel.steps[selectedLesson.index];
@@ -560,7 +600,7 @@ export default function LandingPage() {
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl bg-[#082f55] px-3 py-2 text-white shadow-sm sm:px-4">
-                <div className="min-w-0"><strong className="block truncate text-sm">Enroll in ICT</strong><span className="block truncate text-[11px] text-blue-100">Learn Word, Excel &amp; PowerPoint through practice</span></div>
+                <div className="min-w-0"><strong className="block truncate text-sm">Enroll in practical ICT</strong><span className="block truncate text-[11px] text-blue-100">Microsoft Office, programming languages &amp; coding projects</span></div>
                 <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll</button>
               </div>}
               {enrollment && <>
@@ -662,16 +702,16 @@ export default function LandingPage() {
               })}
               {!enrollment && <div>
                 <div className="border-b border-blue-100 px-3 py-3">
-                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">What you will learn</p>
-                  <p className="mt-1 text-[11px] leading-4 text-slate-500">Choose an Office application to see its practical skills.</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">Choose what to learn</p>
+                  <p className="mt-1 text-[11px] leading-4 text-slate-500">Office skills and programming in one ICT program.</p>
                 </div>
-                <div className="grid gap-2 bg-white p-2">
-                  {officeLearningPaths.map((course) => <button type="button" key={course.id} onClick={() => { setSelectedOfficePath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedOfficePath === course.id} className="office-track-button flex items-center gap-3 p-3 text-left">
-                    <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg text-sm font-black text-white ${course.color}`}>{course.badge}</span>
-                    <span className="min-w-0"><strong className="block text-xs">{course.name}</strong><span className="mt-0.5 block text-[10px] leading-4 text-slate-500">{course.focus}</span></span>
-                  </button>)}
+                <div className="bg-white p-2">
+                  {[['office', 'Microsoft Office'], ['coding', 'Programming & coding']].map(([category, label]) => <div key={category} className="mb-2 last:mb-0"><p className="px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p><div className="grid gap-1">{ictLearningPaths.filter((course) => course.category === category).map((course) => <button type="button" key={course.id} onClick={() => { setSelectedLearningPath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedLearningPath === course.id} className="learning-track-button flex items-center gap-2.5 p-2.5 text-left">
+                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-black text-white ${course.color}`}>{course.badge}</span>
+                    <span className="min-w-0"><strong className="block text-xs">{course.name}</strong><span className="block truncate text-[9px] leading-4 text-slate-500">{course.focus}</span></span>
+                  </button>)}</div></div>)}
                 </div>
-                <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Practical ICT:</strong> learn by completing real office tasks.</div>
+                <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Learn by doing:</strong> complete real office tasks and coding projects.</div>
               </div>}
             </nav>
 
@@ -682,16 +722,16 @@ export default function LandingPage() {
                 <section className="guest-learning-page grid h-full min-h-0 gap-4 lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="flex min-h-0 flex-col justify-between overflow-hidden rounded-2xl bg-[#082f55] p-6 text-white shadow-lg sm:p-8">
                     <div>
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT and Microsoft Office</p>
-                      <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build the office skills used at school and work.</h1>
-                      <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Microsoft Word, Excel, and PowerPoint step by step. Every lesson ends with a practical task you can use in real life.</p>
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
+                      <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, Python, and C through guided lessons and practical projects.</p>
                     </div>
                     <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll in ICT</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
                   <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white p-5 shadow-sm sm:p-6">
-                    <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedOfficeCourse.color}`}>{selectedOfficeCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedOfficeCourse.name}</h2></div></div>
-                    <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-2 text-sm font-bold text-slate-700">{selectedOfficeCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-lg bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
-                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedOfficeCourse.practice}</p></div>
+                    <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedLearningCourse.color}`}>{selectedLearningCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedLearningCourse.name}</h2></div></div>
+                    <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-2 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-lg bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
+                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedLearningCourse.practice}</p></div>
                   </div>
                 </section>
               )}

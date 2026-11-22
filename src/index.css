@@ -332,18 +332,18 @@ textarea {
   background: #eff6ff !important;
 }
 
-#practice .practice-sidebar .office-track-button[aria-pressed="true"] {
+#practice .practice-sidebar .learning-track-button[aria-pressed="true"] {
   color: #082f55 !important;
   background: #dbeafe !important;
   box-shadow: inset 4px 0 0 #0066cc;
 }
 
-#practice .practice-sidebar .office-track-button[aria-pressed="true"] span {
+#practice .practice-sidebar .learning-track-button[aria-pressed="true"] span {
   color: inherit !important;
 }
 
-#practice .practice-sidebar .office-track-button > span:first-child,
-#practice .practice-sidebar .office-track-button[aria-pressed="true"] > span:first-child {
+#practice .practice-sidebar .learning-track-button > span:first-child,
+#practice .practice-sidebar .learning-track-button[aria-pressed="true"] > span:first-child {
   color: #fff !important;
 }
 
