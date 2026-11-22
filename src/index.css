@@ -338,6 +338,12 @@ textarea {
   box-shadow: inset 4px 0 0 #0066cc;
 }
 
+#practice .practice-sidebar .learning-track-button {
+  width: 100%;
+  margin: 0 !important;
+  border-radius: 6px !important;
+}
+
 #practice .practice-sidebar .learning-track-button[aria-pressed="true"] span {
   color: inherit !important;
 }

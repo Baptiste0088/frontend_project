@@ -97,6 +97,16 @@ const ictLearningPaths = [
     practice: 'Create and test an interactive quiz application.',
   },
   {
+    id: 'react',
+    category: 'coding',
+    name: 'React',
+    badge: 'R',
+    color: 'bg-sky-600',
+    focus: 'Build modern interactive web applications.',
+    topics: ['Create reusable React components', 'Manage data with props and state', 'Build responsive application interfaces'],
+    practice: 'Build an interactive learner dashboard with reusable components.',
+  },
+  {
     id: 'python',
     category: 'coding',
     name: 'Python',
@@ -600,7 +610,7 @@ export default function LandingPage() {
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl bg-[#082f55] px-3 py-2 text-white shadow-sm sm:px-4">
-                <div className="min-w-0"><strong className="block truncate text-sm">Enroll in practical ICT</strong><span className="block truncate text-[11px] text-blue-100">Microsoft Office, programming languages &amp; coding projects</span></div>
+                <div className="min-w-0"><strong className="block truncate text-sm">Enroll in practical ICT</strong><span className="block truncate text-[11px] text-blue-100">Microsoft Office, programming, React &amp; coding projects</span></div>
                 <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll</button>
               </div>}
               {enrollment && <>
@@ -706,7 +716,7 @@ export default function LandingPage() {
                   <p className="mt-1 text-[11px] leading-4 text-slate-500">Office skills and programming in one ICT program.</p>
                 </div>
                 <div className="bg-white p-2">
-                  {[['office', 'Microsoft Office'], ['coding', 'Programming & coding']].map(([category, label]) => <div key={category} className="mb-2 last:mb-0"><p className="px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p><div className="grid gap-1">{ictLearningPaths.filter((course) => course.category === category).map((course) => <button type="button" key={course.id} onClick={() => { setSelectedLearningPath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedLearningPath === course.id} className="learning-track-button flex items-center gap-2.5 p-2.5 text-left">
+                  {[['office', 'Microsoft Office'], ['coding', 'Programming & coding']].map(([category, label]) => <div key={category} className="mb-1 last:mb-0"><p className="px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p><div className="grid gap-0.5">{ictLearningPaths.filter((course) => course.category === category).map((course) => <button type="button" key={course.id} onClick={() => { setSelectedLearningPath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedLearningPath === course.id} className="learning-track-button flex items-center gap-2 p-2 text-left">
                     <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-black text-white ${course.color}`}>{course.badge}</span>
                     <span className="min-w-0"><strong className="block text-xs">{course.name}</strong><span className="block truncate text-[9px] leading-4 text-slate-500">{course.focus}</span></span>
                   </button>)}</div></div>)}
@@ -719,18 +729,18 @@ export default function LandingPage() {
           <article className={`lesson-content min-w-0 flex-1 bg-white p-4 text-left text-black sm:p-6 ${enrollment ? 'overflow-y-auto' : 'overflow-y-auto md:overflow-hidden'}`} aria-label="Lesson content">
             <div className={`mx-auto max-w-4xl ${!enrollment ? 'h-full min-h-0' : ''}`}>
               {!enrollment && (
-                <section className="guest-learning-page grid h-full min-h-0 gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+                <section className="guest-learning-page grid h-full min-h-0 gap-1.5 lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="flex min-h-0 flex-col justify-between overflow-hidden rounded-2xl bg-[#082f55] p-6 text-white shadow-lg sm:p-8">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
                       <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
-                      <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, Python, and C through guided lessons and practical projects.</p>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
                     </div>
                     <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll in ICT</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
                   <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white p-5 shadow-sm sm:p-6">
                     <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedLearningCourse.color}`}>{selectedLearningCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedLearningCourse.name}</h2></div></div>
-                    <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-2 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-lg bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
+                    <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-0.5 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-md bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
                     <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedLearningCourse.practice}</p></div>
                   </div>
                 </section>
