@@ -223,6 +223,25 @@ textarea {
   box-shadow: 0 0 0 3px #dbeafe;
 }
 
+#practice .office-invite {
+  border: 1px solid #0b4f86 !important;
+  background: #082f55 !important;
+}
+
+#practice .office-invite strong,
+#practice .office-invite span {
+  color: #fff !important;
+}
+
+#practice .office-invite span {
+  color: #bfdbfe !important;
+}
+
+#practice .office-invite button {
+  color: #082f55 !important;
+  background: #ffd700 !important;
+}
+
 @media (max-width: 767px) {
   #practice .profile-meta {
     display: grid;
@@ -311,6 +330,21 @@ textarea {
 #practice .practice-sidebar button[aria-expanded]:hover {
   color: #0066cc !important;
   background: #eff6ff !important;
+}
+
+#practice .practice-sidebar .office-track-button[aria-pressed="true"] {
+  color: #082f55 !important;
+  background: #dbeafe !important;
+  box-shadow: inset 4px 0 0 #0066cc;
+}
+
+#practice .practice-sidebar .office-track-button[aria-pressed="true"] span {
+  color: inherit !important;
+}
+
+#practice .practice-sidebar .office-track-button > span:first-child,
+#practice .practice-sidebar .office-track-button[aria-pressed="true"] > span:first-child {
+  color: #fff !important;
 }
 
 #practice .practice-sidebar button[aria-current="page"] {

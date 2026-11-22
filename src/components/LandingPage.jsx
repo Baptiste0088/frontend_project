@@ -45,49 +45,37 @@ const rtqfCurriculum = {
   },
 };
 
-const guestSampleLanguages = [
-  { name: 'HTML', chapters: [
-    { title: 'Build your first web page', practice: 'Create a personal introduction page with headings, images, and links.' },
-    { title: 'Forms and semantic HTML', practice: 'Build a student registration form with clear, accessible structure.' },
-    { title: 'Portfolio page project', practice: 'Combine your skills into a portfolio you can share.' },
-  ] },
-  { name: 'CSS', chapters: [
-    { title: 'Colors, fonts, and spacing', practice: 'Turn a plain page into a clean, branded design.' },
-    { title: 'Responsive page layouts', practice: 'Build layouts that work on phones, tablets, and computers.' },
-    { title: 'Design a landing page', practice: 'Create a professional landing page from a real brief.' },
-  ] },
-  { name: 'JavaScript', chapters: [
-    { title: 'Variables and decisions', practice: 'Build an interactive score and grading tool.' },
-    { title: 'Buttons, forms, and events', practice: 'Create a working task manager in the browser.' },
-    { title: 'Interactive application project', practice: 'Build and test a complete quiz application.' },
-  ] },
-  { name: 'Python', chapters: [
-    { title: 'Your first Python program', practice: 'Write and run a program that accepts user input.' },
-    { title: 'Conditions and loops', practice: 'Build a practical marks and attendance calculator.' },
-    { title: 'Python mini-project', practice: 'Create a small command-line management system.' },
-  ] },
-  { name: 'C', chapters: [
-    { title: 'Introduction to C', practice: 'Compile and run your first C program.' },
-    { title: 'Variables and input', practice: 'Build a program that calculates and displays results.' },
-    { title: 'Functions and problem solving', practice: 'Organize a real program into reusable functions.' },
-  ] },
-];
-
-const guestCodeSamples = {
-  HTML: '<h1>Hello, future developer!</h1>\n<p>I built my first web page.</p>',
-  CSS: '.project-card {\n  color: #082f55;\n  border: 2px solid #ffd700;\n}',
-  JavaScript: "const learner = 'You';\nconsole.log(`${learner} can build software!`);",
-  Python: "name = input('Your name: ')\nprint(f'Welcome, {name}!')",
-  C: '#include <stdio.h>\n\nint main(void) {\n  printf("Hello, developer!\\n");\n  return 0;\n}',
-};
-
-const guestFrameworks = [
-  { name: 'React', focus: 'Interactive web applications', color: 'bg-cyan-100 text-cyan-800' },
-  { name: 'Node.js', focus: 'Backend APIs and services', color: 'bg-green-100 text-green-800' },
-  { name: 'Python', focus: 'Automation, data, and AI', color: 'bg-blue-100 text-blue-800' },
-  { name: 'Django', focus: 'Complete Python web systems', color: 'bg-emerald-100 text-emerald-800' },
-  { name: 'Laravel', focus: 'Modern PHP applications', color: 'bg-red-100 text-red-800' },
-  { name: 'Flutter', focus: 'Android and iOS applications', color: 'bg-sky-100 text-sky-800' },
+const officeLearningPaths = [
+  {
+    id: 'word',
+    name: 'Microsoft Word',
+    shortName: 'Word',
+    badge: 'W',
+    color: 'bg-blue-700',
+    focus: 'Create clean, professional documents.',
+    topics: ['Type and format documents', 'Use tables, pictures, and page layouts', 'Create a CV, letter, and report'],
+    practice: 'Prepare a professional job application with a cover letter and CV.',
+  },
+  {
+    id: 'excel',
+    name: 'Microsoft Excel',
+    shortName: 'Excel',
+    badge: 'X',
+    color: 'bg-emerald-700',
+    focus: 'Organize information and calculate results.',
+    topics: ['Enter and format spreadsheet data', 'Use formulas, totals, and functions', 'Build useful charts and reports'],
+    practice: 'Build a monthly budget that calculates totals and displays a chart.',
+  },
+  {
+    id: 'powerpoint',
+    name: 'Microsoft PowerPoint',
+    shortName: 'PowerPoint',
+    badge: 'P',
+    color: 'bg-orange-600',
+    focus: 'Present ideas clearly and confidently.',
+    topics: ['Design clear presentation slides', 'Add images, charts, and transitions', 'Prepare and deliver a presentation'],
+    practice: 'Design and present a five-slide business or school project.',
+  },
 ];
 
 function curriculumTradeKey(enrollment) {
@@ -396,6 +384,7 @@ export default function LandingPage() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [selectedOfficePath, setSelectedOfficePath] = useState('word');
   const [packageLanguages, setPackageLanguages] = useState([]);
   const [packageChapters, setPackageChapters] = useState({});
   const [packagePages, setPackagePages] = useState({});
@@ -416,8 +405,7 @@ export default function LandingPage() {
   const matchingCurriculumLanguages = rtqfCurriculum[rtqfLevel].languages.filter((language) => curriculumTrade === 'ALL' || language.trades.includes(curriculumTrade));
   const curriculumLanguages = matchingCurriculumLanguages.length ? matchingCurriculumLanguages : rtqfCurriculum[rtqfLevel].languages;
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
-  const selectedGuestLanguage = guestSampleLanguages.find((language) => language.name === curriculumLanguage) || guestSampleLanguages[0];
-  const selectedGuestChapter = selectedGuestLanguage.chapters[0];
+  const selectedOfficeCourse = officeLearningPaths.find((course) => course.id === selectedOfficePath) || officeLearningPaths[0];
   const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
   const activeConcept = activeLevel.concepts[selectedLesson.index];
   const activeStep = activeLevel.steps[selectedLesson.index];
@@ -571,7 +559,10 @@ export default function LandingPage() {
             </div>
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
-              {!enrollment && <button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-5 py-2 font-black text-[#082f55] shadow-sm hover:bg-[#f5ca00]">Start Learning</button>}
+              {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl bg-[#082f55] px-3 py-2 text-white shadow-sm sm:px-4">
+                <div className="min-w-0"><strong className="block truncate text-sm">Enroll in ICT</strong><span className="block truncate text-[11px] text-blue-100">Learn Word, Excel &amp; PowerPoint through practice</span></div>
+                <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll</button>
+              </div>}
               {enrollment && <>
               <div className="profile-meta-card progress-card hidden sm:block">
                 <span>Progress</span>
@@ -670,32 +661,37 @@ export default function LandingPage() {
                 );
               })}
               {!enrollment && <div>
-                <div className="grid gap-2 bg-white p-3">
-                  {guestFrameworks.map((framework) => <div key={framework.name} className="rounded-lg border border-slate-200 p-3"><div className="flex items-center gap-2"><span className={`rounded px-2 py-1 text-[10px] font-black ${framework.color}`}>{framework.name}</span></div><p className="mt-2 text-[11px] leading-4 text-slate-600">{framework.focus}</p></div>)}
+                <div className="border-b border-blue-100 px-3 py-3">
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">What you will learn</p>
+                  <p className="mt-1 text-[11px] leading-4 text-slate-500">Choose an Office application to see its practical skills.</p>
                 </div>
-                <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Real practice:</strong> every chapter includes code you can edit, run, and test.</div>
+                <div className="grid gap-2 bg-white p-2">
+                  {officeLearningPaths.map((course) => <button type="button" key={course.id} onClick={() => { setSelectedOfficePath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedOfficePath === course.id} className="office-track-button flex items-center gap-3 p-3 text-left">
+                    <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg text-sm font-black text-white ${course.color}`}>{course.badge}</span>
+                    <span className="min-w-0"><strong className="block text-xs">{course.name}</strong><span className="mt-0.5 block text-[10px] leading-4 text-slate-500">{course.focus}</span></span>
+                  </button>)}
+                </div>
+                <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Practical ICT:</strong> learn by completing real office tasks.</div>
               </div>}
             </nav>
 
           </aside>
-          <article className="lesson-content min-w-0 flex-1 overflow-y-auto bg-white p-5 text-left text-black sm:p-8" aria-label="Lesson content">
-            <div className="mx-auto max-w-4xl">
+          <article className={`lesson-content min-w-0 flex-1 bg-white p-4 text-left text-black sm:p-6 ${enrollment ? 'overflow-y-auto' : 'overflow-y-auto md:overflow-hidden'}`} aria-label="Lesson content">
+            <div className={`mx-auto max-w-4xl ${!enrollment ? 'h-full min-h-0' : ''}`}>
               {!enrollment && (
-                <section className="guest-learning-page">
-                  <div className="overflow-hidden rounded-2xl bg-[#082f55] p-6 text-white shadow-lg sm:p-9">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical software development</p>
-                    <h1 className="mt-3 max-w-2xl text-3xl font-black leading-tight sm:text-4xl">Learn programming by building real software.</h1>
-                    <p className="mt-4 max-w-2xl text-base leading-7 text-blue-100">Global Coding Academy takes you from your first line of code to websites, applications, and software projects you can demonstrate. Every chapter combines a clear lesson with real practice.</p>
-                    <div className="mt-7 flex flex-wrap gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Start learning</button><span className="self-center text-sm font-bold text-blue-100">No experience required</span></div>
+                <section className="guest-learning-page grid h-full min-h-0 gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+                  <div className="flex min-h-0 flex-col justify-between overflow-hidden rounded-2xl bg-[#082f55] p-6 text-white shadow-lg sm:p-8">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT and Microsoft Office</p>
+                      <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build the office skills used at school and work.</h1>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Microsoft Word, Excel, and PowerPoint step by step. Every lesson ends with a practical task you can use in real life.</p>
+                    </div>
+                    <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll in ICT</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
-
-                  <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                    {[['01', 'Learn clearly', 'Short lessons explain each idea in plain language.'], ['02', 'Write real code', 'Practice inside projects instead of only reading theory.'], ['03', 'Run and improve', 'Test your code, see results, fix mistakes, and build confidence.']].map(([number, title, description]) => <div key={number} className="rounded-xl border border-blue-100 bg-blue-50/60 p-5"><span className="text-xs font-black text-blue-600">{number}</span><h2 className="mt-2 text-lg font-black text-[#082f55]">{title}</h2><p className="mt-2 leading-6 text-slate-600">{description}</p></div>)}
-                  </div>
-
-                  <div className="mt-6 grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[1fr_1.05fr]">
-                    <div className="p-6 sm:p-8"><p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Sample from {selectedGuestLanguage.name}</p><h2 className="mt-3 text-2xl font-black text-[#082f55]">{selectedGuestChapter.title}</h2><p className="mt-4 text-base leading-7 text-slate-600">{selectedGuestChapter.practice}</p><ul className="mt-6 space-y-3 text-sm font-bold text-slate-700"><li>✓ Follow a guided example</li><li>✓ Edit the code yourself</li><li>✓ Complete a practical challenge</li></ul><button type="button" onClick={() => setShowEnrollment(true)} className="mt-7 rounded-lg border-2 border-[#082f55] px-5 py-2.5 font-black text-[#082f55] hover:bg-[#082f55] hover:text-white">Enroll to practise</button></div>
-                    <div className="bg-slate-950 p-5 text-slate-100 sm:p-7"><div className="mb-4 flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-wider text-slate-400">{selectedGuestLanguage.name} preview</span><span className="flex gap-1.5" aria-hidden="true"><i className="h-2.5 w-2.5 rounded-full bg-red-400" /><i className="h-2.5 w-2.5 rounded-full bg-amber-300" /><i className="h-2.5 w-2.5 rounded-full bg-emerald-400" /></span></div><pre className="min-h-44 overflow-x-auto rounded-lg bg-black/35 p-4 font-mono text-sm leading-7 text-emerald-300"><code>{guestCodeSamples[selectedGuestLanguage.name]}</code></pre><div className="mt-4 rounded-lg border border-slate-700 bg-slate-900 p-4"><span className="text-[10px] font-bold uppercase text-slate-500">Practice result</span><p className="mt-2 font-mono text-sm text-white">Your project comes to life here.</p></div></div>
+                  <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedOfficeCourse.color}`}>{selectedOfficeCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedOfficeCourse.name}</h2></div></div>
+                    <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-2 text-sm font-bold text-slate-700">{selectedOfficeCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-lg bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
+                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedOfficeCourse.practice}</p></div>
                   </div>
                 </section>
               )}
