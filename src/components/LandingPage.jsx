@@ -608,15 +608,18 @@ export default function LandingPage() {
                 <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
-            <div className="language-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-white px-2.5 py-2 shadow-sm lg:mx-3 lg:flex-1">
+            <div className={`language-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border px-2.5 py-2 shadow-sm lg:mx-3 lg:flex-1 ${enrollment ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-white' : 'border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] shadow-blue-950/20'}`}>
               {enrollment && <span className="shrink-0 rounded-lg bg-[#082f55] px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider text-white">Languages</span>}
-              <div className={`language-row flex min-w-0 flex-1 items-center gap-2 overflow-x-auto ${enrollment ? '' : 'justify-center'}`}>
+              <div className={`${enrollment ? 'language-row' : 'learning-track-switch'} flex min-w-0 flex-1 items-center gap-2 overflow-x-auto ${enrollment ? '' : 'justify-center'}`}>
                 {enrollment && packageLoading && <span className="px-2 text-[11px] text-slate-500">Loading…</span>}
                 {enrollment && packageLanguages.map((language) => {
                   const selected = selectedPackageLanguage === language.id;
                   return <button type="button" key={language.id || language.name} onClick={() => selectStudentLanguage(language.id)} aria-pressed={selected} className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${selected ? 'bg-[#ffd700] text-[#082f55] shadow-sm' : 'bg-white text-slate-600 hover:bg-blue-100 hover:text-blue-800'}`}>{language.name}</button>;
                 })}
-                {!enrollment && <><span className="shrink-0 rounded-full bg-[#082f55] px-5 py-2 text-xs font-black tracking-wide text-white shadow-md ring-2 ring-blue-100">Learn ICT</span><span className="shrink-0 rounded-full bg-[#ffd700] px-5 py-2 text-xs font-black tracking-wide text-[#082f55] shadow-md ring-2 ring-amber-100">Coding</span></>}
+                {!enrollment && <>
+                  <button type="button" onClick={() => setSelectedLearningPath('word')} aria-pressed={selectedLearningCourse.category === 'office'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'office' ? 'bg-white text-[#082f55] ring-2 ring-[#ffd700]' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md text-sm ${selectedLearningCourse.category === 'office' ? 'bg-blue-100 text-blue-700' : 'bg-white/15'}`}>✦</span>Learn ICT</button>
+                  <button type="button" onClick={() => setSelectedLearningPath('web')} aria-pressed={selectedLearningCourse.category === 'coding'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'coding' ? 'bg-[#ffd700] text-[#082f55] ring-2 ring-white' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md font-mono text-[10px] ${selectedLearningCourse.category === 'coding' ? 'bg-[#082f55] text-white' : 'bg-white/15'}`}>&lt;/&gt;</span>Coding</button>
+                </>}
               </div>
             </div>
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
