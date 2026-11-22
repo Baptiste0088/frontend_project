@@ -274,6 +274,17 @@ textarea {
   background: #082f55 !important;
 }
 
+#practice .practice-header .learning-track-switch .learning-track-label,
+#practice .practice-header .learning-track-switch button[aria-pressed="true"] .learning-track-label {
+  display: inline-block !important;
+  width: auto !important;
+  color: inherit !important;
+  background: transparent !important;
+  white-space: nowrap;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 #practice .header-topic-strip strong {
   color: #0066cc !important;
 }
