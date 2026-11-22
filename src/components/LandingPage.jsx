@@ -725,10 +725,15 @@ export default function LandingPage() {
               {!enrollment && (
                 <section className="guest-learning-page grid h-full min-h-0 gap-0 lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="flex min-h-0 flex-col justify-between overflow-hidden bg-[#082f55] p-5 text-white sm:p-7">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
-                      <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
-                      <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
+                    <div className="grid grid-cols-[minmax(0,1fr)_6.5rem] items-center gap-4 sm:grid-cols-[minmax(0,1fr)_9rem] sm:gap-6">
+                      <div className="min-w-0">
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
+                        <h1 className="mt-3 max-w-xl text-2xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
+                        <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
+                      </div>
+                      <div className="aspect-square overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-xl shadow-blue-950/30 sm:p-3">
+                        <img src={logo} alt="Global Coding Academy" className="h-full w-full object-contain" />
+                      </div>
                     </div>
                     <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">{enrollmentLabel}</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
