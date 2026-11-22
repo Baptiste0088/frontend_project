@@ -272,6 +272,11 @@ textarea {
     grid-column: 1 / -1;
   }
 
+  #practice .office-invite {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
   #practice .profile-card {
     grid-column: 1 / -1;
     justify-content: flex-end;
@@ -284,6 +289,16 @@ textarea {
 
   #practice .lesson-content:not(.guest-lesson-content) {
     padding: 16px;
+  }
+}
+
+@media (max-width: 479px) {
+  #practice .office-invite {
+    flex-wrap: wrap;
+  }
+
+  #practice .office-invite button {
+    width: 100%;
   }
 }
 
