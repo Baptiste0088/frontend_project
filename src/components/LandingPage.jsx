@@ -458,6 +458,7 @@ export default function LandingPage() {
   const curriculumLanguages = matchingCurriculumLanguages.length ? matchingCurriculumLanguages : rtqfCurriculum[rtqfLevel].languages;
   const selectedCurriculumLanguage = curriculumLanguages.find((language) => language.name === curriculumLanguage) || curriculumLanguages[0];
   const selectedLearningCourse = ictLearningPaths.find((course) => course.id === selectedLearningPath) || ictLearningPaths[0];
+  const enrollmentLabel = selectedLearningCourse.category === 'coding' ? 'Enroll in Coding' : 'Enroll in ICT';
   const activeLevel = levels.find((level) => level.id === selectedLesson.levelId) || levels[0];
   const activeConcept = activeLevel.concepts[selectedLesson.index];
   const activeStep = activeLevel.steps[selectedLesson.index];
@@ -612,8 +613,8 @@ export default function LandingPage() {
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl bg-[#082f55] px-3 py-2 text-white shadow-sm sm:px-4">
-                <div className="min-w-0"><strong className="block truncate text-sm">Enroll in practical ICT</strong><span className="block truncate text-[11px] text-blue-100">Microsoft Office, programming, React &amp; coding projects</span></div>
-                <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll</button>
+                <div className="min-w-0"><strong className="block truncate text-sm">{enrollmentLabel}</strong><span className="block truncate text-[11px] text-blue-100">Microsoft Office, programming, React &amp; coding projects</span></div>
+                <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] hover:bg-[#f5ca00]">{enrollmentLabel}</button>
               </div>}
               {enrollment && <>
               <div className="profile-meta-card progress-card hidden sm:block">
@@ -742,12 +743,12 @@ export default function LandingPage() {
                       <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
                       <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
                     </div>
-                    <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll in ICT</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
+                    <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">{enrollmentLabel}</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
                   <div className="flex min-h-0 flex-col overflow-hidden border-l border-blue-100 bg-white p-5 sm:p-6">
                     <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedLearningCourse.color}`}>{selectedLearningCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedLearningCourse.name}</h2></div></div>
                     <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-0.5 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-md bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
-                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedLearningCourse.practice}</p></div>
+                    <div className="mt-4 flex items-end gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4"><div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedLearningCourse.practice}</p></div><button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#082f55] px-4 py-2.5 text-xs font-black text-white hover:bg-[#0b416f]">Start learning</button></div>
                   </div>
                 </section>
               )}
