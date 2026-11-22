@@ -610,6 +610,16 @@ export default function LandingPage() {
                 <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
+            {enrollment && <div className="language-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-white px-2.5 py-2 shadow-sm lg:mx-3 lg:flex-1">
+              <span className="shrink-0 rounded-lg bg-[#082f55] px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider text-white">Languages</span>
+              <div className="language-row flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto">
+                {packageLoading && <span className="px-2 text-[11px] text-slate-500">Loading…</span>}
+                {packageLanguages.map((language) => {
+                  const selected = selectedPackageLanguage === language.id;
+                  return <button type="button" key={language.id || language.name} onClick={() => selectStudentLanguage(language.id)} aria-pressed={selected} className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${selected ? 'bg-[#ffd700] text-[#082f55] shadow-sm' : 'bg-white text-slate-600 hover:bg-blue-100 hover:text-blue-800'}`}>{language.name}</button>;
+                })}
+              </div>
+            </div>}
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl bg-[#082f55] px-3 py-2 text-white shadow-sm sm:px-4">
@@ -617,22 +627,22 @@ export default function LandingPage() {
                 <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] hover:bg-[#f5ca00]">{enrollmentLabel}</button>
               </div>}
               {enrollment && <>
-              <div className="profile-meta-card progress-card hidden sm:block">
+              <div className="profile-meta-card progress-card hidden xl:block">
                 <span>Progress</span>
                 <strong>{displayedProgress}%</strong>
                 <span className="progress-track" aria-hidden="true">
                   <span style={{ width: `${displayedProgress}%` }} />
                 </span>
               </div>
-              <div className="profile-meta-card hidden sm:block">
+              <div className="profile-meta-card hidden 2xl:block">
                 <span>Occupation</span>
                 <strong>{occupation}</strong>
               </div>
-              <div className="profile-meta-card hidden sm:block">
+              <div className="profile-meta-card hidden xl:block">
                 <span>Level</span>
                 <strong>{enrolledLevel}</strong>
               </div>
-              <div className="profile-meta-card trade-card hidden sm:block">
+              <div className="profile-meta-card trade-card hidden 2xl:block">
                 <span>Trade</span>
                 <strong>{enrolledTrade}</strong>
               </div>
@@ -652,28 +662,6 @@ export default function LandingPage() {
           {!enrollment && <div className="header-topic-strip mt-1 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap border-t border-blue-100 pt-1">
             <strong className="shrink-0 px-1 text-[9px] uppercase tracking-[0.12em] text-blue-700">Topics</strong>
             {headerTopics.map((topic) => <span key={topic} className="shrink-0 rounded bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-[#082f55]">{topic}</span>)}
-          </div>}
-          {enrollment && <div className="mt-2">
-            <div className="language-row flex min-w-0 items-center gap-2 overflow-x-auto px-2 py-1">
-              <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
-              <div className="flex min-w-0 flex-1 items-center gap-1.5">
-                {enrollment && packageLoading && <span className="text-[11px] text-slate-500">Loading…</span>}
-                {packageLanguages.map((language) => {
-                  const selected = selectedPackageLanguage === language.id;
-                  return (
-                    <button
-                      type="button"
-                      key={language.id || language.name}
-                      onClick={() => selectStudentLanguage(language.id)}
-                      aria-pressed={selected}
-                      className={`shrink-0 rounded px-2.5 py-1 text-[11px] font-bold transition ${selected ? (darkMode ? 'bg-white text-slate-950' : 'bg-slate-900 text-white') : (darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}
-                    >
-                      {language.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>}
         </section>
 
