@@ -131,14 +131,16 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
         return;
       }
       const payload = await apiRequest('/api/enrollments/login', { method: 'POST', body: JSON.stringify(loginForm) });
-      if (payload.requires_enrollment && payload.user?.uuid) {
-        setForm({ ...initialForm, user_uuid: payload.user.uuid, full_name: payload.user.full_name || '' });
+      const needsEnrollment = payload.requires_enrollment || (payload.user && (!payload.user.occupation_id || !payload.user.level_id || !payload.user.trade_id));
+      if (needsEnrollment && payload.user?.uuid) {
+        const verifiedName = payload.user.full_name || [payload.user.first_name, payload.user.last_name].filter((value) => value && value !== '-').join(' ');
+        setForm({ ...initialForm, user_uuid: payload.user.uuid, full_name: verifiedName });
         setMode('enroll');
         setStep(0);
         setLoginStep(0);
         return;
       }
-      if (!payload.user?.occupation_id || !payload.user?.level_id || !payload.user?.trade_id) throw new Error('This account has no learning enrollment. Please use Enroll first.');
+      if (!payload.user) throw new Error('The learner account could not be loaded. Please try again.');
       const enrollment = {
         user_uuid: payload.user.uuid,
         full_name: [payload.user.first_name, payload.user.last_name].filter((value) => value && value !== '-').join(' '),
