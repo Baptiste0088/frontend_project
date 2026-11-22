@@ -257,16 +257,20 @@ textarea {
 }
 
 #practice .practice-header .learning-track-switch button {
-  color: #fff !important;
+  color: #082f55 !important;
+  background: #fff !important;
+  border: 1px solid #bfdbfe !important;
 }
 
 #practice .practice-header .learning-track-switch button[aria-pressed="true"] {
   color: #082f55 !important;
+  background: #ffd700 !important;
+  border-color: #fff !important;
 }
 
 #practice .practice-header .learning-track-switch button span {
-  color: inherit !important;
-  background: rgb(255 255 255 / 15%) !important;
+  color: #082f55 !important;
+  background: #dbeafe !important;
 }
 
 #practice .practice-header .learning-track-switch button[aria-pressed="true"] span {
