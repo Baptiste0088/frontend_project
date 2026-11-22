@@ -712,7 +712,7 @@ export default function LandingPage() {
                 <div className="bg-white p-0.5">
                   {[['office', 'Microsoft Office'], ['coding', 'Programming & coding']].map(([category, label]) => <div key={category} className="mb-1 last:mb-0"><p className="px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p><div className="grid gap-0.5">{ictLearningPaths.filter((course) => course.category === category).map((course) => <button type="button" key={course.id} onClick={() => { setSelectedLearningPath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedLearningPath === course.id} className="learning-track-button flex items-center gap-2 p-2 text-left">
                     <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-black text-white ${course.color}`}>{course.badge}</span>
-                    <span className="min-w-0"><strong className="block text-xs">{course.name}</strong><span className="block truncate text-[9px] leading-4 text-slate-500">{course.focus}</span></span>
+                    <strong className="min-w-0 truncate text-xs">{course.name}</strong>
                   </button>)}</div></div>)}
                 </div>
                 <div className="m-0.5 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Learn by doing:</strong> complete real office tasks and coding projects.</div>
