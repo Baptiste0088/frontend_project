@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../lib/api';
 
 const initialForm = {
   learner_type: '', full_name: '', student_id_type: 'SDMS', student_id_number: '', student_id_confirmation: '',
-  occupation_id: '', level_id: '', trade_id: '',
+  occupation_id: '', level_id: '', trade_id: '', user_uuid: '',
 };
 
 const enrollmentSteps = ['Learner type', 'Full name', 'Occupation', 'Level', 'Trade', 'Login number', 'Confirm number'];
@@ -131,6 +131,13 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
         return;
       }
       const payload = await apiRequest('/api/enrollments/login', { method: 'POST', body: JSON.stringify(loginForm) });
+      if (payload.requires_enrollment && payload.user?.uuid) {
+        setForm({ ...initialForm, user_uuid: payload.user.uuid, full_name: payload.user.full_name || '' });
+        setMode('enroll');
+        setStep(0);
+        setLoginStep(0);
+        return;
+      }
       if (!payload.user?.occupation_id || !payload.user?.level_id || !payload.user?.trade_id) throw new Error('This account has no learning enrollment. Please use Enroll first.');
       const enrollment = {
         user_uuid: payload.user.uuid,
