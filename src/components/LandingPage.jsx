@@ -608,7 +608,7 @@ export default function LandingPage() {
                 <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
-            <div className={`language-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border px-2.5 py-2 shadow-sm lg:mx-3 lg:flex-1 ${enrollment ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-white' : 'border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] shadow-blue-950/20'}`}>
+            <div className={`language-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border px-2.5 py-2 shadow-sm lg:mx-3 lg:flex-1 ${enrollment ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-white' : 'guest-track-center border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] shadow-blue-950/20'}`}>
               {enrollment && <span className="shrink-0 rounded-lg bg-[#082f55] px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider text-white">Languages</span>}
               <div className={`${enrollment ? 'language-row' : 'learning-track-switch'} flex min-w-0 flex-1 items-center gap-2 overflow-x-auto ${enrollment ? '' : 'justify-center'}`}>
                 {enrollment && packageLoading && <span className="px-2 text-[11px] text-slate-500">Loading…</span>}

@@ -223,23 +223,50 @@ textarea {
   box-shadow: 0 0 0 3px #dbeafe;
 }
 
-#practice .office-invite {
+#practice .practice-header .office-invite {
   border: 1px solid #0b4f86 !important;
   background: #082f55 !important;
 }
 
-#practice .office-invite strong,
-#practice .office-invite span {
+#practice .practice-header .office-invite strong {
   color: #fff !important;
 }
 
-#practice .office-invite span {
-  color: #bfdbfe !important;
+#practice .practice-header .office-invite > span {
+  color: #ffd700 !important;
+  background: rgb(255 255 255 / 12%) !important;
 }
 
-#practice .office-invite button {
+#practice .practice-header .office-invite > div > span {
+  color: #ffd700 !important;
+}
+
+#practice .practice-header .office-invite button {
   color: #082f55 !important;
   background: #ffd700 !important;
+}
+
+#practice .practice-header .guest-track-center {
+  border-color: #1d5d91 !important;
+  background: linear-gradient(110deg, #061f3a 0%, #082f55 52%, #0b416f 100%) !important;
+}
+
+#practice .practice-header .learning-track-switch button {
+  color: #fff !important;
+}
+
+#practice .practice-header .learning-track-switch button[aria-pressed="true"] {
+  color: #082f55 !important;
+}
+
+#practice .practice-header .learning-track-switch button span {
+  color: inherit !important;
+  background: rgb(255 255 255 / 15%) !important;
+}
+
+#practice .practice-header .learning-track-switch button[aria-pressed="true"] span {
+  color: #fff !important;
+  background: #082f55 !important;
 }
 
 #practice .header-topic-strip strong {
