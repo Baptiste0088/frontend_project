@@ -128,6 +128,8 @@ const ictLearningPaths = [
   },
 ];
 
+const headerTopics = ['Word', 'Excel', 'PowerPoint', 'HTML & CSS', 'JavaScript', 'React', 'Python', 'C'];
+
 function curriculumTradeKey(enrollment) {
   const value = `${enrollment?.trade_code || ''} ${enrollment?.trade_name || ''}`.toLowerCase();
   if (value.includes('swd') || value.includes('software')) return 'SWD';
@@ -646,6 +648,10 @@ export default function LandingPage() {
               </>}
             </div>
           </div>
+          {!enrollment && <div className="header-topic-strip mt-1 flex min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap border-t border-blue-100 pt-1">
+            <strong className="shrink-0 px-1 text-[9px] uppercase tracking-[0.12em] text-blue-700">Topics</strong>
+            {headerTopics.map((topic) => <span key={topic} className="shrink-0 rounded bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-[#082f55]">{topic}</span>)}
+          </div>}
           {enrollment && <div className="mt-2">
             <div className="language-row flex min-w-0 items-center gap-2 overflow-x-auto px-2 py-1">
               <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-slate-400">Language</span>
@@ -715,22 +721,22 @@ export default function LandingPage() {
                   <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">Choose what to learn</p>
                   <p className="mt-1 text-[11px] leading-4 text-slate-500">Office skills and programming in one ICT program.</p>
                 </div>
-                <div className="bg-white p-2">
+                <div className="bg-white p-0.5">
                   {[['office', 'Microsoft Office'], ['coding', 'Programming & coding']].map(([category, label]) => <div key={category} className="mb-1 last:mb-0"><p className="px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p><div className="grid gap-0.5">{ictLearningPaths.filter((course) => course.category === category).map((course) => <button type="button" key={course.id} onClick={() => { setSelectedLearningPath(course.id); setShowMobileSidebar(false); }} aria-pressed={selectedLearningPath === course.id} className="learning-track-button flex items-center gap-2 p-2 text-left">
                     <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-black text-white ${course.color}`}>{course.badge}</span>
                     <span className="min-w-0"><strong className="block text-xs">{course.name}</strong><span className="block truncate text-[9px] leading-4 text-slate-500">{course.focus}</span></span>
                   </button>)}</div></div>)}
                 </div>
-                <div className="m-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Learn by doing:</strong> complete real office tasks and coding projects.</div>
+                <div className="m-0.5 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] leading-5 text-slate-700"><strong className="text-[#082f55]">Learn by doing:</strong> complete real office tasks and coding projects.</div>
               </div>}
             </nav>
 
           </aside>
-          <article className={`lesson-content min-w-0 flex-1 bg-white p-4 text-left text-black sm:p-6 ${enrollment ? 'overflow-y-auto' : 'overflow-y-auto md:overflow-hidden'}`} aria-label="Lesson content">
-            <div className={`mx-auto max-w-4xl ${!enrollment ? 'h-full min-h-0' : ''}`}>
+          <article className={`lesson-content min-w-0 flex-1 bg-white text-left text-black ${enrollment ? 'overflow-y-auto p-4 sm:p-6' : 'guest-lesson-content overflow-y-auto p-0 md:overflow-hidden'}`} aria-label="Lesson content">
+            <div className={enrollment ? 'mx-auto max-w-4xl' : 'h-full min-h-0 max-w-none'}>
               {!enrollment && (
-                <section className="guest-learning-page grid h-full min-h-0 gap-1.5 lg:grid-cols-[1.05fr_0.95fr]">
-                  <div className="flex min-h-0 flex-col justify-between overflow-hidden rounded-2xl bg-[#082f55] p-6 text-white shadow-lg sm:p-8">
+                <section className="guest-learning-page grid h-full min-h-0 gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+                  <div className="flex min-h-0 flex-col justify-between overflow-hidden bg-[#082f55] p-5 text-white sm:p-7">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
                       <h1 className="mt-3 max-w-xl text-3xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
@@ -738,7 +744,7 @@ export default function LandingPage() {
                     </div>
                     <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">Enroll in ICT</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
-                  <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white p-5 shadow-sm sm:p-6">
+                  <div className="flex min-h-0 flex-col overflow-hidden border-l border-blue-100 bg-white p-5 sm:p-6">
                     <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedLearningCourse.color}`}>{selectedLearningCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedLearningCourse.name}</h2></div></div>
                     <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-0.5 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-md bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
                     <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedLearningCourse.practice}</p></div>

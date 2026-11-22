@@ -242,6 +242,15 @@ textarea {
   background: #ffd700 !important;
 }
 
+#practice .header-topic-strip strong {
+  color: #0066cc !important;
+}
+
+#practice .header-topic-strip span {
+  color: #082f55 !important;
+  background: #eff6ff !important;
+}
+
 @media (max-width: 767px) {
   #practice .profile-meta {
     display: grid;
@@ -273,7 +282,7 @@ textarea {
     overflow-y: auto;
   }
 
-  #practice .lesson-content {
+  #practice .lesson-content:not(.guest-lesson-content) {
     padding: 16px;
   }
 }
