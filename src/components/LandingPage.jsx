@@ -725,7 +725,7 @@ export default function LandingPage() {
               {!enrollment && (
                 <section className="guest-learning-page grid h-full min-h-0 gap-0 lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="flex min-h-0 flex-col justify-between overflow-hidden bg-[#082f55] p-5 text-white sm:p-7">
-                    <div className="grid grid-cols-[minmax(0,1fr)_6.5rem] items-center gap-4 sm:grid-cols-[minmax(0,1fr)_9rem] sm:gap-6">
+                    <div className="grid grid-cols-[minmax(0,1fr)_8rem] items-center gap-4 sm:grid-cols-[minmax(0,1fr)_12rem] sm:gap-6 xl:grid-cols-[minmax(0,1fr)_13rem]">
                       <div className="min-w-0">
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
                         <h1 className="mt-3 max-w-xl text-2xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
