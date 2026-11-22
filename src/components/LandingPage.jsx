@@ -626,7 +626,7 @@ export default function LandingPage() {
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl border border-blue-700 bg-[#082f55] px-3 py-2.5 text-white shadow-md sm:px-4">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/10 text-lg text-[#ffd700]" aria-hidden="true">✦</span>
-                <div className="min-w-0 flex-1"><span className="block text-[9px] font-black uppercase tracking-[0.14em] text-[#ffd700]">Practical learning paths</span><strong className="mt-0.5 block text-xs leading-5 text-white sm:text-sm">Microsoft Office, programming, React &amp; coding projects</strong></div>
+                <div className="min-w-0 flex-1"><span className="block text-[9px] font-black uppercase tracking-[0.14em] text-[#ffd700]">Practical learning paths</span><strong className="office-invite-message mt-1 block text-xs leading-5 sm:text-sm">Microsoft Office, programming, React &amp; coding projects</strong></div>
                 <button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#ffd700] px-4 py-2 font-black text-[#082f55] shadow-sm hover:bg-[#f5ca00]">{enrollmentLabel}</button>
               </div>}
               {enrollment && <>

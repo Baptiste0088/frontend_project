@@ -228,8 +228,13 @@ textarea {
   background: #082f55 !important;
 }
 
-#practice .practice-header .office-invite strong {
-  color: #fff !important;
+#practice .practice-header .office-invite .office-invite-message {
+  color: #061f3a !important;
+  background: #fff !important;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 3px 8px;
+  box-shadow: 0 1px 3px rgb(2 23 45 / 18%);
 }
 
 #practice .practice-header .office-invite > span {
