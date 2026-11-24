@@ -3,11 +3,11 @@ import logo from '../assets/logo.jpeg';
 import { API_BASE_URL } from '../lib/api';
 
 const initialForm = {
-  learner_type: '', full_name: '', student_id_type: 'SDMS', student_id_number: '', student_id_confirmation: '',
+  learner_type: '', full_name: '', email: '', student_id_type: 'SDMS', student_id_number: '', student_id_confirmation: '',
   occupation_id: '', level_id: '', trade_id: '', user_uuid: '',
 };
 
-const enrollmentSteps = ['Learner type', 'Full name', 'Occupation', 'Level', 'Trade', 'Login number', 'Confirm number'];
+const enrollmentSteps = ['Learner type', 'Full name', 'Email', 'Occupation', 'Level', 'Trade', 'Login number', 'Confirm number'];
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -87,12 +87,13 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
   const validateStep = () => {
     if (step === 0 && !form.learner_type) return 'Choose whether you are a student.';
     if (step === 1 && form.full_name.trim().length < 2) return 'Enter your full name.';
-    if (step === 2 && !form.occupation_id) return 'Select your occupation.';
-    if (step === 3 && !form.level_id) return 'Select your level.';
-    if (step === 4 && !form.trade_id) return 'Select your trade.';
-    if (step === 5 && form.student_id_number.trim().length < 2) return `Enter your ${identifierName}.`;
+    if (step === 2 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return 'Enter a valid email address.';
+    if (step === 3 && !form.occupation_id) return 'Select your occupation.';
+    if (step === 4 && !form.level_id) return 'Select your level.';
+    if (step === 5 && !form.trade_id) return 'Select your trade.';
+    if (step === 6 && form.student_id_number.trim().length < 2) return `Enter your ${identifierName}.`;
     const normalizeIdentifier = (value) => isNonStudent ? value.replace(/\D/g, '') : value.trim().toUpperCase();
-    if (step === 6 && normalizeIdentifier(form.student_id_confirmation) !== normalizeIdentifier(form.student_id_number)) return 'The two numbers must match.';
+    if (step === 7 && normalizeIdentifier(form.student_id_confirmation) !== normalizeIdentifier(form.student_id_number)) return 'The two numbers must match.';
     return '';
   };
 
@@ -136,7 +137,7 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
       const needsEnrollment = payload.requires_enrollment || (payload.user && (!payload.user.occupation_id || !payload.user.level_id || !payload.user.trade_id));
       if (needsEnrollment && payload.user?.uuid) {
         const verifiedName = payload.user.full_name || [payload.user.first_name, payload.user.last_name].filter((value) => value && value !== '-').join(' ');
-        setForm({ ...initialForm, user_uuid: payload.user.uuid, full_name: verifiedName });
+        setForm({ ...initialForm, user_uuid: payload.user.uuid, full_name: verifiedName, email: payload.user.email || '' });
         setMode('enroll');
         setStep(0);
         setLoginStep(0);
@@ -173,10 +174,11 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
     const inputClass = 'w-full rounded-lg border border-slate-300 px-4 py-3.5 font-normal outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100';
     if (step === 0) return <fieldset className="grid gap-3"><legend className="mb-2 text-sm font-bold text-slate-700">Are you currently a student?</legend>{[['STUDENT', 'I am a student', 'Use your Index or SDMS number.'], ['NON_STUDENT', 'I am not a student', 'Use your phone number.']].map(([value, title, description]) => <button autoFocus={value === 'STUDENT'} key={value} type="button" onClick={() => setForm((current) => ({ ...current, learner_type: value, student_id_type: value === 'NON_STUDENT' ? 'PHONE' : (requiresIndexNumber ? 'INDEX' : 'SDMS'), student_id_number: '', student_id_confirmation: '' }))} className={`rounded-xl border-2 p-4 text-left transition ${form.learner_type === value ? 'border-blue-700 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}><strong className="block text-[#082f55]">{title}</strong><span className="mt-1 block text-sm font-normal text-slate-500">{description}</span></button>)}</fieldset>;
     if (step === 1) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your full name?<input autoFocus className={inputClass} value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} placeholder="Enter your full name" /></label>;
-    if (step === 2) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your occupation?<select autoFocus className={inputClass} value={form.occupation_id} onChange={(event) => selectOccupation(event.target.value)}><option value="">Select occupation</option>{occupations.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>;
-    if (step === 3) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your level?<select autoFocus className={inputClass} value={form.level_id} onChange={(event) => selectLevel(event.target.value)} disabled={loadingOptions}><option value="">Select level</option>{levels.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>;
-    if (step === 4) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your trade?<select autoFocus className={inputClass} value={form.trade_id} onChange={(event) => setForm((current) => ({ ...current, trade_id: event.target.value }))} disabled={loadingOptions}><option value="">Select trade</option>{trades.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>;
-    if (step === 5) return <label className="grid gap-2 text-sm font-bold text-slate-700">Enter your {identifierName}<input autoFocus type={isNonStudent ? 'tel' : 'text'} className={`${inputClass} ${isNonStudent ? '' : 'uppercase'}`} value={form.student_id_number} onChange={(event) => setForm((current) => ({ ...current, student_id_number: isNonStudent ? event.target.value : event.target.value.toUpperCase() }))} placeholder={`Enter ${identifierName}`} /><span className="text-xs font-normal text-slate-500">You will use this number to log in.</span></label>;
+    if (step === 2) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your email address?<input autoFocus type="email" className={inputClass} value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} placeholder="Enter your real email address" autoComplete="email" /><span className="text-xs font-normal text-slate-500">You can also use this email to log in.</span></label>;
+    if (step === 3) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your occupation?<select autoFocus className={inputClass} value={form.occupation_id} onChange={(event) => selectOccupation(event.target.value)}><option value="">Select occupation</option>{occupations.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>;
+    if (step === 4) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your level?<select autoFocus className={inputClass} value={form.level_id} onChange={(event) => selectLevel(event.target.value)} disabled={loadingOptions}><option value="">Select level</option>{levels.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>;
+    if (step === 5) return <label className="grid gap-2 text-sm font-bold text-slate-700">What is your trade?<select autoFocus className={inputClass} value={form.trade_id} onChange={(event) => setForm((current) => ({ ...current, trade_id: event.target.value }))} disabled={loadingOptions}><option value="">Select trade</option>{trades.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>;
+    if (step === 6) return <label className="grid gap-2 text-sm font-bold text-slate-700">Enter your {identifierName}<input autoFocus type={isNonStudent ? 'tel' : 'text'} className={`${inputClass} ${isNonStudent ? '' : 'uppercase'}`} value={form.student_id_number} onChange={(event) => setForm((current) => ({ ...current, student_id_number: isNonStudent ? event.target.value : event.target.value.toUpperCase() }))} placeholder={`Enter ${identifierName}`} /><span className="text-xs font-normal text-slate-500">You will use this number to log in.</span></label>;
     return <label className="grid gap-2 text-sm font-bold text-slate-700">Enter your {identifierName} again<input autoFocus type={isNonStudent ? 'tel' : 'password'} className={inputClass} value={form.student_id_confirmation} onChange={(event) => setForm((current) => ({ ...current, student_id_confirmation: isNonStudent ? event.target.value : event.target.value.toUpperCase() }))} placeholder="Enter the same number again" /><span className="text-xs font-normal text-slate-500">This confirms your login number.</span></label>;
   };
 
