@@ -26,6 +26,8 @@ const prepareProfileImage = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
+const profileImageUrl = (value) => value?.startsWith('/') ? `${API_BASE_URL}${value}` : value;
+
 const levels = [
   { id: 1, name: 'Foundations', brief: 'Personal welcome card: practise headings, paragraphs, colors, and one button.', result: 'A centered card displays your greeting and introduction. Clicking the button shows a success message beneath it.', concepts: ['HTML structure', 'CSS colors', 'Click events'], steps: ['Edit the welcome text in HTML.', 'Change the card colors in CSS.', 'Run the code and click the button.'] },
   { id: 2, name: 'Core Skills', brief: 'Counter app: practise variables, buttons, events, and updating the page.', result: 'The score starts at 0. Add increases it, Subtract decreases it, and Reset always returns the score to 0.', concepts: ['Variables', 'Functions', 'DOM updates'], steps: ['Study the score element and buttons.', 'Change how much each click adds.', 'Run and test Add, Subtract, and Reset.'] },
@@ -458,7 +460,7 @@ export default function LandingPage() {
   const [showAccount, setShowAccount] = useState(false);
   const [profileImageSaving, setProfileImageSaving] = useState(false);
   const [profileImageError, setProfileImageError] = useState('');
-  const [weeklyBestLearner, setWeeklyBestLearner] = useState(null);
+  const [weeklyBestLearners, setWeeklyBestLearners] = useState([]);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedLearningPath, setSelectedLearningPath] = useState('word');
   const [packageLanguages, setPackageLanguages] = useState([]);
@@ -512,7 +514,7 @@ export default function LandingPage() {
   const enrolledLevel = enrollment?.level_name || 'Choose level';
   const enrolledTrade = enrollment?.trade_name || 'Choose trade';
   const displayedProgress = enrollment ? progressPercentage : 0;
-  const profileImage = profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url || logo;
+  const profileImage = profileImageUrl(profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url) || logo;
   const selectedLanguageChapters = packageChapters[selectedPackageLanguage] || [];
   const publishedLessonPages = selectedLanguageChapters.flatMap((chapter) => (
     (packagePages[chapter.id] || []).map((page) => ({ ...page, heading: publishedPageHeading(page) }))
@@ -529,9 +531,9 @@ export default function LandingPage() {
       .then(async (response) => {
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.message || 'Unable to load the weekly learner.');
-        if (!cancelled) setWeeklyBestLearner(payload.learner || null);
+        if (!cancelled) setWeeklyBestLearners(payload.learners || []);
       })
-      .catch(() => { if (!cancelled) setWeeklyBestLearner(null); });
+      .catch(() => { if (!cancelled) setWeeklyBestLearners([]); });
     return () => { cancelled = true; };
   }, [enrollment]);
 
@@ -812,7 +814,7 @@ export default function LandingPage() {
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
                         <h1 className="mt-3 max-w-xl text-2xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
                         <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
-                        {weeklyBestLearner && <div className="mt-4 inline-flex max-w-full items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-3 py-2.5 shadow-lg backdrop-blur-sm"><img src={weeklyBestLearner.profile_image} alt={`${weeklyBestLearner.full_name} profile`} className="h-12 w-12 shrink-0 rounded-full border-2 border-[#ffd700] object-cover" /><div className="min-w-0"><span className="block text-[9px] font-black uppercase tracking-[0.16em] text-[#ffd700]">Best learner this week</span><strong className="mt-0.5 block truncate text-sm text-white sm:text-base">{weeklyBestLearner.full_name}</strong></div><span className="ml-1 text-lg text-[#ffd700]" aria-hidden="true">★</span></div>}
+                        {weeklyBestLearners.length > 0 && <div className="mt-4 max-w-xl"><div className="mb-2 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.16em] text-[#ffd700]"><span aria-hidden="true">★</span><span>Best learners this week</span></div><div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:thin]">{weeklyBestLearners.map((learner, index) => <figure key={`${learner.profile_image}-${index}`} className="w-16 shrink-0 snap-start text-center"><img src={profileImageUrl(learner.profile_image)} alt={`${learner.full_name} profile`} className="mx-auto h-14 w-14 rounded-full border-2 border-[#ffd700] object-cover shadow-lg" /><figcaption className="mt-1 truncate text-[9px] font-bold text-blue-100">{learner.last_name}</figcaption></figure>)}</div></div>}
                       </div>
                       <div className="aspect-square overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-xl shadow-blue-950/30 sm:p-3">
                         <img src={logo} alt="Global Coding Academy" className="h-full w-full object-contain" />
