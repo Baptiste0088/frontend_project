@@ -1,0 +1,59 @@
+.office-compiler { --app-color: #185abd; height: 100svh; display: grid; grid-template-rows: 38px auto auto minmax(0,1fr) 26px; overflow: hidden; background: #f3f3f3; color: #202020; font-family: "Segoe UI", Arial, sans-serif; }
+.oc-titlebar { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 0 8px; background: var(--app-color); color: white; }
+.oc-titlebar strong { font-size: 13px; }
+.oc-back, .oc-titlebar button { display: grid; place-items: center; border: 0; background: transparent; color: inherit; text-decoration: none; }
+.oc-back { width: 28px; height: 28px; border-radius: 4px; font-size: 27px; }
+.oc-back:hover, .oc-titlebar button:hover { background: rgba(255,255,255,.15); }
+.oc-app-badge { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 3px; background: rgba(255,255,255,.18); font-weight: 800; }
+.oc-file-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: auto; font-size: 12px; opacity: .85; }
+.oc-window-actions { display: flex; margin-left: 12px; }
+.oc-window-actions button { width: 36px; height: 38px; }
+.oc-app-switcher { display: flex; gap: 4px; padding: 6px 10px; border-bottom: 1px solid #d0d0d0; background: white; overflow-x: auto; }
+.oc-app-switcher button { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; padding: 5px 12px 5px 6px; border: 1px solid transparent; border-radius: 5px; background: transparent; font-weight: 600; color: #333; }
+.oc-app-switcher button span { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 4px; background: var(--app-color); color: white; font-weight: 800; }
+.oc-app-switcher button[aria-pressed="true"] { border-color: color-mix(in srgb, var(--app-color), white 55%); background: color-mix(in srgb, var(--app-color), white 90%); color: var(--app-color); }
+.oc-ribbon { border-bottom: 1px solid #cfcfcf; background: white; box-shadow: 0 1px 2px #00000010; }
+.oc-ribbon-tabs { display: flex; gap: 2px; padding: 0 10px; overflow-x: auto; }
+.oc-ribbon-tabs button { flex: 0 0 auto; padding: 7px 12px 5px; border: 0; border-bottom: 2px solid transparent; background: transparent; font-size: 12px; }
+.oc-ribbon-tabs button.active { border-color: var(--app-color); color: var(--app-color); font-weight: 700; }
+.oc-ribbon-tools { display: flex; gap: 5px; padding: 7px 10px; overflow-x: auto; }
+.oc-ribbon-tools button { flex: 0 0 auto; min-height: 31px; padding: 5px 9px; border: 1px solid #ddd; border-radius: 3px; background: #fff; font-size: 11px; }
+.oc-ribbon-tools button:hover { background: #f0f0f0; }
+.oc-ribbon-tools button.strong { font-weight: 900; }
+.oc-workspace { min-height: 0; overflow: hidden; }
+.oc-statusbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; background: var(--app-color); color: white; font-size: 10px; }
+.oc-word-workspace { height: 100%; overflow: auto; padding: 0 18px 40px; background: #e5e5e5; }
+.oc-ruler { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-around; max-width: 794px; height: 22px; margin: 0 auto 14px; border: 1px solid #bbb; border-top: 0; background: white; color: #777; font-size: 9px; }
+.oc-paper { width: min(794px,100%); min-height: 900px; margin: auto; padding: clamp(38px,8vw,86px); outline: 0; background: white; box-shadow: 0 2px 12px #0002; font-family: Calibri, Arial, sans-serif; line-height: 1.5; }
+.oc-paper h1 { margin: 0 0 20px; color: #17365d; font-size: 28px; }
+.oc-paper h2 { margin: 30px 0 12px; color: #2f5597; font-size: 20px; }
+.oc-paper p { margin: 0 0 15px; font-size: 15px; }
+.oc-excel-workspace { height: 100%; overflow: auto; background: white; }
+.oc-formula { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 65px 30px minmax(180px,1fr); align-items: center; min-width: 700px; border-bottom: 1px solid #bbb; background: white; }
+.oc-formula > * { min-height: 31px; padding: 7px 9px; border: 0; border-right: 1px solid #ddd; }
+.oc-formula span { font-style: italic; color: #666; }
+.oc-formula input { outline: 0; }
+.oc-sheet { min-width: 700px; display: grid; grid-template-columns: 42px repeat(var(--columns), minmax(82px,1fr)); }
+.oc-corner, .oc-column, .oc-row-number { display: grid; place-items: center; background: #f3f3f3; color: #444; font-size: 11px; }
+.oc-corner, .oc-column { position: sticky; top: 31px; z-index: 2; height: 25px; border-right: 1px solid #ccc; border-bottom: 1px solid #bbb; }
+.oc-sheet-row { display: contents; }
+.oc-row-number { min-height: 25px; border-right: 1px solid #bbb; border-bottom: 1px solid #ddd; }
+.oc-sheet-row > div[contenteditable] { min-height: 25px; padding: 4px; outline: 0; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; font-size: 12px; }
+.oc-sheet-row > div[contenteditable].selected { box-shadow: inset 0 0 0 2px #107c41; }
+.oc-sheet-tabs { position: sticky; bottom: 0; display: flex; gap: 4px; padding: 5px 10px; border-top: 1px solid #ccc; background: #f5f5f5; }
+.oc-sheet-tabs button { padding: 5px 14px; border: 0; background: transparent; }
+.oc-sheet-tabs button.active { border-bottom: 2px solid #107c41; font-weight: 700; }
+.oc-powerpoint-workspace { height: 100%; display: grid; grid-template-columns: 220px minmax(0,1fr); background: #e8e8e8; }
+.oc-slide-list { overflow-y: auto; padding: 10px; border-right: 1px solid #bbb; background: white; }
+.oc-slide-list > button { width: 100%; display: flex; gap: 7px; margin-bottom: 9px; padding: 6px; border: 1px solid transparent; background: transparent; text-align: left; }
+.oc-slide-list > button.active { border-color: #c43e1c; }
+.oc-slide-list > button div { min-width: 0; aspect-ratio: 16/9; flex: 1; padding: 8px; border: 1px solid #bbb; background: white; overflow: hidden; }
+.oc-slide-list strong, .oc-slide-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
+.oc-slide-list .oc-new-slide { justify-content: center; border: 1px dashed #aaa; color: #c43e1c; font-weight: 700; }
+.oc-slide-stage { min-width: 0; overflow: auto; display: grid; align-content: center; justify-items: center; gap: 12px; padding: 24px; }
+.oc-slide { width: min(900px,100%); aspect-ratio: 16/9; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 8%; background: white; box-shadow: 0 2px 12px #0003; }
+.oc-slide input, .oc-slide textarea { width: 100%; border: 1px dashed #aaa; outline-color: #c43e1c; background: transparent; text-align: center; font-family: inherit; }
+.oc-slide input { padding: 10px; font-size: clamp(22px,4vw,44px); font-weight: 700; }
+.oc-slide textarea { min-height: 100px; padding: 12px; resize: none; font-size: clamp(14px,2vw,24px); }
+.oc-notes { width: min(900px,100%); padding: 10px; border: 1px solid #ccc; background: white; color: #777; font-size: 11px; }
+@media (max-width: 700px) { .oc-window-actions, .oc-file-name { display: none; } .oc-titlebar strong { margin-right: auto; } .oc-app-switcher { justify-content: flex-start; } .oc-ribbon-tabs button { padding-inline: 9px; } .oc-word-workspace { padding-inline: 8px; } .oc-paper { min-height: 720px; padding: 36px 24px; } .oc-powerpoint-workspace { grid-template-columns: 82px minmax(0,1fr); } .oc-slide-list { padding: 6px; } .oc-slide-list > button { gap: 3px; padding: 3px; } .oc-slide-list > button > span, .oc-slide-list strong, .oc-slide-list small { display: none; } .oc-slide-stage { padding: 10px; } }

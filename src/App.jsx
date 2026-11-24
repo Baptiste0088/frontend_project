@@ -4,6 +4,7 @@ import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
 import CodeRunnerPage from './pages/CodeRunnerPage';
 import WordPracticePage from './pages/WordPracticePage';
+import OfficeCompilerPage from './pages/OfficeCompilerPage';
 import './App.css';
 
 function AcademyHome() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/code-runner" element={<CodeRunnerPage />} />
         <Route path="/word-practice" element={<WordPracticePage />} />
+        <Route path="/compiler" element={<OfficeCompilerPage />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
     </Router>
