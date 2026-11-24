@@ -458,6 +458,7 @@ export default function LandingPage() {
   const [showAccount, setShowAccount] = useState(false);
   const [profileImageSaving, setProfileImageSaving] = useState(false);
   const [profileImageError, setProfileImageError] = useState('');
+  const [weeklyBestLearner, setWeeklyBestLearner] = useState(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedLearningPath, setSelectedLearningPath] = useState('word');
   const [packageLanguages, setPackageLanguages] = useState([]);
@@ -520,6 +521,19 @@ export default function LandingPage() {
   const activePackagePageIndex = publishedLessonPages.findIndex((page) => page.id === selectedPackagePage);
   const previousPackagePage = activePackagePageIndex > 0 ? publishedLessonPages[activePackagePageIndex - 1] : null;
   const nextPackagePage = activePackagePageIndex >= 0 && activePackagePageIndex < publishedLessonPages.length - 1 ? publishedLessonPages[activePackagePageIndex + 1] : null;
+
+  useEffect(() => {
+    if (enrollment) return;
+    let cancelled = false;
+    fetch(`${API_BASE_URL}/api/learners/weekly-best`)
+      .then(async (response) => {
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.message || 'Unable to load the weekly learner.');
+        if (!cancelled) setWeeklyBestLearner(payload.learner || null);
+      })
+      .catch(() => { if (!cancelled) setWeeklyBestLearner(null); });
+    return () => { cancelled = true; };
+  }, [enrollment]);
 
   useEffect(() => {
     if (!enrollment?.trade_id) return;
@@ -798,6 +812,7 @@ export default function LandingPage() {
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
                         <h1 className="mt-3 max-w-xl text-2xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
                         <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
+                        {weeklyBestLearner && <div className="mt-4 inline-flex max-w-full items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-3 py-2.5 shadow-lg backdrop-blur-sm"><img src={weeklyBestLearner.profile_image} alt={`${weeklyBestLearner.full_name} profile`} className="h-12 w-12 shrink-0 rounded-full border-2 border-[#ffd700] object-cover" /><div className="min-w-0"><span className="block text-[9px] font-black uppercase tracking-[0.16em] text-[#ffd700]">Best learner this week</span><strong className="mt-0.5 block truncate text-sm text-white sm:text-base">{weeklyBestLearner.full_name}</strong></div><span className="ml-1 text-lg text-[#ffd700]" aria-hidden="true">★</span></div>}
                       </div>
                       <div className="aspect-square overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-xl shadow-blue-950/30 sm:p-3">
                         <img src={logo} alt="Global Coding Academy" className="h-full w-full object-contain" />
