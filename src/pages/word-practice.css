@@ -1,0 +1,64 @@
+.word-lab{--ink:#172d40;--blue:#174b71;--green:#146657;--edge:#cbd9dd;color:var(--ink);background:#f3f6f5;min-height:100vh;text-align:left;font:16px/1.5 "Segoe UI",Arial,sans-serif;letter-spacing:normal}
+.word-lab *{box-sizing:border-box}
+.word-lab h1,.word-lab h2,.word-lab p{margin:0}
+.wl-mast{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px max(4vw,22px);border-bottom:1px solid var(--edge);background:#fff}
+.wl-mast a{font-size:18px;font-weight:750;color:var(--blue);text-decoration:none}
+.wl-mast span,.wl-kicker{font-size:13px;font-weight:700;color:var(--green)}
+.wl-layout{max-width:1360px;margin:0 auto;display:grid;grid-template-columns:240px minmax(0,1fr);align-items:start;gap:clamp(20px,4vw,60px);padding:32px max(4vw,18px) 44px}
+.wl-lessons{position:sticky;top:16px}
+.wl-lessons h2,.wl-checks h2{font-size:17px;font-weight:700;margin:0 0 12px}
+.wl-lessons nav{display:grid;gap:3px}
+.wl-lessons a{display:flex;gap:10px;align-items:baseline;color:#3d505b;text-decoration:none;padding:8px 10px;border-radius:5px;font-size:14px;line-height:1.35}
+.wl-lessons a>span{min-width:15px;color:#54736c;font-variant-numeric:tabular-nums}
+.wl-lessons a:hover,.wl-lessons a[aria-current=page]{background:#e0efe9;color:#0c5548}
+.wl-lessons a[aria-current=page]{font-weight:700}
+.wl-work{min-width:0}
+.wl-exercise{margin:0 0 20px}
+.wl-exercise h1{font-weight:750;font-size:clamp(23px,3.1vw,37px);line-height:1.14;letter-spacing:-.035em;margin:5px 0 9px;color:#143b57}
+.wl-exercise p:not(.wl-kicker){max-width:78ch}
+.wl-exercise ol{margin:12px 0 0;padding-left:23px;list-style:decimal}
+.wl-exercise li{padding-left:4px;margin:4px 0;font-size:15px}
+.wl-desk{border:1px solid #c4d2d5;border-radius:10px;background:#fff;overflow:hidden}
+.wl-file{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:11px 15px;background:#e8f1f2}
+.wl-file label{display:flex;flex-direction:column;gap:2px;font-size:11px;line-height:1.2;font-weight:700;color:#44606a;min-width:0;flex:1 1 170px}
+.wl-file input{background:#fff;border:1px solid #a7bdc2;border-radius:4px;color:var(--ink);font:600 15px/1.2 inherit;font-family:inherit;font-size:15px;font-weight:600;padding:6px 8px;max-width:300px;width:100%}
+.wl-file-actions,.wl-toolbar,.wl-review{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.word-lab button,.word-lab select{font:600 13px/1.2 "Segoe UI",Arial,sans-serif;color:var(--ink);border:1px solid #c0cfd3;border-radius:5px;min-height:32px;padding:5px 9px;background:#fff;cursor:pointer}
+.word-lab button:hover,.word-lab select:hover{background:#edf5f2;border-color:#7fa69b}
+.word-lab :focus-visible{outline:2px solid #167764;outline-offset:2px}
+.wl-toolbar{padding:8px 12px;border-block:1px solid #d9e1e3;background:#fbfcfc}
+.wl-toolbar b,.wl-toolbar i{font-size:16px}
+.wl-sheet-scroll{background:#edf1f1;padding:14px clamp(8px,2vw,25px);overflow:auto;max-height:min(65vh,710px);min-height:175px}
+.word-lab .wl-paper{display:block;max-width:800px;min-height:290px;margin:0 auto;padding:clamp(20px,4vw,52px);background:#fff;color:#223548;border:1px solid #d8dede;box-shadow:0 2px 6px #203a4211;font:normal var(--document-size,16px)/1.5 Calibri,"Segoe UI",Arial,sans-serif;overflow-wrap:anywhere;white-space:normal}
+.word-lab .wl-paper:focus{outline:2px solid #abd1c4;outline-offset:0}
+.word-lab .wl-paper p,.word-lab .wl-paper div{margin:0 0 .48em}
+.word-lab .wl-paper h1{font:bold 2em/1.13 Calibri,Arial,sans-serif;color:#101820;margin:.25em 0 .3em}
+.word-lab .wl-paper h2,.word-lab .wl-paper h3{font:bold 1.25em/1.25 Calibri,Arial,sans-serif;color:#173f67;margin:.9em 0 .28em}
+.word-lab .wl-paper .category{font-size:.75em;font-weight:700;letter-spacing:.05em;color:#146657}
+.wl-paper ul,.wl-paper ol{margin:.35em 0 .65em;padding-left:1.6em}
+.wl-paper ul{list-style:disc}.wl-paper ol{list-style:decimal}
+.wl-paper table{width:100%;border-collapse:collapse;margin:.45em 0}
+.wl-paper td,.wl-paper th{border:1px solid #bbcbd0;padding:.38em .55em;text-align:left;min-width:55px}
+.wl-paper td:first-child,.wl-paper th:first-child{width:27%}
+.wl-paper th{background:#1b4f76;color:#fff;font-weight:700}
+.wl-paper tbody tr:nth-child(even){background:#edf4f9}
+.wl-status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:5px 12px;border-top:1px solid #d6e0e1;font-size:12px;color:#3f5863}
+.wl-status span:first-child{margin-right:auto}
+.wl-status select{min-height:26px;font-size:12px;padding:2px}
+.wl-review{margin:15px 0 8px}
+.wl-review button:first-child{background:#146657;color:#fff;border-color:#146657}
+.wl-review button:first-child:hover{background:#0b4a3e}
+.wl-checks{padding:12px 15px;margin:8px 0;background:white;border:1px solid var(--edge);border-radius:6px}
+.wl-checks h2{margin-bottom:6px}
+.wl-checks ul{margin:0;padding:0;list-style:none;font-size:14px}
+.wl-checks li{margin:4px 0}.wl-done{color:#106452}.wl-try{color:#8b4a06}
+.wl-storage,.wl-originals{font-size:12px;color:#45616b}
+.wl-originals a{display:inline-block;margin:6px;color:#174b71;text-decoration:underline}
+.word-lab-embedded{min-height:0;background:white}
+.word-lab-embedded .wl-layout{display:block;padding:12px}
+.word-lab-embedded .wl-exercise h1{font-size:21px}
+.word-lab-embedded .wl-exercise{margin-bottom:12px}
+.word-lab-embedded .wl-sheet-scroll{max-height:360px}
+@media(max-width:800px){.wl-layout{grid-template-columns:1fr}.wl-lessons{position:static}.wl-lessons nav{display:flex;flex-wrap:nowrap;overflow:auto;padding-bottom:5px}.wl-lessons a{flex:0 0 auto;max-width:190px}.wl-lessons h2{margin-bottom:4px}.wl-mast{min-height:48px}.wl-mast span{font-size:11px}.wl-layout{gap:12px;padding-top:14px}}
+@media(max-width:500px){.wl-layout{padding-inline:10px}.wl-file{padding:8px;gap:6px}.wl-file-actions{gap:4px}.wl-toolbar{padding:6px;gap:4px}.word-lab button,.word-lab select{padding:4px 7px}.wl-paper{padding:17px}.wl-mast{padding-inline:12px}.wl-status{gap:7px}}
+@media print{html,body,#root,.word-lab,.wl-layout,.wl-work,.wl-desk,.wl-sheet-scroll{display:block!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:white!important;box-shadow:none!important}.wl-mast,.wl-lessons,.wl-exercise,.wl-file,.wl-toolbar,.wl-status,.wl-review,.wl-checks,.wl-storage,.wl-originals{display:none!important}.word-lab .wl-paper{max-width:none;min-height:0;box-shadow:none;border:0;outline:0;margin:0;padding:0;font-size:12pt}.wl-paper tr{break-inside:avoid}.wl-paper th{print-color-adjust:exact}@page{size:A4;margin:22mm}}

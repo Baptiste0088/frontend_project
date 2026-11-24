@@ -1,0 +1,3 @@
+{
+  "html": "<p class=\"category\">CLUB ANNOUNCEMENT</p>\n<h1>Club meeting notice</h1>\n<p>[Write an invitation.]</p>\n<h2>Meeting details</h2>\n<p><strong>When   </strong>[Day and time]</p>\n<p><strong>Where   </strong>[Meeting place]</p>\n<p>What to bring</p>\n<p>[First item]</p>\n<p>[Second item]</p>\n<h2>Agenda</h2>\n<table><thead><tr><th>Time</th><th>Activity</th></tr></thead><tbody><tr><td>[Start time]</td><td>[First activity]</td></tr><tr><td>[Next time]</td><td>[Second activity]</td></tr></tbody></table>"
+}
