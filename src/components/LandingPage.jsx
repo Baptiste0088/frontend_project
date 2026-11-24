@@ -809,17 +809,17 @@ export default function LandingPage() {
               {!enrollment && (
                 <section className="guest-learning-page grid h-full min-h-0 gap-0 lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="flex min-h-0 flex-col justify-between overflow-hidden bg-[#082f55] p-5 text-white sm:p-7">
-                    <div className="grid grid-cols-[minmax(0,1fr)_8rem] items-center gap-4 sm:grid-cols-[minmax(0,1fr)_12rem] sm:gap-6 xl:grid-cols-[minmax(0,1fr)_13rem]">
-                      <div className="min-w-0">
+                    <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-stretch gap-4 sm:grid-cols-[minmax(0,1fr)_10rem] sm:gap-6 xl:grid-cols-[minmax(0,1fr)_11rem]">
+                      <div className="flex min-w-0 flex-col justify-center">
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
-                        <h1 className="mt-3 max-w-xl text-2xl font-black leading-tight sm:text-4xl">Build digital skills and learn to code.</h1>
-                        <p className="mt-4 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
-                        {weeklyBestLearners.length > 0 && <div className="mt-4 max-w-xl"><div className="mb-2 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.16em] text-[#ffd700]"><span aria-hidden="true">★</span><span>Best learners this week</span></div><div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:thin]">{weeklyBestLearners.map((learner, index) => <figure key={`${learner.profile_image}-${index}`} className="w-16 shrink-0 snap-start text-center"><img src={profileImageUrl(learner.profile_image)} alt={`${learner.full_name} profile`} className="mx-auto h-14 w-14 rounded-full border-2 border-[#ffd700] object-cover shadow-lg" /><figcaption className="mt-1 truncate text-[9px] font-bold text-blue-100">{learner.last_name}</figcaption></figure>)}</div></div>}
+                        <h1 className="mt-2 max-w-xl text-xl font-black leading-tight sm:text-2xl xl:text-3xl">Build digital skills and learn to code.</h1>
+                        <p className="mt-2 max-w-xl text-xs leading-5 text-blue-100 sm:text-sm">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
                       </div>
-                      <div className="aspect-square overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-xl shadow-blue-950/30 sm:p-3">
+                      <div className="min-h-full overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-xl shadow-blue-950/30 sm:p-3">
                         <img src={logo} alt="Global Coding Academy" className="h-full w-full object-contain" />
                       </div>
                     </div>
+                    {weeklyBestLearners.length > 0 && <div className="mt-4 max-w-xl"><div className="mb-2 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.16em] text-[#ffd700]"><span aria-hidden="true">★</span><span>Best learners this week</span></div><div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:thin]">{weeklyBestLearners.map((learner, index) => <figure key={`${learner.profile_image}-${index}`} className="w-16 shrink-0 snap-start text-center"><img src={profileImageUrl(learner.profile_image)} alt={`${learner.full_name} profile`} className="mx-auto h-14 w-14 rounded-full border-2 border-[#ffd700] object-cover shadow-lg" /><figcaption className="mt-1 truncate text-[9px] font-bold text-blue-100">{learner.last_name}</figcaption></figure>)}</div></div>}
                     <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">{enrollmentLabel}</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
                   <div className="flex min-h-0 flex-col overflow-hidden border-l border-blue-100 bg-white p-5 sm:p-6">
