@@ -51,5 +51,5 @@ export function wordPracticeNumber(block) {
 }
 
 export function practiceUrl(number, embedded = false) {
-  return '/word-practice?lesson=' + number + (embedded ? '&embedded=1' : '');
+  return '/?course=word-practice&lesson=' + number + (embedded ? '&embedded=1' : '');
 }

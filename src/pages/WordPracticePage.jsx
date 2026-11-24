@@ -36,7 +36,7 @@ export default function WordPracticePage() {
   const isNote=lesson<=2;
   const draftKey=learnerDraftKey(isNote);
   const go=to=>{
-    if (to>=1 && to<=wordActivities.length) setParams({lesson:String(to),...(embedded?{embedded:'1'}:{})});
+    if (to>=1 && to<=wordActivities.length) setParams({course:'word-practice',lesson:String(to),...(embedded?{embedded:'1'}:{})});
   };
   return <LessonWorkspace key={draftKey} {...{lesson,embedded,isNote,draftKey,go}} />;
 }
