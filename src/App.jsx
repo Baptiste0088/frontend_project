@@ -9,7 +9,9 @@ import './App.css';
 
 function AcademyHome() {
   const [params] = useSearchParams();
-  return params.get('course') === 'word-practice' ? <WordPracticePage /> : <LandingPage />;
+  if (params.get('course') === 'word-practice') return <WordPracticePage />;
+  if (params.get('course') === 'compiler') return <OfficeCompilerPage />;
+  return <LandingPage />;
 }
 
 function App() {
