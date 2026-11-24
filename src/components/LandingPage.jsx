@@ -697,20 +697,12 @@ export default function LandingPage() {
                 <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
-            <div className={`language-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border px-2.5 py-2 shadow-sm lg:mx-3 lg:flex-1 ${enrollment ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-white' : 'guest-track-center border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] shadow-blue-950/20'}`}>
-              {enrollment && <span className="shrink-0 rounded-lg bg-[#082f55] px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wider text-white">Languages</span>}
-              <div className={`${enrollment ? 'language-row' : 'learning-track-switch'} flex min-w-0 flex-1 items-center gap-2 overflow-x-auto ${enrollment ? '' : 'justify-center'}`}>
-                {enrollment && packageLoading && <span className="px-2 text-[11px] text-slate-500">Loading…</span>}
-                {enrollment && packageLanguages.map((language) => {
-                  const selected = selectedPackageLanguage === language.id;
-                  return <button type="button" key={language.id || language.name} onClick={() => selectStudentLanguage(language.id)} aria-pressed={selected} className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${selected ? 'bg-[#ffd700] text-[#082f55] shadow-sm' : 'bg-white text-slate-600 hover:bg-blue-100 hover:text-blue-800'}`}>{language.name}</button>;
-                })}
-                {!enrollment && <>
+            {!enrollment && <div className="language-center guest-track-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] px-2.5 py-2 shadow-sm shadow-blue-950/20 lg:mx-3 lg:flex-1">
+              <div className="learning-track-switch flex min-w-0 flex-1 items-center justify-center gap-2 overflow-x-auto">
                   <button type="button" onClick={() => setSelectedLearningPath('word')} aria-pressed={selectedLearningCourse.category === 'office'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'office' ? 'bg-white text-[#082f55] ring-2 ring-[#ffd700]' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md text-sm ${selectedLearningCourse.category === 'office' ? 'bg-blue-100 text-blue-700' : 'bg-white/15'}`}>✦</span><span className="learning-track-label">Learn ICT</span></button>
                   <button type="button" onClick={() => setSelectedLearningPath('web')} aria-pressed={selectedLearningCourse.category === 'coding'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'coding' ? 'bg-[#ffd700] text-[#082f55] ring-2 ring-white' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md font-mono text-[10px] ${selectedLearningCourse.category === 'coding' ? 'bg-[#082f55] text-white' : 'bg-white/15'}`}>&lt;/&gt;</span><span className="learning-track-label">Coding</span></button>
-                </>}
               </div>
-            </div>
+            </div>}
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl border border-blue-700 bg-[#082f55] px-3 py-2.5 text-white shadow-md sm:px-4">
@@ -751,6 +743,16 @@ export default function LandingPage() {
               </>}
             </div>
           </div>
+          {enrollment && <div className="mt-2 flex min-w-0 items-center gap-3 border-t border-slate-200 pt-2">
+            <span className="shrink-0 text-[9px] font-black uppercase tracking-[0.14em] text-[#082f55]">Languages</span>
+            <div className="language-row flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+              {packageLoading && <span className="px-2 text-[11px] text-slate-500">Loading…</span>}
+              {packageLanguages.map((language) => {
+                const selected = selectedPackageLanguage === language.id;
+                return <button type="button" key={language.id || language.name} onClick={() => selectStudentLanguage(language.id)} aria-pressed={selected} className={`shrink-0 px-2 py-1 text-[11px] font-bold transition ${selected ? 'border-b-2 border-[#ffd700] text-[#082f55]' : 'text-slate-500 hover:text-blue-800'}`}>{language.name}</button>;
+              })}
+            </div>
+          </div>}
         </section>
 
         <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
