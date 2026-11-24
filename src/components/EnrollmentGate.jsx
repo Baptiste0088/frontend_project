@@ -112,7 +112,9 @@ export default function EnrollmentGate({ initialName = '', onEnrolled, onClose }
     try {
       const payload = await apiRequest('/api/enrollments', { method: 'POST', body: JSON.stringify(form) });
       localStorage.setItem('gcaEnrollment', JSON.stringify(payload.enrollment));
-      onEnrolled(payload.enrollment);
+      if (payload.token) localStorage.setItem('gcaAuthToken', payload.token);
+      if (payload.user) localStorage.setItem('gcaUser', JSON.stringify(payload.user));
+      onEnrolled(payload.enrollment, payload.user || null);
     } catch (requestError) {
       setError(requestError.message);
     } finally {

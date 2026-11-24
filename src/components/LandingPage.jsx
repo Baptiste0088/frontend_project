@@ -3,6 +3,29 @@ import logo from '../assets/logo.jpeg';
 import EnrollmentGate from './EnrollmentGate';
 import { API_BASE_URL } from '../lib/api';
 
+const prepareProfileImage = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onerror = () => reject(new Error('The selected image could not be read.'));
+  reader.onload = () => {
+    const image = new Image();
+    image.onerror = () => reject(new Error('Choose a valid image file.'));
+    image.onload = () => {
+      const maxSize = 512;
+      const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+      const width = Math.max(1, Math.round(image.width * scale));
+      const height = Math.max(1, Math.round(image.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', 0.86));
+    };
+    image.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+
 const levels = [
   { id: 1, name: 'Foundations', brief: 'Personal welcome card: practise headings, paragraphs, colors, and one button.', result: 'A centered card displays your greeting and introduction. Clicking the button shows a success message beneath it.', concepts: ['HTML structure', 'CSS colors', 'Click events'], steps: ['Edit the welcome text in HTML.', 'Change the card colors in CSS.', 'Run the code and click the button.'] },
   { id: 2, name: 'Core Skills', brief: 'Counter app: practise variables, buttons, events, and updating the page.', result: 'The score starts at 0. Add increases it, Subtract decreases it, and Reset always returns the score to 0.', concepts: ['Variables', 'Functions', 'DOM updates'], steps: ['Study the score element and buttons.', 'Change how much each click adds.', 'Run and test Add, Subtract, and Reset.'] },
@@ -433,6 +456,8 @@ export default function LandingPage() {
   const [showEnrollment, setShowEnrollment] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
+  const [profileImageSaving, setProfileImageSaving] = useState(false);
+  const [profileImageError, setProfileImageError] = useState('');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedLearningPath, setSelectedLearningPath] = useState('word');
   const [packageLanguages, setPackageLanguages] = useState([]);
@@ -564,6 +589,44 @@ export default function LandingPage() {
     window.open(`/code-runner?run=${encodeURIComponent(runId)}`, '_blank', 'noopener');
   };
 
+  const uploadProfileImage = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    if (!/^image\/(?:jpeg|png|webp)$/i.test(file.type)) {
+      setProfileImageError('Choose a JPEG, PNG, or WebP image.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setProfileImageError('Choose an image smaller than 10 MB.');
+      return;
+    }
+    const token = localStorage.getItem('gcaAuthToken');
+    if (!token) {
+      setProfileImageError('Please sign out and log in again before uploading a profile image.');
+      return;
+    }
+    setProfileImageSaving(true);
+    setProfileImageError('');
+    try {
+      const profile_image = await prepareProfileImage(file);
+      const response = await fetch(`${API_BASE_URL}/api/users/me/profile-image`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ profile_image }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.message || 'Unable to update the profile image.');
+      const nextUser = { ...(profileUser || {}), profile_image: payload.profile_image };
+      localStorage.setItem('gcaUser', JSON.stringify(nextUser));
+      setProfileUser(nextUser);
+    } catch (error) {
+      setProfileImageError(error.message);
+    } finally {
+      setProfileImageSaving(false);
+    }
+  };
+
   const signOut = () => {
     localStorage.removeItem('gcaAuthToken');
     localStorage.removeItem('gcaUser');
@@ -580,14 +643,24 @@ export default function LandingPage() {
         <EnrollmentGate
           initialName={accountName}
           onClose={() => setShowEnrollment(false)}
-          onEnrolled={(savedEnrollment) => { setEnrollment(savedEnrollment); setShowEnrollment(false); }}
+          onEnrolled={(savedEnrollment, savedUser) => { setEnrollment(savedEnrollment); if (savedUser) setProfileUser(savedUser); setShowEnrollment(false); }}
         />
       )}
       {showAccount && enrollment && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-[#082f55]/65 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="My account">
           <section className="relative w-full max-w-md rounded-2xl bg-white p-7 text-left text-slate-900 shadow-2xl">
             <button type="button" onClick={() => setShowAccount(false)} className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-xl text-slate-600" aria-label="Close account">×</button>
-            <img src={profileImage} alt="Profile" className="h-16 w-16 rounded-full object-cover" />
+            <div className="flex items-center gap-4 pr-10">
+              <img src={profileImage} alt={`${fullName} profile`} className="h-24 w-24 shrink-0 rounded-2xl border-4 border-blue-50 object-cover shadow-md" />
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.12em] text-blue-700">Profile image</p>
+                <label className={`mt-2 inline-flex cursor-pointer items-center rounded-lg bg-[#082f55] px-4 py-2.5 text-xs font-black text-white ${profileImageSaving ? 'pointer-events-none opacity-60' : 'hover:bg-[#0b416f]'}`}>
+                  {profileImageSaving ? 'Uploading…' : 'Upload new image'}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={uploadProfileImage} disabled={profileImageSaving} />
+                </label>
+              </div>
+            </div>
+            {profileImageError && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">{profileImageError}</p>}
             <h2 className="mt-4 text-2xl font-black text-[#082f55]">{fullName}</h2>
             <dl className="mt-6 grid gap-4 text-sm">
               <div><dt className="text-xs font-bold uppercase text-slate-500">Username</dt><dd className="mt-1 font-bold">{profileUser?.username || enrollment.login_username || enrollment.student_id_number || 'Student account'}</dd></div>
