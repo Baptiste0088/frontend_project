@@ -26,7 +26,7 @@ function Ribbon({ active }) {
   </div>;
 }
 
-const wordTabs = ['Home', 'Insert', 'Design', 'Layout', 'References', 'Mailings', 'Review', 'View'];
+const wordTabs = ['Home', 'Insert', 'Design', 'Layout', 'References', 'Mailings', 'Review', 'View', 'Acrobat'];
 
 function WordRibbon({ activeTab, onTab, run, zoom, setZoom, onSave }) {
   const home = <div className="oc-word-groups">
@@ -35,6 +35,7 @@ function WordRibbon({ activeTab, onTab, run, zoom, setZoom, onSave }) {
     <div className="oc-word-group"><div className="oc-paragraph-line"><button type="button" onClick={() => run('insertUnorderedList')}>• List</button><button type="button" onClick={() => run('insertOrderedList')}>1. List</button><button type="button" onClick={() => run('outdent')}>⇤</button><button type="button" onClick={() => run('indent')}>⇥</button><button type="button" onClick={() => run('formatBlock', 'blockquote')}>¶</button></div><div className="oc-paragraph-line"><button type="button" onClick={() => run('justifyLeft')}>≡</button><button type="button" onClick={() => run('justifyCenter')}>≣</button><button type="button" onClick={() => run('justifyRight')}>≡→</button><button type="button" onClick={() => run('justifyFull')}>▤</button><button type="button" onClick={() => run('formatBlock', 'p')}>↕</button></div><small>Paragraph</small></div>
     <div className="oc-word-group oc-styles"><button type="button" onClick={() => run('formatBlock', 'p')}>Normal</button><button type="button" onClick={() => run('formatBlock', 'h1')}>Heading 1</button><button type="button" onClick={() => run('formatBlock', 'h2')}>Heading 2</button><button type="button" onClick={() => run('formatBlock', 'h3')}>Title</button><small>Styles</small></div>
     <div className="oc-word-group oc-editing"><button type="button" onClick={() => run('find')}>⌕ Find</button><button type="button" onClick={() => run('replace')}>↔ Replace</button><button type="button" onClick={() => run('selectAll')}>▾ Select</button><small>Editing</small></div>
+    <div className="oc-word-group oc-adobe"><button type="button" onClick={() => run('print')}><strong>⌘</strong><span>Create<br />a PDF</span></button><small>Adobe Acrobat</small></div>
   </div>;
   const secondary = {
     File: [['Save document', 'save'], ['New document', 'newDocument'], ['Print', 'print']],
@@ -45,6 +46,7 @@ function WordRibbon({ activeTab, onTab, run, zoom, setZoom, onSave }) {
     Mailings: [['Greeting line', 'greeting'], ['Address block', 'address'], ['Merge field', 'merge']],
     Review: [['Word count', 'wordCount'], ['Spelling', 'spelling'], ['Select all', 'selectAll'], ['Clear formatting', 'removeFormat']],
     View: [['Print layout', 'printView'], ['Web layout', 'webView'], ['100% zoom', 'zoom100']],
+    Acrobat: [['Create a PDF', 'print'], ['Export document', 'save']],
   };
   return <div className="oc-ribbon oc-word-ribbon">
     <div className="oc-ribbon-tabs"><button type="button" className="oc-file-tab" onClick={() => onTab('File')}>File</button>{wordTabs.map((tab) => <button type="button" key={tab} onClick={() => onTab(tab)} className={activeTab === tab ? 'active' : ''}>{tab}</button>)}<span className="oc-tell-me">Tell me what you want to do…</span></div>
@@ -54,12 +56,8 @@ function WordRibbon({ activeTab, onTab, run, zoom, setZoom, onSave }) {
 
 function WordWorkspace({ editorRef, onInput, zoom, paperMode }) {
   return <section className="oc-word-workspace" aria-label="Word editor">
-    <div className="oc-ruler"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div>
     <article ref={editorRef} className={`oc-paper ${paperMode}`} style={{ zoom: `${zoom}%` }} contentEditable suppressContentEditableWarning spellCheck="true" onInput={onInput}>
-      <h1>My practice document</h1>
-      <p>Start typing here. Use the ribbon to practise creating and formatting a professional Microsoft Word document.</p>
-      <h2>Learning task</h2>
-      <p>Write one paragraph, add a title, make important words bold, and create a short bulleted list.</p>
+      <p><br /></p>
     </article>
   </section>;
 }
@@ -101,22 +99,22 @@ function PowerPointWorkspace() {
 export default function OfficeCompilerPage() {
   const [active, setActive] = useState('word');
   const [wordTab, setWordTab] = useState('Home');
-  const [wordCount, setWordCount] = useState(29);
+  const [wordCount, setWordCount] = useState(0);
   const [zoom, setZoom] = useState(100);
   const [paperMode, setPaperMode] = useState('portrait');
-  const [fileName, setFileName] = useState('Practice file');
+  const [fileName] = useState('Document2 [Compatibility Mode]');
   const wordEditorRef = useRef(null);
   const currentApp = apps.find((app) => app.id === active) || apps[0];
   useEffect(() => {
     if (!wordEditorRef.current) return;
-    const stored = localStorage.getItem('gca:office-compiler:word');
+    const stored = localStorage.getItem('gca:office-compiler:word:v2');
     if (stored) wordEditorRef.current.innerHTML = stored;
     setWordCount(wordEditorRef.current.innerText.trim().split(/\s+/).filter(Boolean).length);
   }, [active]);
   const updateWordState = () => {
     const editor = wordEditorRef.current;
     if (!editor) return;
-    localStorage.setItem('gca:office-compiler:word', editor.innerHTML);
+    localStorage.setItem('gca:office-compiler:word:v2', editor.innerHTML);
     setWordCount(editor.innerText.trim().split(/\s+/).filter(Boolean).length);
   };
   const runWordCommand = async (command, value = null) => {
@@ -168,9 +166,9 @@ export default function OfficeCompilerPage() {
       await downloadPracticeDocument(wordEditorRef.current, fileName);
     }
   };
-  return <main className="office-compiler" style={{ '--app-color': currentApp.color }}>
-    <header className="oc-titlebar"><a href="/" className="oc-back" aria-label="Back to learning">‹</a>{active === 'word' && <div className="oc-quick-access"><button type="button" onClick={saveWord} title="Save">▣</button><button type="button" onClick={() => runWordCommand('undo')} title="Undo">↶</button><button type="button" onClick={() => runWordCommand('redo')} title="Redo">↷</button></div>}<span className="oc-app-badge">{currentApp.badge}</span><strong>{currentApp.label} practice</strong>{active === 'word' ? <input className="oc-file-name-input" value={fileName} onChange={(event) => setFileName(event.target.value)} aria-label="Document name" /> : <span className="oc-file-name">Practice file</span>}<div className="oc-window-actions"><button type="button">−</button><button type="button">□</button><button type="button">×</button></div></header>
-    <AppSwitcher active={active} onChange={setActive} />
+  return <main className={`office-compiler ${active === 'word' ? 'word-mode' : ''}`} style={{ '--app-color': currentApp.color }}>
+    {active === 'word' ? <header className="oc-titlebar oc-word-titlebar"><div className="oc-word-title-left"><a href="/" className="oc-back" aria-label="Back to learning">‹</a><select className="oc-office-launcher" value={active} onChange={(event) => setActive(event.target.value)} aria-label="Office application"><option value="word">W</option><option value="excel">X</option><option value="powerpoint">P</option></select><div className="oc-quick-access"><button type="button" onClick={saveWord} title="Save">▣</button><button type="button" onClick={() => runWordCommand('undo')} title="Undo">↶</button><button type="button" onClick={() => runWordCommand('redo')} title="Redo">↷</button><button type="button" title="Repeat">↻</button><button type="button" title="Customize toolbar">⌄</button></div></div><strong className="oc-word-window-title">{fileName} - Word</strong><div className="oc-word-title-right"><button type="button" className="oc-share">♙ Share</button><div className="oc-window-actions"><button type="button">−</button><button type="button">□</button><button type="button">×</button></div></div></header> : <header className="oc-titlebar"><a href="/" className="oc-back" aria-label="Back to learning">‹</a><span className="oc-app-badge">{currentApp.badge}</span><strong>{currentApp.label} practice</strong><span className="oc-file-name">Practice file</span><div className="oc-window-actions"><button type="button">−</button><button type="button">□</button><button type="button">×</button></div></header>}
+    {active !== 'word' && <AppSwitcher active={active} onChange={setActive} />}
     {active === 'word' ? <WordRibbon activeTab={wordTab} onTab={setWordTab} run={runWordCommand} zoom={zoom} setZoom={setZoom} onSave={saveWord} /> : <Ribbon active={active} />}
     <div className="oc-workspace">{active === 'word' && <WordWorkspace editorRef={wordEditorRef} onInput={updateWordState} zoom={zoom} paperMode={paperMode} />}{active === 'excel' && <ExcelWorkspace />}{active === 'powerpoint' && <PowerPointWorkspace />}</div>
     <footer className="oc-statusbar">{active === 'word' ? <><span>Page 1 of 1</span><span>{wordCount} words</span><span>English (United Kingdom)</span><span className="oc-view-buttons">▤ ▣ ▥</span><label>− <input type="range" min="70" max="150" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /> ＋ {zoom}%</label></> : <><span>Ready</span><span>{currentApp.label} learning workspace</span><span>100%</span></>}</footer>

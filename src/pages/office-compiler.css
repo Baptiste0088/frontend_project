@@ -1,10 +1,17 @@
 .office-compiler { --app-color: #185abd; height: 100svh; display: grid; grid-template-rows: 38px auto auto minmax(0,1fr) 26px; overflow: hidden; background: #f3f3f3; color: #202020; font-family: "Segoe UI", Arial, sans-serif; }
+.office-compiler.word-mode { grid-template-rows: 58px auto minmax(0,1fr) 26px; }
 .oc-titlebar { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 0 8px; background: var(--app-color); color: white; }
 .oc-titlebar strong { font-size: 13px; }
 .oc-back, .oc-titlebar button { display: grid; place-items: center; border: 0; background: transparent; color: inherit; text-decoration: none; }
 .oc-back { width: 28px; height: 28px; border-radius: 4px; font-size: 27px; }
 .oc-back:hover, .oc-titlebar button:hover { background: rgba(255,255,255,.15); }
 .oc-app-badge { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 3px; background: rgba(255,255,255,.18); font-weight: 800; }
+.oc-word-titlebar { position: relative; display: grid; grid-template-columns: 1fr minmax(260px,auto) 1fr; padding: 0 14px; background: #2b579a; }
+.oc-word-title-left, .oc-word-title-right { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.oc-word-title-right { justify-content: flex-end; }
+.oc-word-window-title { overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font-size: 15px !important; font-weight: 400; }
+.oc-office-launcher { width: 30px; height: 30px; border: 1px solid #ffffff55; border-radius: 2px; outline: 0; background: #2b579a; color: white; font-weight: 800; }
+.oc-share { height: 40px; padding: 0 16px; border: 0; background: #17467f !important; color: white; font-size: 14px; }
 .oc-quick-access { display: flex; gap: 1px; }
 .oc-quick-access button { width: 27px; height: 28px; border-radius: 3px; font-size: 16px; }
 .oc-file-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: auto; font-size: 12px; opacity: .85; }
@@ -27,20 +34,25 @@
 .oc-ribbon-tools button:hover { background: #f0f0f0; }
 .oc-ribbon-tools button.strong { font-weight: 900; }
 .oc-word-ribbon { min-width: 0; }
-.oc-word-groups { display: flex; min-width: 0; height: 82px; overflow-x: auto; padding: 4px 6px 3px; }
-.oc-word-group { position: relative; flex: 0 0 auto; display: flex; align-content: start; gap: 3px; padding: 2px 8px 17px; border-right: 1px solid #ddd; }
-.oc-word-group button, .oc-word-group select, .oc-word-group label { min-height: 25px; border: 1px solid transparent; border-radius: 2px; background: white; color: #222; font-size: 10px; }
+.oc-word-ribbon .oc-ribbon-tabs { height: 44px; align-items: stretch; gap: 0; padding: 0 18px; background: #2b579a; color: white; }
+.oc-word-ribbon .oc-ribbon-tabs button { padding: 0 15px; border: 0; color: white; font-size: 15px; }
+.oc-word-ribbon .oc-ribbon-tabs button.active { background: #f5f5f5; color: #2b579a; }
+.oc-word-ribbon .oc-ribbon-tabs .oc-file-tab { margin-left: -18px; background: #194378; }
+.oc-word-ribbon .oc-tell-me { margin-left: 12px; background: #244d86; color: #e7effa; font-size: 13px; }
+.oc-word-groups { display: flex; min-width: 0; height: 152px; overflow-x: auto; overflow-y: hidden; padding: 8px 6px 4px; background: #f6f6f6; }
+.oc-word-group { position: relative; flex: 0 0 auto; display: flex; align-content: start; gap: 5px; padding: 4px 12px 26px; border-right: 1px solid #d1d1d1; }
+.oc-word-group button, .oc-word-group select, .oc-word-group label { min-height: 34px; border: 1px solid transparent; border-radius: 1px; background: #f6f6f6; color: #333; font-size: 13px; }
 .oc-word-group button:hover, .oc-word-group label:hover { border-color: #b9d5f1; background: #eaf3fc; }
-.oc-word-group small { position: absolute; right: 8px; bottom: 1px; left: 8px; text-align: center; color: #666; font-size: 9px; }
-.oc-word-group .oc-large-tool { width: 45px; display: grid; align-content: center; justify-items: center; font-size: 25px; }
-.oc-word-group .oc-large-tool span { font-size: 9px; }
+.oc-word-group small { position: absolute; right: 8px; bottom: 3px; left: 8px; text-align: center; color: #666; font-size: 12px; }
+.oc-word-group .oc-large-tool { width: 56px; display: grid; align-content: center; justify-items: center; font-size: 38px; }
+.oc-word-group .oc-large-tool span { font-size: 13px; }
 .oc-clipboard > div, .oc-editing { display: grid; }
 .oc-clipboard > div button, .oc-editing button { text-align: left; }
 .oc-font-line, .oc-paragraph-line { display: flex; align-items: center; gap: 1px; }
 .oc-font-line:first-child { align-self: start; }
-.oc-font-line select:first-child { width: 122px; }
-.oc-font-line select:nth-child(2) { width: 48px; }
-.oc-font-line button, .oc-paragraph-line button { min-width: 27px; padding: 2px 5px; }
+.oc-font-line select:first-child { width: 145px; font-size: 15px; }
+.oc-font-line select:nth-child(2) { width: 58px; font-size: 15px; }
+.oc-font-line button, .oc-paragraph-line button { min-width: 34px; padding: 3px 7px; font-size: 14px; }
 .oc-font-line .strong { font-weight: 900; }
 .oc-font-line .italic { font-family: Georgia,serif; font-style: italic; }
 .oc-font-line .underline { text-decoration: underline; }
@@ -48,21 +60,24 @@
 .oc-font-line input[type="color"] { position: absolute; inset: auto 2px 1px; width: 24px; height: 5px; padding: 0; border: 0; opacity: .8; }
 .oc-word-group:not(.oc-clipboard):not(.oc-styles):not(.oc-editing) { display: grid; grid-template-rows: 1fr 1fr; }
 .oc-styles { align-items: stretch; }
-.oc-styles button { width: 70px; border-color: #d8d8d8; background: linear-gradient(#fff,#f7f7f7); }
-.oc-styles button:nth-child(2) { color: #2f5597; font-size: 12px; }
+.oc-styles button { width: 105px; border-color: #d8d8d8; background: linear-gradient(#fff,#f7f7f7); font-family: Georgia,serif; font-size: 16px; }
+.oc-styles button:nth-child(2) { color: #2f5597; font-size: 17px; }
 .oc-styles button:nth-child(3) { color: #4472c4; }
 .oc-secondary-tools { display: flex; min-height: 72px; align-items: stretch; gap: 4px; overflow-x: auto; padding: 5px 8px; }
 .oc-secondary-tools > button { width: 72px; flex: 0 0 auto; display: grid; place-items: center; gap: 1px; border: 1px solid transparent; background: white; font-size: 9px; }
 .oc-secondary-tools > button:hover { border-color: #b9d5f1; background: #eaf3fc; }
 .oc-secondary-tools > button strong { display: grid; width: 28px; height: 28px; place-items: center; color: var(--app-color); font-size: 18px; }
 .oc-ribbon-zoom { min-width: 170px; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 10px; }
+.oc-adobe > button { width: 78px; display: grid; place-items: center; border: 0; background: transparent; }
+.oc-adobe > button strong { color: #1769e0; font-size: 32px; }
+.oc-adobe > button span { font-size: 13px; }
 .oc-workspace { min-height: 0; overflow: hidden; }
 .oc-statusbar { display: flex; align-items: center; gap: 18px; padding: 0 12px; background: var(--app-color); color: white; font-size: 10px; }
 .oc-statusbar label { display: flex; align-items: center; gap: 5px; margin-left: auto; }
 .oc-statusbar input[type="range"] { width: 100px; height: 3px; accent-color: white; }
 .oc-view-buttons { margin-left: auto; letter-spacing: 5px; }
 .oc-view-buttons + label { margin-left: 0; }
-.oc-word-workspace { height: 100%; overflow: auto; padding: 0 18px 40px; background: #e5e5e5; }
+.oc-word-workspace { height: 100%; overflow: auto; padding: 28px 18px 60px; background: #e6e6e6; }
 .oc-ruler { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-around; max-width: 794px; height: 22px; margin: 0 auto 14px; border: 1px solid #bbb; border-top: 0; background: white; color: #777; font-size: 9px; }
 .oc-paper { width: min(794px,100%); min-height: 900px; margin: auto; padding: clamp(38px,8vw,86px); outline: 0; background: white; box-shadow: 0 2px 12px #0002; font-family: Calibri, Arial, sans-serif; line-height: 1.5; text-align: left; }
 .oc-paper.landscape { width: min(1050px,100%); min-height: 710px; }
@@ -103,4 +118,4 @@
 .oc-slide input { padding: 10px; font-size: clamp(22px,4vw,44px); font-weight: 700; }
 .oc-slide textarea { min-height: 100px; padding: 12px; resize: none; font-size: clamp(14px,2vw,24px); }
 .oc-notes { width: min(900px,100%); padding: 10px; border: 1px solid #ccc; background: white; color: #777; font-size: 11px; }
-@media (max-width: 700px) { .oc-window-actions, .oc-file-name, .oc-tell-me { display: none; } .oc-titlebar strong { margin-right: auto; } .oc-file-name-input { width: 105px; margin-left: 0; } .oc-quick-access button { width: 23px; } .oc-app-switcher { justify-content: flex-start; } .oc-ribbon-tabs button { padding-inline: 9px; } .oc-word-groups { height: 76px; } .oc-word-workspace { padding-inline: 8px; } .oc-paper { min-height: 720px; padding: 36px 24px; } .oc-statusbar { gap: 8px; padding-inline: 7px; } .oc-statusbar span:nth-child(3), .oc-view-buttons { display: none; } .oc-statusbar input[type="range"] { width: 65px; } .oc-powerpoint-workspace { grid-template-columns: 82px minmax(0,1fr); } .oc-slide-list { padding: 6px; } .oc-slide-list > button { gap: 3px; padding: 3px; } .oc-slide-list > button > span, .oc-slide-list strong, .oc-slide-list small { display: none; } .oc-slide-stage { padding: 10px; } }
+@media (max-width: 700px) { .office-compiler.word-mode { grid-template-rows: 46px auto minmax(0,1fr) 26px; } .oc-window-actions, .oc-file-name, .oc-tell-me, .oc-share { display: none; } .oc-titlebar strong { margin-right: auto; } .oc-word-titlebar { grid-template-columns: auto minmax(120px,1fr); padding-inline: 5px; } .oc-word-title-right { display: none; } .oc-word-window-title { font-size: 11px !important; } .oc-quick-access button { width: 23px; } .oc-app-switcher { justify-content: flex-start; } .oc-ribbon-tabs button { padding-inline: 9px; } .oc-word-ribbon .oc-ribbon-tabs { height: 38px; padding-inline: 5px; } .oc-word-ribbon .oc-ribbon-tabs button { padding-inline: 11px; font-size: 12px; } .oc-word-ribbon .oc-ribbon-tabs .oc-file-tab { margin-left: -5px; } .oc-word-groups { height: 104px; } .oc-word-group { padding: 2px 7px 20px; } .oc-word-group button, .oc-word-group select, .oc-word-group label { min-height: 27px; font-size: 10px; } .oc-word-group small { font-size: 9px; } .oc-word-group .oc-large-tool { width: 42px; font-size: 25px; } .oc-word-group .oc-large-tool span { font-size: 9px; } .oc-font-line select:first-child { width: 100px; font-size: 11px; } .oc-font-line select:nth-child(2) { width: 43px; font-size: 11px; } .oc-font-line button, .oc-paragraph-line button { min-width: 27px; padding: 2px 4px; font-size: 10px; } .oc-styles button { width: 75px; font-size: 11px; } .oc-word-workspace { padding: 14px 8px 40px; } .oc-paper { min-height: 720px; padding: 36px 24px; } .oc-statusbar { gap: 8px; padding-inline: 7px; } .oc-statusbar span:nth-child(3), .oc-view-buttons { display: none; } .oc-statusbar input[type="range"] { width: 65px; } .oc-powerpoint-workspace { grid-template-columns: 82px minmax(0,1fr); } .oc-slide-list { padding: 6px; } .oc-slide-list > button { gap: 3px; padding: 3px; } .oc-slide-list > button > span, .oc-slide-list strong, .oc-slide-list small { display: none; } .oc-slide-stage { padding: 10px; } }
