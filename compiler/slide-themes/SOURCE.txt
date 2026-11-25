@@ -1,0 +1,2 @@
+Presentation theme sources, compiled themes and thumbnails from https://github.com/agentbridges-ai/onlyoffice-browser/tree/0f7efb20ce59aac074a2d895f1bee04203455825/public/sdkjs/slide/themes/
+See LICENSE.

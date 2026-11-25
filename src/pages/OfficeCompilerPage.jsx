@@ -1,180 +1,209 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import './office-compiler.css';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { cleanDocument } from '../lib/wordDocument';
+import './office-practice.css';
 
-const apps = [
-  { id: 'word', label: 'Word', badge: 'W', color: '#185abd' },
-  { id: 'excel', label: 'Excel', badge: 'X', color: '#107c41' },
-  { id: 'powerpoint', label: 'PowerPoint', badge: 'P', color: '#c43e1c' },
+const runtime = '/compiler/runtime/9.3.0.133-24e34b4f401d86dfb31def637358e2fa/vendor';
+const exercises = [
+  { id: 'document', app: 'word', kind: 'word', ext: 'docx', title: 'Blank document', url: '/compiler/templates/blank.docx' },
+  { id: 'workbook', app: 'excel', kind: 'cell', ext: 'xlsx', title: 'Blank spreadsheet', url: '/compiler/templates/blank.xlsx' },
+  { id: 'presentation', app: 'powerpoint', kind: 'slide', ext: 'pptx', title: 'Blank presentation', url: '/compiler/templates/blank.pptx' },
+  { id: 'club-notice', app: 'word', kind: 'word', ext: 'docx', title: 'Club meeting notice', url: '/word-practice-files/club-meeting-notice.docx' },
+  { id: 'budget', app: 'excel', kind: 'cell', ext: 'xlsx', title: 'Project budget', url: '/compiler/templates/project-budget.xlsx' },
+  { id: 'project-brief', app: 'powerpoint', kind: 'slide', ext: 'pptx', title: 'Project brief', url: '/compiler/templates/project-brief.pptx' },
 ];
 
-const ribbonTools = {
-  word: ['Paste', 'Calibri', '11', 'Bold', 'Italic', 'Underline', 'Text color', 'Bullets', 'Align'],
-  excel: ['Paste', 'Arial', '11', 'Bold', 'Borders', 'Currency', 'Percent', 'Sort', 'Filter'],
-  powerpoint: ['New slide', 'Layout', 'Arial', '24', 'Bold', 'Shapes', 'Design', 'Transitions'],
-};
-
-function AppSwitcher({ active, onChange }) {
-  return <nav className="oc-app-switcher" aria-label="Office applications">
-    {apps.map((app) => <button key={app.id} type="button" onClick={() => onChange(app.id)} aria-pressed={active === app.id} style={{ '--app-color': app.color }}><span>{app.badge}</span>{app.label}</button>)}
-  </nav>;
+let loadingAPI;
+function loadEditor() {
+  if (window.DocsAPI?.DocEditor) return Promise.resolve(window.DocsAPI);
+  if (!loadingAPI) loadingAPI = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = runtime + '/web-apps/apps/api/documents/api.js';
+    script.onload = () => window.DocsAPI?.DocEditor ? resolve(window.DocsAPI) : reject(new Error());
+    script.onerror = () => { script.remove(); reject(new Error()); };
+    document.head.append(script);
+  }).catch(error => { loadingAPI = null; throw error; });
+  return loadingAPI;
 }
 
-function Ribbon({ active }) {
-  return <div className="oc-ribbon">
-    <div className="oc-ribbon-tabs"><button className="active">Home</button><button>Insert</button><button>Layout</button><button>Review</button><button>View</button></div>
-    <div className="oc-ribbon-tools">{ribbonTools[active].map((tool) => <button key={tool} type="button" className={tool === 'Bold' ? 'strong' : ''}>{tool}</button>)}</div>
-  </div>;
-}
-
-const wordTabs = ['Home', 'Insert', 'Design', 'Layout', 'References', 'Mailings', 'Review', 'View', 'Acrobat'];
-
-function WordRibbon({ activeTab, onTab, run, zoom, setZoom, onSave }) {
-  const home = <div className="oc-word-groups">
-    <div className="oc-word-group oc-clipboard"><button type="button" className="oc-large-tool" onClick={() => run('paste')}>▣<span>Paste</span></button><div><button type="button" onClick={() => run('cut')}>✂ Cut</button><button type="button" onClick={() => run('copy')}>▤ Copy</button><button type="button" onClick={() => run('removeFormat')}>▥ Format Painter</button></div><small>Clipboard</small></div>
-    <div className="oc-word-group"><div className="oc-font-line"><select aria-label="Font family" defaultValue="Calibri" onChange={(event) => run('fontName', event.target.value)}><option value="Calibri">Calibri (Body)</option><option>Arial</option><option>Times New Roman</option><option>Century Schoolbook</option><option>Georgia</option></select><select aria-label="Font size" defaultValue="3" onChange={(event) => run('fontSize', event.target.value)}><option value="2">10</option><option value="3">11</option><option value="4">14</option><option value="5">18</option><option value="6">24</option><option value="7">36</option></select><button type="button" onClick={() => run('increaseFontSize')}>A↑</button><button type="button" onClick={() => run('decreaseFontSize')}>A↓</button></div><div className="oc-font-line"><button type="button" className="strong" onClick={() => run('bold')}>B</button><button type="button" className="italic" onClick={() => run('italic')}>I</button><button type="button" className="underline" onClick={() => run('underline')}>U</button><button type="button" onClick={() => run('strikeThrough')}>abc</button><label title="Highlight color">▰<input type="color" defaultValue="#fff200" onChange={(event) => run('hiliteColor', event.target.value)} /></label><label title="Font color">A<input type="color" defaultValue="#000000" onChange={(event) => run('foreColor', event.target.value)} /></label><button type="button" onClick={() => run('removeFormat')}>A⌫</button></div><small>Font</small></div>
-    <div className="oc-word-group"><div className="oc-paragraph-line"><button type="button" onClick={() => run('insertUnorderedList')}>• List</button><button type="button" onClick={() => run('insertOrderedList')}>1. List</button><button type="button" onClick={() => run('outdent')}>⇤</button><button type="button" onClick={() => run('indent')}>⇥</button><button type="button" onClick={() => run('formatBlock', 'blockquote')}>¶</button></div><div className="oc-paragraph-line"><button type="button" onClick={() => run('justifyLeft')}>≡</button><button type="button" onClick={() => run('justifyCenter')}>≣</button><button type="button" onClick={() => run('justifyRight')}>≡→</button><button type="button" onClick={() => run('justifyFull')}>▤</button><button type="button" onClick={() => run('formatBlock', 'p')}>↕</button></div><small>Paragraph</small></div>
-    <div className="oc-word-group oc-styles"><button type="button" onClick={() => run('formatBlock', 'p')}>Normal</button><button type="button" onClick={() => run('formatBlock', 'div')}>No Spacing</button><button type="button" onClick={() => run('formatBlock', 'h1')}>Heading 1</button><button type="button" onClick={() => run('formatBlock', 'h2')}>Heading 2</button><button type="button" onClick={() => run('formatBlock', 'h3')}>Title</button><small>Styles</small></div>
-    <div className="oc-word-group oc-editing"><button type="button" onClick={() => run('find')}>⌕ Find</button><button type="button" onClick={() => run('replace')}>↔ Replace</button><button type="button" onClick={() => run('selectAll')}>▾ Select</button><small>Editing</small></div>
-    <div className="oc-word-group oc-adobe"><button type="button" onClick={() => run('print')}><strong>⌘</strong><span>Create<br />a PDF</span></button><small>Adobe Acrobat</small></div>
-  </div>;
-  const secondary = {
-    File: [['Save document', 'save'], ['New document', 'newDocument'], ['Print', 'print'], ['Open Excel', 'switchExcel'], ['Open PowerPoint', 'switchPowerpoint'], ['Back to learning', 'backHome']],
-    Insert: [['Page break', 'pageBreak'], ['Table', 'table'], ['Link', 'createLink'], ['Picture', 'image'], ['Date & time', 'date'], ['Symbol', 'symbol']],
-    Design: [['Title style', 'title'], ['Heading style', 'heading'], ['Blue theme', 'blueTheme'], ['Clear formatting', 'removeFormat']],
-    Layout: [['Normal margins', 'normalMargins'], ['Narrow margins', 'narrowMargins'], ['Portrait', 'portrait'], ['Landscape', 'landscape']],
-    References: [['Table of contents', 'toc'], ['Footnote', 'footnote'], ['Citation', 'citation']],
-    Mailings: [['Greeting line', 'greeting'], ['Address block', 'address'], ['Merge field', 'merge']],
-    Review: [['Word count', 'wordCount'], ['Spelling', 'spelling'], ['Select all', 'selectAll'], ['Clear formatting', 'removeFormat']],
-    View: [['Print layout', 'printView'], ['Web layout', 'webView'], ['100% zoom', 'zoom100']],
-    Acrobat: [['Create a PDF', 'print'], ['Export document', 'save']],
-  };
-  return <div className="oc-ribbon oc-word-ribbon">
-    <div className="oc-ribbon-tabs"><button type="button" className="oc-file-tab" onClick={() => onTab('File')}>File</button>{wordTabs.map((tab) => <button type="button" key={tab} onClick={() => onTab(tab)} className={activeTab === tab ? 'active' : ''}>{tab}</button>)}<span className="oc-tell-me">Tell me what you want to do…</span></div>
-    {activeTab === 'Home' ? home : <div className="oc-secondary-tools">{(secondary[activeTab] || secondary.Insert).map(([label, command]) => <button type="button" key={command} onClick={() => command === 'zoom100' ? setZoom(100) : command === 'save' ? onSave() : run(command)}><strong>{label.slice(0, 1)}</strong><span>{label}</span></button>)}{activeTab === 'View' && <label className="oc-ribbon-zoom">Zoom <input type="range" min="70" max="150" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /></label>}</div>}
-  </div>;
-}
-
-function WordWorkspace({ editorRef, onInput, zoom, paperMode }) {
-  return <section className="oc-word-workspace" aria-label="Word editor">
-    <article ref={editorRef} className={`oc-paper ${paperMode}`} style={{ zoom: `${zoom}%` }} contentEditable suppressContentEditableWarning spellCheck="true" onInput={onInput}>
-      <p><br /></p>
-    </article>
-  </section>;
-}
-
-function ExcelWorkspace() {
-  const rows = 12;
-  const columns = 8;
-  const [selected, setSelected] = useState('A1');
-  const letters = useMemo(() => Array.from({ length: columns }, (_, index) => String.fromCharCode(65 + index)), []);
-  return <section className="oc-excel-workspace" aria-label="Excel editor">
-    <div className="oc-formula"><strong>{selected}</strong><span>fx</span><input aria-label="Formula" placeholder="Enter a value or formula" /></div>
-    <div className="oc-sheet" style={{ '--columns': columns }}>
-      <div className="oc-corner" />{letters.map((letter) => <div className="oc-column" key={letter}>{letter}</div>)}
-      {Array.from({ length: rows }, (_, row) => <div className="oc-sheet-row" key={row}>
-        <div className="oc-row-number">{row + 1}</div>
-        {letters.map((letter) => { const cell = `${letter}${row + 1}`; return <div key={cell} className={selected === cell ? 'selected' : ''} contentEditable suppressContentEditableWarning onFocus={() => setSelected(cell)} />; })}
-      </div>)}
-    </div>
-    <div className="oc-sheet-tabs"><button type="button">＋</button><button type="button" className="active">Sheet1</button></div>
-  </section>;
-}
-
-function PowerPointWorkspace() {
-  const [slides, setSlides] = useState([{ id: 1, title: 'Presentation title', body: 'Click to add a subtitle' }]);
-  const [activeSlide, setActiveSlide] = useState(1);
-  const slide = slides.find((item) => item.id === activeSlide) || slides[0];
-  const addSlide = () => {
-    const next = { id: Date.now(), title: 'New slide', body: 'Click to add text' };
-    setSlides((current) => [...current, next]);
-    setActiveSlide(next.id);
-  };
-  const updateSlide = (field, value) => setSlides((current) => current.map((item) => item.id === slide.id ? { ...item, [field]: value } : item));
-  return <section className="oc-powerpoint-workspace" aria-label="PowerPoint editor">
-    <aside className="oc-slide-list"><button type="button" className="oc-new-slide" onClick={addSlide}>＋ New slide</button>{slides.map((item, index) => <button type="button" key={item.id} onClick={() => setActiveSlide(item.id)} className={item.id === activeSlide ? 'active' : ''}><span>{index + 1}</span><div><strong>{item.title}</strong><small>{item.body}</small></div></button>)}</aside>
-    <div className="oc-slide-stage"><div className="oc-slide"><input value={slide.title} onChange={(event) => updateSlide('title', event.target.value)} aria-label="Slide title" /><textarea value={slide.body} onChange={(event) => updateSlide('body', event.target.value)} aria-label="Slide text" /></div><div className="oc-notes">Click to add speaker notes</div></div>
-  </section>;
+function previousDraft() {
+  try { return localStorage.getItem('gca:office-compiler:word:v2'); } catch { return null; }
 }
 
 export default function OfficeCompilerPage() {
-  const requestedApp = new URLSearchParams(window.location.search).get('app');
-  const [active, setActive] = useState(apps.some((app) => app.id === requestedApp) ? requestedApp : 'word');
-  const [wordTab, setWordTab] = useState('Home');
-  const [wordCount, setWordCount] = useState(0);
-  const [zoom, setZoom] = useState(100);
-  const [paperMode, setPaperMode] = useState('portrait');
-  const [fileName] = useState('Document2 [Compatibility Mode]');
-  const wordEditorRef = useRef(null);
-  const currentApp = apps.find((app) => app.id === active) || apps[0];
+  const [params] = useSearchParams();
+  const initial = exercises.find(item => item.id === params.get('template'))
+    || exercises.find(item => item.app === params.get('app')) || exercises[0];
+  const [practice, setPractice] = useState(initial);
+  const [status, setStatus] = useState('opening');
+  const [message, setMessage] = useState('');
+  const [draft] = useState(previousDraft);
+  const stage = useRef(null);
+  const fileInput = useRef(null);
+  const session = useRef(null);
+  const dirty = useRef(false);
+  const saving = useRef(false);
+  const saveTimer = useRef(null);
+
   useEffect(() => {
-    if (!wordEditorRef.current) return;
-    const stored = localStorage.getItem('gca:office-compiler:word:v2');
-    if (stored) wordEditorRef.current.innerHTML = stored;
-    setWordCount(wordEditorRef.current.innerText.trim().split(/\s+/).filter(Boolean).length);
-  }, [active]);
-  const updateWordState = () => {
-    const editor = wordEditorRef.current;
-    if (!editor) return;
-    localStorage.setItem('gca:office-compiler:word:v2', editor.innerHTML);
-    setWordCount(editor.innerText.trim().split(/\s+/).filter(Boolean).length);
-  };
-  const runWordCommand = async (command, value = null) => {
-    const editor = wordEditorRef.current;
-    if (!editor) return;
-    editor.focus();
-    if (command === 'find') { document.execCommand('findString', false, window.getSelection()?.toString() || ''); return; }
-    if (command === 'replace') { document.execCommand('selectAll'); return; }
-    if (command === 'pageBreak') value = '<div class="oc-page-break"><span>Page break</span></div><p><br></p>';
-    if (command === 'table') value = '<table><tbody><tr><td>Heading 1</td><td>Heading 2</td></tr><tr><td>Data</td><td>Data</td></tr></tbody></table><p><br></p>';
-    if (command === 'date') value = `<p>${new Date().toLocaleDateString()}</p>`;
-    if (command === 'symbol') value = '©';
-    if (command === 'footnote') value = '<sup>1</sup>';
-    if (command === 'citation') value = '(Author, Year)';
-    if (command === 'greeting') value = 'Dear «First_Name»,';
-    if (command === 'address') value = '«Address_Block»';
-    if (command === 'merge') value = '«Merge_Field»';
-    if (command === 'toc') value = '<h2>Table of contents</h2><p>1. Introduction ................................ 1</p>';
-    if (['pageBreak', 'table', 'date', 'toc'].includes(command)) command = 'insertHTML';
-    if (['symbol', 'footnote', 'citation', 'greeting', 'address', 'merge'].includes(command)) command = 'insertText';
-    if (command === 'title') { command = 'formatBlock'; value = 'h1'; }
-    if (command === 'heading') { command = 'formatBlock'; value = 'h2'; }
-    if (command === 'blueTheme') { document.execCommand('foreColor', false, '#2f5597'); updateWordState(); return; }
-    if (command === 'normalMargins') { setPaperMode('portrait'); return; }
-    if (command === 'narrowMargins') { setPaperMode('narrow'); return; }
-    if (command === 'portrait') { setPaperMode('portrait'); return; }
-    if (command === 'landscape') { setPaperMode('landscape'); return; }
-    if (command === 'wordCount') { window.alert(`${wordCount} words`); return; }
-    if (command === 'spelling') { editor.setAttribute('spellcheck', 'true'); editor.focus(); return; }
-    if (command === 'printView') { setPaperMode('portrait'); return; }
-    if (command === 'webView') { setPaperMode('web'); return; }
-    if (command === 'image') { document.execCommand('insertText', false, '[Picture]'); updateWordState(); return; }
-    if (command === 'createLink') { document.execCommand('createLink', false, 'https://'); updateWordState(); return; }
-    if (command === 'newDocument') { editor.innerHTML = '<p><br></p>'; updateWordState(); return; }
-    if (command === 'print') { window.print(); return; }
-    if (command === 'switchExcel') { setActive('excel'); return; }
-    if (command === 'switchPowerpoint') { setActive('powerpoint'); return; }
-    if (command === 'backHome') { window.location.assign('/'); return; }
-    if (command === 'paste') {
-      try { document.execCommand('insertText', false, await navigator.clipboard.readText()); } catch { editor.focus(); }
-      updateWordState();
-      return;
+    const controller = new AbortController();
+    const { signal } = controller;
+    const host = stage.current;
+    const mount = document.createElement('div');
+    mount.id = 'office-' + crypto.randomUUID();
+    host.replaceChildren(mount);
+    let editor;
+    let fileUrl;
+    const openingTimer = setTimeout(() => {
+      setStatus('error');
+      setMessage('The editor is taking longer to open. You can retry or choose another file.');
+    }, 120000);
+    const frame = () => host.querySelector('iframe')?.contentWindow;
+    const listenForSave = event => {
+      if (event.origin !== location.origin || !frame() || event.source !== frame()) return;
+      const data = event.data;
+      if (data?.type !== 'onlyoffice-file-stream' || !(data.buffer instanceof ArrayBuffer) || !data.buffer.byteLength) return;
+      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'application/octet-stream' }));
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = data.fileName || practice.title + '.' + practice.ext;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      saving.current = false;
+      clearTimeout(saveTimer.current);
+      dirty.current = false;
+      setStatus('ready');
+      setMessage('Copy downloaded');
+    };
+    const leave = event => {
+      if (dirty.current) { event.preventDefault(); event.returnValue = ''; }
+    };
+    window.addEventListener('message', listenForSave);
+    window.addEventListener('beforeunload', leave);
+    async function open() {
+      try {
+        const api = await loadEditor();
+        if (signal.aborted) return;
+        let file = practice.file;
+        if (!file) {
+          const response = await fetch(practice.url, { signal });
+          if (!response.ok) throw new Error();
+          file = await response.blob();
+        }
+        if (signal.aborted) return;
+        fileUrl = URL.createObjectURL(file);
+        editor = new api.DocEditor(mount.id, {
+          width: '100%', height: '100%',
+          // This browser build includes local file conversion in its full editor on all screen sizes.
+          type: 'desktop',
+          documentType: practice.kind,
+          document: { fileType: practice.ext, title: practice.file?.name || practice.title + '.' + practice.ext,
+            url: fileUrl, key: mount.id, permissions: { edit: true, download: true, print: true } },
+          editorConfig: { mode: 'edit', lang: 'en', user: { id: 'practice', name: 'Learner' },
+            customization: { autosave: false } },
+          events: {
+            onAppReady() { if (!signal.aborted && frame()) frame().OO_FILE_STREAM_ONLY = true; },
+            onDocumentReady() {
+              if (signal.aborted) return;
+              clearTimeout(openingTimer);
+              if (frame()) frame().OO_FILE_STREAM_ONLY = true;
+              setMessage('');
+              setStatus('ready');
+            },
+            onDocumentStateChange(event) {
+              if (!signal.aborted && event.data) { dirty.current = true; setMessage(''); }
+            },
+            onError() {
+              if (signal.aborted) return;
+              clearTimeout(openingTimer);
+              clearTimeout(saveTimer.current);
+              saving.current = false;
+              setStatus('error');
+              setMessage('ONLYOFFICE could not complete the operation. Try opening the file again.');
+            },
+          },
+        });
+        session.current = editor;
+      } catch {
+        if (!signal.aborted) { setStatus('error'); setMessage('The practice editor could not open this file.'); }
+      }
     }
-    if (['copy', 'cut'].includes(command)) { document.execCommand(command); updateWordState(); return; }
-    document.execCommand(command, false, value);
-    updateWordState();
-  };
-  const saveWord = async () => {
-    updateWordState();
-    if (wordEditorRef.current) {
+    open();
+    return () => {
+      controller.abort();
+      clearTimeout(openingTimer);
+      clearTimeout(saveTimer.current);
+      window.removeEventListener('message', listenForSave);
+      window.removeEventListener('beforeunload', leave);
+      editor?.destroyEditor();
+      session.current = null;
+      if (fileUrl) URL.revokeObjectURL(fileUrl);
+    };
+  }, [practice]);
+
+  function changeFile(next) {
+    if (saving.current || (dirty.current && !confirm('Open another practice file and discard unsaved edits?'))) return;
+    dirty.current = false;
+    setMessage('');
+    setStatus('opening');
+    setPractice({ ...next });
+  }
+
+  function openLocal(event) {
+    const file = event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+    const type = exercises.find(item => item.ext === file.name.split('.').pop().toLowerCase());
+    if (type) changeFile({ ...type, id: 'local', title: file.name, file });
+    else setMessage('Choose a DOCX, XLSX or PPTX file.');
+  }
+
+  async function downloadOldDraft() {
+    try {
       const { downloadPracticeDocument } = await import('../lib/exportWordDocument');
-      await downloadPracticeDocument(wordEditorRef.current, fileName);
+      const content = document.createElement('div');
+      content.innerHTML = cleanDocument(draft);
+      await downloadPracticeDocument(content, 'Academy Word draft');
+    } catch { setMessage('Your previous draft could not be downloaded. Please try again.'); }
+  }
+
+  function downloadCopy() {
+    if (status !== 'ready' || saving.current) return;
+    try {
+      saving.current = true;
+      setStatus('saving');
+      setMessage('Preparing download…');
+      session.current.downloadAs(practice.ext);
+      saveTimer.current = setTimeout(() => {
+        saving.current = false;
+        setStatus('ready');
+        setMessage('The download has not finished. Your file is still open.');
+      }, 60000);
+    } catch {
+      saving.current = false;
+      setStatus('ready');
+      setMessage('Download failed. Please try again.');
     }
-  };
-  return <main className={`office-compiler ${active === 'word' ? 'word-mode' : ''}`} style={{ '--app-color': currentApp.color }}>
-    {active === 'word' ? <header className="oc-titlebar oc-word-titlebar"><div className="oc-word-title-left"><div className="oc-quick-access"><button type="button" onClick={saveWord} title="Save">▣</button><button type="button" onClick={() => runWordCommand('undo')} title="Undo">↶</button><button type="button" onClick={() => runWordCommand('redo')} title="Redo">↷</button><button type="button" title="Repeat">↻</button><button type="button" title="Customize toolbar">⌄</button></div></div><strong className="oc-word-window-title">{fileName} - Word</strong><div className="oc-word-title-right"><button type="button" className="oc-share">♙ Share</button><div className="oc-window-actions"><button type="button">−</button><button type="button">□</button><button type="button">×</button></div></div></header> : <header className="oc-titlebar"><a href="/" className="oc-back" aria-label="Back to learning">‹</a><span className="oc-app-badge">{currentApp.badge}</span><strong>{currentApp.label} practice</strong><span className="oc-file-name">Practice file</span><div className="oc-window-actions"><button type="button">−</button><button type="button">□</button><button type="button">×</button></div></header>}
-    {active !== 'word' && <AppSwitcher active={active} onChange={setActive} />}
-    {active === 'word' ? <WordRibbon activeTab={wordTab} onTab={setWordTab} run={runWordCommand} zoom={zoom} setZoom={setZoom} onSave={saveWord} /> : <Ribbon active={active} />}
-    <div className="oc-workspace">{active === 'word' && <WordWorkspace editorRef={wordEditorRef} onInput={updateWordState} zoom={zoom} paperMode={paperMode} />}{active === 'excel' && <ExcelWorkspace />}{active === 'powerpoint' && <PowerPointWorkspace />}</div>
-    <footer className="oc-statusbar">{active === 'word' ? <><span>Page 1 of 1</span><span>{wordCount} words</span><span>English (United Kingdom)</span><span className="oc-view-buttons">▤ ▣ ▥</span><label>− <input type="range" min="70" max="150" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /> ＋ {zoom}%</label></> : <><span>Ready</span><span>{currentApp.label} learning workspace</span><span>100%</span></>}</footer>
+  }
+
+  return <main className="office-practice" aria-label="ONLYOFFICE practice space">
+    <header>
+      <a href="/" className="office-academy">Global Coding Academy</a>
+      <select aria-label="Practice file" value={practice.id} disabled={status === 'saving'}
+        onChange={event => changeFile(exercises.find(item => item.id === event.target.value))}>
+        <optgroup label="New file">{exercises.slice(0, 3).map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>
+        <optgroup label="Practice templates">{exercises.slice(3).map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</optgroup>
+        {practice.file && <option value="local">{practice.file.name}</option>}
+      </select>
+      <input type="file" accept=".docx,.xlsx,.pptx" hidden ref={fileInput} onChange={openLocal} />
+      <button type="button" disabled={status === 'saving'} onClick={() => fileInput.current.click()}>Open file</button>
+      <button type="button" disabled={status !== 'ready'} onClick={downloadCopy}>Download copy</button>
+      {draft && <button type="button" onClick={downloadOldDraft}>Previous Word draft</button>}
+      <span role="status">{status === 'opening' ? 'Opening ONLYOFFICE…' : message}</span>
+      {status === 'error' && <button type="button" onClick={() => changeFile(practice)}>Retry</button>}
+    </header>
+    <section className="office-stage" aria-label="Office editor" ref={stage} />
   </main>;
 }

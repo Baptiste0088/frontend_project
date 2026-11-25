@@ -24,6 +24,7 @@ function App() {
         <Route path="/code-runner" element={<CodeRunnerPage />} />
         <Route path="/word-practice" element={<WordPracticePage />} />
         <Route path="/compiler" element={<OfficeCompilerPage />} />
+        <Route path="/compiler/index.html" element={<OfficeCompilerPage />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
     </Router>

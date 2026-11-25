@@ -1,0 +1,10 @@
+.office-practice { display: flex; flex-direction: column; height: 100dvh; min-height: 0; background: #f4f5f6; color: #193348; font: 14px/1.4 Tahoma, Arial, sans-serif; text-align: left; }
+.office-practice > header { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .65rem; padding: .45rem 1rem; background: #123449; color: white; }
+.office-academy { margin-right: auto; font-weight: bold; color: white; }
+.office-practice header button, .office-practice header select { color: #15394e; background: white; border: 1px solid #bfcfd6; border-radius: 4px; padding: .25rem .6rem; font: inherit; }
+.office-practice header button { cursor: pointer; }
+.office-practice header button:disabled { opacity: .65; cursor: default; }
+.office-practice [role=status]:empty { display: none; }
+.office-stage { position: relative; flex: 1; min-height: 0; min-width: 0; }
+.office-stage > iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@media (max-width: 600px) { .office-practice > header { padding: .35rem .5rem; gap: .35rem; } .office-academy { font-size: 13px; } }
