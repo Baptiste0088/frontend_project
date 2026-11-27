@@ -758,7 +758,7 @@ export default function LandingPage() {
 
         <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
           {showMobileSidebar && <button type="button" className="fixed inset-0 z-40 bg-slate-950/55 md:hidden" onClick={() => setShowMobileSidebar(false)} aria-label="Close lesson menu" />}
-          <aside id="learning-sidebar" className={`practice-sidebar fixed inset-y-0 left-0 z-50 flex h-full w-[min(85vw,300px)] shrink-0 flex-col overflow-y-auto border-r text-left shadow-2xl transition-transform duration-200 md:static md:z-auto md:w-[260px] md:translate-x-0 md:shadow-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
+          <aside id="learning-sidebar" className={`practice-sidebar fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col overflow-y-auto border-r text-left shadow-2xl transition-transform duration-200 md:static md:z-auto md:translate-x-0 md:shadow-none ${enrollment ? 'w-[min(92vw,360px)] md:w-[clamp(288px,32vw,368px)]' : 'w-[min(85vw,300px)] md:w-[260px]'} ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
             <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-3 md:hidden"><strong className="text-[#082f55]">Learning menu</strong><button type="button" onClick={() => setShowMobileSidebar(false)} className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Close lesson menu">×</button></div>
             {enrollment && <div className={`border-b px-3 py-3 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`}>
               <p className={`text-[10px] font-black uppercase tracking-[0.14em] ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>My Package</p>
@@ -769,7 +769,7 @@ export default function LandingPage() {
               {enrollment && packageError && <p className="mx-3 my-3 rounded bg-red-50 px-3 py-2 text-red-700">{packageError}</p>}
               {enrollment && !packageLoading && !packageError && packageLanguages.length === 0 && <p className="px-3 py-4 text-slate-500">No languages have been added to your trade yet.</p>}
               {enrollment && !packageLoading && packageLanguages.length > 0 && selectedLanguageChapters.length === 0 && <p className="px-3 py-4 text-slate-500">No chapters have been added to this language yet.</p>}
-              {enrollment && selectedLanguageChapters.map((chapter, chapterIndex) => {
+              {enrollment && selectedLanguageChapters.map((chapter) => {
                 const expanded = expandedChapter === chapter.id;
                 const publishedPages = packagePages[chapter.id] || [];
                 return (
@@ -777,13 +777,11 @@ export default function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setExpandedChapter(expanded ? '' : chapter.id)}
-                      className={`flex w-full items-center gap-2 px-3 py-3 text-left font-bold transition ${darkMode ? 'text-white hover:bg-slate-800' : 'text-[#082f55] hover:bg-slate-100'}`}
+                      className={`flex min-h-11 w-full items-baseline gap-2 px-3 py-2 text-left text-[13px] leading-[1.4] font-semibold transition md:min-h-9 ${darkMode ? 'text-white hover:bg-slate-800' : 'text-[#082f55] hover:bg-slate-100'}`}
                       aria-expanded={expanded}
                     >
-                      <span className="shrink-0 text-slate-400">{chapterIndex + 1}.</span>
-                      <span className="min-w-0 flex-1 truncate" title={chapter.name}>{chapter.name}</span>
-                      <span className="shrink-0 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-700">{publishedPages.length}</span>
-                      <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+                      <span className="min-w-0 flex-1 wrap-anywhere">{chapter.name}</span>
+                      <span className="shrink-0" aria-hidden="true">{expanded ? '▾' : '▸'}</span>
                     </button>
                     {expanded && <div className={darkMode ? 'bg-slate-950' : 'bg-white'}>
                       {publishedPages.length === 0
