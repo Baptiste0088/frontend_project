@@ -712,22 +712,22 @@ export default function LandingPage() {
       )}
       <main id="practice" className="flex min-h-svh w-full flex-col lg:h-svh">
         <section className={`practice-header shrink-0 border-b px-3 py-2 text-left ${darkMode ? 'border-slate-700 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}>
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:flex lg:justify-between">
             <div className="brand-block flex min-w-0 items-center gap-3">
               <img src={logo} alt="Global Coding Academy logo" className="brand-logo h-11 w-11 shrink-0 rounded-full object-cover" />
-              <div className="brand-copy min-w-0">
+              <div className="brand-copy hidden min-w-0 lg:block">
                 <p className="brand-name">Global Coding Academy</p>
                 <p className="brand-slogan"><span aria-hidden="true" />Code Today. Build Tomorrow.</p>
               </div>
             </div>
-            {!enrollment && <div className="language-center guest-track-center mx-auto flex w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] px-2.5 py-2 shadow-sm shadow-blue-950/20 lg:mx-3 lg:flex-1">
+            {!enrollment && <div className="language-center guest-track-center hidden w-full min-w-0 max-w-xl items-center gap-2 rounded-xl border border-blue-800 bg-gradient-to-r from-[#061f3a] via-[#082f55] to-[#0b416f] px-2.5 py-2 shadow-sm shadow-blue-950/20 lg:mx-3 lg:flex lg:flex-1">
               <div className="learning-track-switch flex min-w-0 flex-1 items-center justify-center gap-2 overflow-x-auto">
                   <button type="button" onClick={() => setSelectedLearningPath('word')} aria-pressed={selectedLearningCourse.category === 'office'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'office' ? 'bg-white text-[#082f55] ring-2 ring-[#ffd700]' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md text-sm ${selectedLearningCourse.category === 'office' ? 'bg-blue-100 text-blue-700' : 'bg-white/15'}`}>✦</span><span className="learning-track-label">Learn ICT</span></button>
                   <button type="button" onClick={() => setSelectedLearningPath('web')} aria-pressed={selectedLearningCourse.category === 'coding'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'coding' ? 'bg-[#ffd700] text-[#082f55] ring-2 ring-white' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md font-mono text-[10px] ${selectedLearningCourse.category === 'coding' ? 'bg-[#082f55] text-white' : 'bg-white/15'}`}>&lt;/&gt;</span><span className="learning-track-label">Coding</span></button>
               </div>
             </div>}
             <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] lg:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
-            <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
+            <div className={`flex-wrap items-stretch gap-2 lg:justify-end ${enrollment ? 'profile-meta col-span-2 flex' : 'hidden lg:flex'}`}>
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl border border-blue-700 bg-[#082f55] px-3 py-2.5 text-white shadow-md sm:px-4">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/10 text-lg text-[#ffd700]" aria-hidden="true">✦</span>
                 <div className="min-w-0 flex-1"><span className="block text-[9px] font-black uppercase tracking-[0.14em] text-[#ffd700]">Practical learning paths</span><strong className="office-invite-message mt-1 block text-xs leading-5 sm:text-sm">Microsoft Office, programming, React &amp; coding projects</strong></div>
