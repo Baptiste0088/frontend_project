@@ -154,6 +154,19 @@ const ictLearningPaths = [
   },
 ];
 
+function orderLearnerCourses(languages) {
+  const officeCourses = ictLearningPaths.filter(course => course.category === 'office');
+  const officeGroups = officeCourses.map(() => []);
+  const otherCourses = [];
+  for (const language of languages) {
+    const key = language.name.toLowerCase().replace(/\s+/g, '').replace(/^(microsoft|ms)/, '');
+    const index = officeCourses.findIndex(course => course.id === key);
+    if (index === -1) otherCourses.push(language);
+    else officeGroups[index].push({ ...language, name: officeCourses[index].name });
+  }
+  return [...officeGroups.flat(), ...otherCourses];
+}
+
 function curriculumTradeKey(enrollment) {
   const value = `${enrollment?.trade_code || ''} ${enrollment?.trade_name || ''}`.toLowerCase();
   if (value.includes('swd') || value.includes('software')) return 'SWD';
@@ -543,7 +556,7 @@ export default function LandingPage() {
       .then(async (response) => {
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.message || 'Unable to load languages.');
-        const languages = payload.languages || [];
+        const languages = orderLearnerCourses(payload.languages || []);
         const languageResults = await Promise.all(languages.map(async (language) => {
           const chapterResponse = await fetch(`${API_BASE_URL}/api/languages/${language.id}/chapters`);
           const chapterPayload = await chapterResponse.json().catch(() => ({}));
