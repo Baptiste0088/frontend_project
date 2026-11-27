@@ -831,13 +831,13 @@ export default function LandingPage() {
               {!enrollment && (
                 <section className="guest-learning-page grid lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="flex min-w-0 flex-col justify-between bg-[#082f55] p-5 text-white sm:p-7">
-                    <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-stretch gap-4 sm:grid-cols-[minmax(0,1fr)_10rem] sm:gap-6 xl:grid-cols-[minmax(0,1fr)_11rem]">
+                    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_10rem] lg:gap-6 xl:grid-cols-[minmax(0,1fr)_11rem]">
                       <div className="flex min-w-0 flex-col justify-center">
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
                         <h1 className="mt-2 max-w-xl text-xl font-black leading-tight sm:text-2xl xl:text-3xl">Build digital skills and learn to code.</h1>
                         <p className="mt-2 max-w-xl text-xs leading-5 text-blue-100 sm:text-sm">Learn Word, Excel, PowerPoint, web development, JavaScript, React, Python, and C through guided lessons and practical projects.</p>
                       </div>
-                      <div className="min-h-full overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-xl shadow-blue-950/30 sm:p-3">
+                      <div className="hidden min-h-full overflow-hidden rounded-2xl border border-white/25 bg-white p-3 shadow-xl shadow-blue-950/30 lg:block">
                         <img src={logo} alt="Global Coding Academy" className="h-full w-full object-contain" />
                       </div>
                     </div>
