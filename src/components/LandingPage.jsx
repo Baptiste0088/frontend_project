@@ -167,6 +167,14 @@ function orderLearnerCourses(languages) {
   return [...officeGroups.flat(), ...otherCourses];
 }
 
+function compareChapterCreation(a, b) {
+  if (a.created_at === b.created_at) return 0;
+  if (!a.created_at) return b.created_at ? 1 : 0;
+  if (!b.created_at) return -1;
+  // The API returns UTC ISO timestamps, including microseconds.
+  return a.created_at < b.created_at ? -1 : 1;
+}
+
 function curriculumTradeKey(enrollment) {
   const value = `${enrollment?.trade_code || ''} ${enrollment?.trade_name || ''}`.toLowerCase();
   if (value.includes('swd') || value.includes('software')) return 'SWD';
@@ -561,7 +569,7 @@ export default function LandingPage() {
           const chapterResponse = await fetch(`${API_BASE_URL}/api/languages/${language.id}/chapters`);
           const chapterPayload = await chapterResponse.json().catch(() => ({}));
           if (!chapterResponse.ok) throw new Error(chapterPayload.message || `Unable to load ${language.name} chapters.`);
-          const chapters = chapterPayload.chapters || [];
+          const chapters = (chapterPayload.chapters || []).sort(compareChapterCreation);
           const pageEntries = await Promise.all(chapters.map(async (chapter) => {
             const pageResponse = await fetch(`${API_BASE_URL}/api/chapters/${chapter.id}/pages`);
             const pagePayload = await pageResponse.json().catch(() => ({}));
