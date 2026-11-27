@@ -540,6 +540,7 @@ export default function LandingPage() {
   const selectedLanguageChapters = packageChapters[selectedPackageLanguage] || [];
   const publishedLessonPages = selectedLanguageChapters.flatMap((chapter) => packagePages[chapter.id] || []);
   const activePackagePage = Object.values(packagePages).flat().find((page) => page.id === selectedPackagePage);
+  const showEmptyLesson = enrollment && !activePackagePage && (!enrollment.trade_id || !packageLoading);
   const activePackagePageIndex = publishedLessonPages.findIndex((page) => page.id === selectedPackagePage);
   const previousPackagePage = activePackagePageIndex > 0 ? publishedLessonPages[activePackagePageIndex - 1] : null;
   const nextPackagePage = activePackagePageIndex >= 0 && activePackagePageIndex < publishedLessonPages.length - 1 ? publishedLessonPages[activePackagePageIndex + 1] : null;
@@ -826,7 +827,7 @@ export default function LandingPage() {
             </nav>
 
           </aside>
-          <article className={`lesson-content min-w-0 flex-1 bg-white text-left text-black lg:overflow-y-auto ${enrollment ? 'p-4 sm:p-6' : 'guest-lesson-content p-0'}`} aria-label="Lesson content">
+          <article className={`lesson-content min-w-0 flex-1 bg-white text-left text-black lg:overflow-y-auto ${enrollment ? 'p-4 sm:p-6' : 'guest-lesson-content p-0'} ${showEmptyLesson ? 'grid place-items-center' : ''}`} aria-label="Lesson content">
             <div className={enrollment ? 'mx-auto max-w-4xl' : 'lg:grid lg:min-h-full'}>
               {!enrollment && (
                 <section className="guest-learning-page grid lg:grid-cols-[1.05fr_0.95fr]">
@@ -868,7 +869,7 @@ export default function LandingPage() {
                   </nav>
                 </section>
               )}
-              {enrollment && !packageLoading && !activePackagePage && <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-slate-600">Select a published page from the left sidebar. If none appears, this language has no published lesson pages yet.</div>}
+              {showEmptyLesson && <div role="status" className="text-center text-slate-600">Content not available</div>}
               <div className="sample-lesson-document hidden">
               <p className={`text-[10px] font-black uppercase tracking-[0.16em] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Level {activeLevel.id} · {selectedCurriculumLanguage.name}
