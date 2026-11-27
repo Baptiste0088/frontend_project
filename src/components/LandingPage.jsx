@@ -517,9 +517,7 @@ export default function LandingPage() {
   const displayedProgress = enrollment ? progressPercentage : 0;
   const profileImage = profileImageUrl(profileUser?.profile_image || profileUser?.profileImage || profileUser?.avatar_url) || logo;
   const selectedLanguageChapters = packageChapters[selectedPackageLanguage] || [];
-  const publishedLessonPages = selectedLanguageChapters.flatMap((chapter) => (
-    (packagePages[chapter.id] || []).map((page) => ({ ...page, heading: publishedPageHeading(page) }))
-  ));
+  const publishedLessonPages = selectedLanguageChapters.flatMap((chapter) => packagePages[chapter.id] || []);
   const activePackagePage = Object.values(packagePages).flat().find((page) => page.id === selectedPackagePage);
   const activePackagePageIndex = publishedLessonPages.findIndex((page) => page.id === selectedPackagePage);
   const previousPackagePage = activePackagePageIndex > 0 ? publishedLessonPages[activePackagePageIndex - 1] : null;
@@ -555,7 +553,10 @@ export default function LandingPage() {
             const pageResponse = await fetch(`${API_BASE_URL}/api/chapters/${chapter.id}/pages`);
             const pagePayload = await pageResponse.json().catch(() => ({}));
             if (!pageResponse.ok) throw new Error(pagePayload.message || `Unable to load ${chapter.name} pages.`);
-            return [chapter.id, (pagePayload.pages || []).filter((page) => page.is_published)];
+            const publishedPages = (pagePayload.pages || [])
+              .filter((page) => page.is_published)
+              .map((page) => ({ ...page, heading: publishedPageHeading(page) }));
+            return [chapter.id, publishedPages];
           }));
           return { languageId: language.id, chapters, pageEntries };
         }));
@@ -766,26 +767,29 @@ export default function LandingPage() {
               {enrollment && !packageLoading && !packageError && packageLanguages.length === 0 && <p className="px-3 py-4 text-slate-500">No languages have been added to your trade yet.</p>}
               {enrollment && !packageLoading && packageLanguages.length > 0 && selectedLanguageChapters.length === 0 && <p className="px-3 py-4 text-slate-500">No chapters have been added to this language yet.</p>}
               {enrollment && selectedLanguageChapters.map((chapter) => {
-                const expanded = expandedChapter === chapter.id;
                 const publishedPages = packagePages[chapter.id] || [];
+                const headingPages = publishedPages.filter(page => page.heading);
+                const hasHeadings = headingPages.length > 0;
+                const expanded = hasHeadings && expandedChapter === chapter.id;
                 return (
                   <div key={chapter.id} className={`border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
                     <button
                       type="button"
-                      onClick={() => setExpandedChapter(expanded ? '' : chapter.id)}
-                      className={`flex min-h-11 w-full items-baseline gap-2 px-3 py-2 text-left text-[13px] leading-[1.4] font-semibold transition md:min-h-9 ${darkMode ? 'text-white hover:bg-slate-800' : 'text-[#082f55] hover:bg-slate-100'}`}
-                      aria-expanded={expanded}
+                      disabled={publishedPages.length === 0}
+                      onClick={() => {
+                        if (hasHeadings) setExpandedChapter(expanded ? '' : chapter.id);
+                        else selectPublishedPage(publishedPages[0]);
+                      }}
+                      className={`flex min-h-11 w-full items-baseline gap-2 px-3 py-2 text-left text-[13px] leading-[1.4] font-semibold transition disabled:pointer-events-none md:min-h-9 ${darkMode ? 'text-white hover:bg-slate-800' : 'text-[#082f55] hover:bg-slate-100'}`}
+                      aria-expanded={hasHeadings ? expanded : undefined}
                     >
                       <span className="min-w-0 flex-1 wrap-anywhere">{chapter.name}</span>
-                      <span className="shrink-0" aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+                      {hasHeadings && <span className="shrink-0" aria-hidden="true">{expanded ? '▾' : '▸'}</span>}
                     </button>
                     {expanded && <div className={darkMode ? 'bg-slate-950' : 'bg-white'}>
-                      {publishedPages.length === 0
-                        ? <p className="px-8 py-3 text-[11px] text-slate-500">No published pages</p>
-                        : publishedPages.map((page) => {
-                          const heading = publishedPageHeading(page);
-                          return heading ? <button type="button" key={page.id} onClick={() => selectPublishedPage(page)} className={`flex w-full items-start border-t px-8 py-2.5 text-left text-[11px] ${selectedPackagePage === page.id ? 'bg-slate-900 text-white' : (darkMode ? 'border-slate-800 text-slate-300 hover:bg-slate-800' : 'border-slate-100 text-slate-700 hover:bg-slate-100')}`}><span className="mr-2 text-slate-400">›</span><span>{heading}</span></button> : null;
-                        })}
+                      {headingPages.map(page => (
+                        <button type="button" key={page.id} onClick={() => selectPublishedPage(page)} className={`flex w-full items-start border-t px-8 py-2.5 text-left text-[11px] ${selectedPackagePage === page.id ? 'bg-slate-900 text-white' : (darkMode ? 'border-slate-800 text-slate-300 hover:bg-slate-800' : 'border-slate-100 text-slate-700 hover:bg-slate-100')}`}><span className="mr-2 text-slate-400">›</span><span>{page.heading}</span></button>
+                      ))}
                     </div>}
                   </div>
                 );
