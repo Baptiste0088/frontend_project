@@ -744,9 +744,8 @@ export default function LandingPage() {
               </>}
             </div>
           </div>
-          {enrollment && <div className="mt-2 flex min-w-0 items-center gap-3 border-t border-slate-200 pt-2">
-            <span className="shrink-0 text-[9px] font-black uppercase tracking-[0.14em] text-[#082f55]">Languages</span>
-            <div className="language-row flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+          {enrollment && <div className="mt-2 min-w-0 border-t border-slate-200 pt-2">
+            <div role="group" aria-label="Choose a language" className="language-row flex min-w-0 items-center gap-2 overflow-x-auto">
               {packageLoading && <span className="px-2 text-[11px] text-slate-500">Loading…</span>}
               {packageLanguages.map((language) => {
                 const selected = selectedPackageLanguage === language.id;
@@ -760,9 +759,6 @@ export default function LandingPage() {
           {showMobileSidebar && <button type="button" className="fixed inset-0 z-40 bg-slate-950/55 md:hidden" onClick={() => setShowMobileSidebar(false)} aria-label="Close lesson menu" />}
           <aside id="learning-sidebar" className={`practice-sidebar fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col overflow-y-auto border-r text-left shadow-2xl transition-transform duration-200 md:static md:z-auto md:translate-x-0 md:shadow-none ${enrollment ? 'w-[min(92vw,360px)] md:w-[clamp(288px,32vw,368px)]' : 'w-[min(85vw,300px)] md:w-[260px]'} ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
             <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-3 md:hidden"><strong className="text-[#082f55]">Learning menu</strong><button type="button" onClick={() => setShowMobileSidebar(false)} className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Close lesson menu">×</button></div>
-            {enrollment && <div className={`border-b px-3 py-3 ${darkMode ? 'border-slate-700' : 'border-slate-300'}`}>
-              <p className={`text-[10px] font-black uppercase tracking-[0.14em] ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>My Package</p>
-            </div>}
 
             <nav className="flex-1 overflow-y-auto py-2" aria-label="Lesson table of contents">
               {enrollment && packageLoading && <p className="px-3 py-4 text-slate-500">Loading your languages…</p>}
