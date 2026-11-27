@@ -329,11 +329,6 @@ textarea {
     justify-content: flex-end;
   }
 
-  #practice .practice-header {
-    max-height: 42svh;
-    overflow-y: auto;
-  }
-
   #practice .lesson-content:not(.guest-lesson-content) {
     padding: 16px;
   }

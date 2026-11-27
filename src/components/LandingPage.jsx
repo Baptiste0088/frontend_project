@@ -677,7 +677,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className={`h-[100svh] w-full overflow-hidden text-xs ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
+    <div className={`w-full text-xs ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
       {showEnrollment && !enrollment && (
         <EnrollmentGate
           initialName={accountName}
@@ -710,8 +710,8 @@ export default function LandingPage() {
           </section>
         </div>
       )}
-      <main id="practice" className="flex h-full w-full flex-col overflow-hidden">
-        <section className={`practice-header border-b px-3 py-2 text-left ${darkMode ? 'border-slate-700 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}>
+      <main id="practice" className="flex min-h-svh w-full flex-col lg:h-svh">
+        <section className={`practice-header shrink-0 border-b px-3 py-2 text-left ${darkMode ? 'border-slate-700 bg-slate-950 text-white' : 'border-slate-300 bg-white text-slate-900'}`}>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="brand-block flex min-w-0 items-center gap-3">
               <img src={logo} alt="Global Coding Academy logo" className="brand-logo h-11 w-11 shrink-0 rounded-full object-cover" />
@@ -726,7 +726,7 @@ export default function LandingPage() {
                   <button type="button" onClick={() => setSelectedLearningPath('web')} aria-pressed={selectedLearningCourse.category === 'coding'} className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-xs font-black tracking-wide transition duration-200 hover:-translate-y-0.5 hover:shadow-lg ${selectedLearningCourse.category === 'coding' ? 'bg-[#ffd700] text-[#082f55] ring-2 ring-white' : 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20'}`}><span className={`grid h-6 w-6 place-items-center rounded-md font-mono text-[10px] ${selectedLearningCourse.category === 'coding' ? 'bg-[#082f55] text-white' : 'bg-white/15'}`}>&lt;/&gt;</span><span className="learning-track-label">Coding</span></button>
               </div>
             </div>}
-            <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] md:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
+            <button type="button" onClick={() => setShowMobileSidebar(true)} className="flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 font-black text-[#082f55] lg:hidden" aria-expanded={showMobileSidebar} aria-controls="learning-sidebar"><span aria-hidden="true">☰</span> Lessons</button>
             <div className="profile-meta flex flex-wrap items-stretch gap-2 lg:justify-end">
               {!enrollment && <div className="office-invite flex min-w-0 items-center gap-3 rounded-xl border border-blue-700 bg-[#082f55] px-3 py-2.5 text-white shadow-md sm:px-4">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/10 text-lg text-[#ffd700]" aria-hidden="true">✦</span>
@@ -777,10 +777,10 @@ export default function LandingPage() {
           </div>}
         </section>
 
-        <section className={`flex min-h-0 flex-1 overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
-          {showMobileSidebar && <button type="button" className="fixed inset-0 z-40 bg-slate-950/55 md:hidden" onClick={() => setShowMobileSidebar(false)} aria-label="Close lesson menu" />}
-          <aside id="learning-sidebar" className={`practice-sidebar fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col overflow-y-auto border-r text-left shadow-2xl transition-transform duration-200 md:static md:z-auto md:translate-x-0 md:shadow-none ${enrollment ? 'w-[min(92vw,360px)] md:w-[clamp(288px,32vw,368px)]' : 'w-[min(85vw,300px)] md:w-[260px]'} ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
-            <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-3 md:hidden"><strong className="text-[#082f55]">Learning menu</strong><button type="button" onClick={() => setShowMobileSidebar(false)} className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Close lesson menu">×</button></div>
+        <section className={`flex flex-1 lg:min-h-0 lg:overflow-hidden ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
+          {showMobileSidebar && <button type="button" className="fixed inset-0 z-40 bg-slate-950/55 lg:hidden" onClick={() => setShowMobileSidebar(false)} aria-label="Close lesson menu" />}
+          <aside id="learning-sidebar" className={`practice-sidebar fixed inset-y-0 left-0 z-50 flex h-full shrink-0 flex-col overflow-y-auto border-r text-left shadow-2xl transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 lg:shadow-none ${enrollment ? 'w-[min(92vw,360px)] lg:w-[clamp(288px,32vw,368px)]' : 'w-[min(85vw,300px)] lg:w-[260px]'} ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} ${darkMode ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-300 bg-slate-50 text-slate-900'}`}>
+            <div className="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-3 lg:hidden"><strong className="text-[#082f55]">Learning menu</strong><button type="button" onClick={() => setShowMobileSidebar(false)} className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Close lesson menu">×</button></div>
 
             <nav className="flex-1 overflow-y-auto py-2" aria-label="Lesson table of contents">
               {enrollment && packageLoading && <p className="px-3 py-4 text-slate-500">Loading your languages…</p>}
@@ -826,11 +826,11 @@ export default function LandingPage() {
             </nav>
 
           </aside>
-          <article className={`lesson-content min-w-0 flex-1 bg-white text-left text-black ${enrollment ? 'overflow-y-auto p-4 sm:p-6' : 'guest-lesson-content overflow-y-auto p-0 md:overflow-hidden'}`} aria-label="Lesson content">
-            <div className={enrollment ? 'mx-auto max-w-4xl' : 'h-full min-h-0 max-w-none'}>
+          <article className={`lesson-content min-w-0 flex-1 bg-white text-left text-black lg:overflow-y-auto ${enrollment ? 'p-4 sm:p-6' : 'guest-lesson-content p-0'}`} aria-label="Lesson content">
+            <div className={enrollment ? 'mx-auto max-w-4xl' : 'lg:grid lg:min-h-full'}>
               {!enrollment && (
-                <section className="guest-learning-page grid h-full min-h-0 gap-0 lg:grid-cols-[1.05fr_0.95fr]">
-                  <div className="flex min-h-0 flex-col justify-between overflow-hidden bg-[#082f55] p-5 text-white sm:p-7">
+                <section className="guest-learning-page grid lg:grid-cols-[1.05fr_0.95fr]">
+                  <div className="flex min-w-0 flex-col justify-between bg-[#082f55] p-5 text-white sm:p-7">
                     <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-stretch gap-4 sm:grid-cols-[minmax(0,1fr)_10rem] sm:gap-6 xl:grid-cols-[minmax(0,1fr)_11rem]">
                       <div className="flex min-w-0 flex-col justify-center">
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffd700]">Practical ICT, Office and programming</p>
@@ -844,9 +844,9 @@ export default function LandingPage() {
                     {weeklyBestLearners.length > 0 && <div className="mt-4 max-w-xl"><div className="mb-2 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.16em] text-[#ffd700]"><span aria-hidden="true">★</span><span>Best learners this week</span></div><div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:thin]">{weeklyBestLearners.map((learner, index) => <figure key={`${learner.profile_image}-${index}`} className="w-16 shrink-0 snap-start text-center"><img src={profileImageUrl(learner.profile_image)} alt={`${learner.full_name} profile`} className="mx-auto h-14 w-14 rounded-full border-2 border-[#ffd700] object-cover shadow-lg" /><figcaption className="mt-1 truncate text-[9px] font-bold text-blue-100">{learner.last_name}</figcaption></figure>)}</div></div>}
                     <div className="mt-5 flex flex-wrap items-center gap-3"><button type="button" onClick={() => setShowEnrollment(true)} className="rounded-lg bg-[#ffd700] px-6 py-3 font-black text-[#082f55] hover:bg-[#f5ca00]">{enrollmentLabel}</button><span className="text-xs font-bold text-blue-100">Beginner-friendly · Learn by doing</span></div>
                   </div>
-                  <div className="flex min-h-0 flex-col overflow-hidden border-l border-blue-100 bg-white p-5 sm:p-6">
+                  <div className="flex min-w-0 flex-col border-t border-blue-100 lg:border-t-0 lg:border-l bg-white p-5 sm:p-6">
                     <div className="flex items-center gap-3 border-b border-slate-200 pb-4"><span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-black text-white ${selectedLearningCourse.color}`}>{selectedLearningCourse.badge}</span><div><p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Selected learning path</p><h2 className="text-xl font-black text-[#082f55]">{selectedLearningCourse.name}</h2></div></div>
-                    <div className="mt-4 min-h-0 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-0.5 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-md bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
+                    <div className="mt-4 flex-1"><h3 className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">What you will learn</h3><ul className="mt-3 grid gap-0.5 text-sm font-bold text-slate-700">{selectedLearningCourse.topics.map((topic) => <li key={topic} className="flex items-start gap-2 rounded-md bg-blue-50/70 px-3 py-2"><span className="text-emerald-600">✓</span><span>{topic}</span></li>)}</ul></div>
                     <div className="mt-4 flex items-end gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4"><div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-700">Practice project</p><p className="mt-1 text-sm font-bold leading-5 text-slate-700">{selectedLearningCourse.practice}</p></div><button type="button" onClick={() => setShowEnrollment(true)} className="shrink-0 rounded-lg bg-[#082f55] px-4 py-2.5 text-xs font-black text-white hover:bg-[#0b416f]">Start learning</button></div>
                   </div>
                 </section>
